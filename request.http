@@ -1,2 +1,41 @@
-### Test Get Hello
-GET http://localhost:3000/
+### Variables
+@baseUrl = http://localhost:3000
+#@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
+@contentType = application/json
+
+### The basic request
+GET {{baseUrl}}
+
+### Get all tasks 
+# @name getAllTasks
+GET {{baseUrl}}/tasks
+
+
+### Get one task
+GET {{baseUrl}}/tasks/{{taskId}}
+
+### Create new task
+# @name createTask
+POST {{baseUrl}}/tasks
+Content-Type: {{contentType}}
+
+{
+  "title": "Learn NestJS",
+  "description": "Complete the NestJS course",
+  "status": "OPEN"
+}
+### Set the task id
+@taskId = {{ createTask.response.body.id }}
+
+
+### Update the task status
+PATCH {{baseUrl}}/tasks/{{taskId}}
+Content-Type: {{contentType}}
+
+{
+  "status": "IN_PROGRESS"
+ 
+}
+
+### Deleting a task
+DELETE {{ baseUrl }}/tasks/{{taskId}}

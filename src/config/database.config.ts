@@ -8,5 +8,6 @@ export const typeOrmConfig = registerAs('database', (): TypeOrmModuleOptions => 
     username: process.env.DB_USER ?? 'postgres',
     password: process.env.DB_PASSWORD ?? '050912',
     database: process.env.DB_DATABASE ?? 'questForKids',
-    synchronize: Boolean(process.env.DB_SYNC) ?? false,
+    //synchronize: Boolean(process.env.DB_SYNC) ?? false,
+    synchronize: false,
 }));
