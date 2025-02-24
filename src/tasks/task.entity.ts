@@ -28,8 +28,10 @@ export class Task {
     })
     status: TaskStatus;
 
-    @Column()
-    points: number;
+    @Column({
+        nullable: true
+    })
+    points?: number;
 
     @Column()
     userId: string;

@@ -22,8 +22,8 @@ export class CreateTaskDto
     userId: string;
 
     @IsInt()
-    @IsNotEmpty()
-    points: number;
+    @IsOptional()
+    points?: number;
 
     @IsOptional()
     @ValidateNested({each: true})
