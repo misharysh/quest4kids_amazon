@@ -1,3 +1,5 @@
+
+
 ### Variables
 @baseUrl = http://localhost:3000
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
@@ -6,36 +8,92 @@
 ### The basic request
 GET {{baseUrl}}
 
+
+### Register
+POST {{baseUrl}}/auth/register
+Content-Type: {{contentType}}
+
+{
+  "email": "test@gmail.com",
+  "name": "mysharysh",
+  "password": "Test123!"
+}
+
+### Login
+POST {{baseUrl}}/auth/login
+Content-Type: {{contentType}}
+
+{
+  "email": "test@gmail.com",
+  "password": "Test123!"
+}
+
 ### Get all tasks 
 # @name getAllTasks
 GET {{baseUrl}}/tasks
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
 
 
 ### Get one task
 GET {{baseUrl}}/tasks/{{taskId}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+
 
 ### Create new task
 # @name createTask
 POST {{baseUrl}}/tasks
 Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
 
 {
   "title": "Learn NestJS",
   "description": "Complete the NestJS course",
-  "status": "OPEN"
+  "status": "OPEN",
+  "userId": "23260601-b4e9-4090-ba8c-d9c0a779b733",
+  "labels": [
+    {
+      "name": "Mysha label"
+    }
+  ]
 }
 ### Set the task id
 @taskId = {{ createTask.response.body.id }}
 
-
 ### Update the task status
 PATCH {{baseUrl}}/tasks/{{taskId}}
 Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+
 
 {
-  "status": "IN_PROGRESS"
- 
+  "status": "IN_PROGRESS",
+  "labels": [{
+    "name": "done"
+  }]
 }
 
 ### Deleting a task
 DELETE {{ baseUrl }}/tasks/{{taskId}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+
+
+### Add specific labels to task
+# @name addLabels
+POST {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+
+
+[
+  {"name": "prioritized"},
+  {"name": "bug"}
+]
+
+### Remove specific labels from task
+# @name removeLabels
+DELETE {{baseUrl}}/tasks/{{taskId}}/labels
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+
+
+["prioritized"]

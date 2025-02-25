@@ -10,6 +10,6 @@ export class AppService {
 
   getHello(): string {
     const prefix = this.configService.get<AppConfig>('app')?.messagePrefix;
-    return prefix + ' hello';
+    return 'Hello ' + prefix;
   }
 }
