@@ -3,7 +3,8 @@ import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user.entity';
 import { PasswordService } from '../password/password.service';
-import { CreateUserDto } from '../dto/create-user-dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { Role } from '../role.enum';
 
 @Injectable()
 export class AuthService {
@@ -21,8 +22,8 @@ export class AuthService {
         {
             throw new ConflictException('Email already exists');
         }
-
-        const user = await this.userService.createUser(createUserDto);
+        const userRole = Role.PARENT;
+        const user = await this.userService.createUser(createUserDto, userRole);
 
         return user;
     };
@@ -46,7 +47,7 @@ export class AuthService {
 
     private generateToken(user: User): string 
     {
-        const payload = {sub: user.id, name: user.name};
+        const payload = {sub: user.id, name: user.name, role: user.role};
         return this.jwtService.sign(payload);
     };
 }

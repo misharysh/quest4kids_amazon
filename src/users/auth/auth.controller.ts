@@ -1,5 +1,5 @@
 import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Post, Request, SerializeOptions, UseInterceptors } from '@nestjs/common';
-import { CreateUserDto } from '../dto/create-user-dto';
+import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../user.entity';
 import { AuthService } from './auth.service';
 import { LoginDto } from '../dto/login.dto';
@@ -8,6 +8,9 @@ import { request } from 'http';
 import { AuthRequest } from '../auth.request';
 import { UserService } from '../user/user.service';
 import { Public } from '../decorators/public.decorator';
+import { ParentResponse } from '../dto/parent.response.dto';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../role.enum';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -48,4 +51,11 @@ export class AuthController {
 
         throw new NotFoundException();
     };
+
+    @Get('parent')
+    @Roles(Role.PARENT)
+    async parentOnly(): Promise<ParentResponse>
+    {
+        return new ParentResponse({message: "This is for Parent role only."});
+    }
 }

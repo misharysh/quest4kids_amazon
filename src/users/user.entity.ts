@@ -1,6 +1,7 @@
 import { Expose } from "class-transformer";
 import { Task } from "../tasks/task.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Role } from "./role.enum";
 
 @Entity()
 export class User {
@@ -30,4 +31,12 @@ export class User {
     @OneToMany(() => Task, task => task.user)
     @Expose()
     tasks: Task[];
+
+    @Column({
+        type: 'enum',
+        enum: Role,
+        default: Role.CHILD
+    })
+    @Expose()
+    role: Role;
 }

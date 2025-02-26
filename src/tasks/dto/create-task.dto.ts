@@ -30,12 +30,7 @@ export class CreateTaskDto
     @IsEnum(TaskStatus)
     status: TaskStatus;
 
-    @ApiProperty({
-        example: "'UserId'",
-        required: true
-    })
-    @IsNotEmpty()
-    @IsUUID()
+    
     userId: string;
 
     @ApiProperty({

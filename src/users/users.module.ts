@@ -3,14 +3,15 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { User } from "./user.entity";
 import { JwtModule } from "@nestjs/jwt";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { ConfigTypes } from "src/config/config-types";
-import { AuthConfig } from "src/config/auth.config";
+import { ConfigTypes } from "./../config/config-types";
+import { AuthConfig } from "./../config/auth.config";
 import { PasswordService } from './password/password.service';
 import { UserService } from './user/user.service';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
 import { AuthGuard } from "./auth.guard";
 import { APP_GUARD } from "@nestjs/core";
+import { RolesGuard } from "./roles.guard";
 
 @Module({
     imports: [
@@ -26,10 +27,16 @@ import { APP_GUARD } from "@nestjs/core";
             })
         }),
     ],
-    providers: [PasswordService, UserService, AuthService, AuthGuard, {
+    providers: [PasswordService, UserService, AuthService, AuthGuard, RolesGuard, 
+    {
         provide: APP_GUARD,
         useClass: AuthGuard
-    }],
+    },
+    {
+        provide: APP_GUARD,
+        useClass: RolesGuard
+    },
+    ],
     controllers: [AuthController]
 })
 export class UsersModule {}

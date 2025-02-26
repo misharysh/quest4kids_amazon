@@ -3,7 +3,8 @@ import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { PasswordService } from '../password/password.service';
-import { CreateUserDto } from '../dto/create-user-dto';
+import { CreateUserDto } from '../dto/create-user.dto';
+import { Role } from '../role.enum';
 
 @Injectable()
 export class UserService {
@@ -18,13 +19,14 @@ export class UserService {
         return await this.userRepository.findOneBy({email});
     };
 
-    public async createUser(createUserDto: CreateUserDto): Promise<User>
+    public async createUser(createUserDto: CreateUserDto, role: Role): Promise<User>
     {
         const hashedPassword = await this.passwordService.hash(createUserDto.password);
 
         const user = this.userRepository.create({
             ...createUserDto,
-            password: hashedPassword
+            password: hashedPassword,
+            role: role
         });
 
         return await this.userRepository.save(user);
