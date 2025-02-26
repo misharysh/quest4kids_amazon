@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { FindOneParams } from './find-one.params';
@@ -6,6 +6,9 @@ import { UpdateTaskDto } from './dto/update-task.dto';
 import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
 import { Task } from './task.entity';
 import { CreateTaskLabelDto } from './dto/create-task-label.dto';
+import { FindTaskParams } from './find-task.params';
+import { PaginationParams } from 'src/common/pagination.params';
+import { PaginationResponse } from 'src/common/pagination.response';
 
 @Controller('tasks')
 export class TasksController {
@@ -13,9 +16,21 @@ export class TasksController {
     constructor(private readonly tasksService: TasksService) {};
 
     @Get()
-    public async findAll(): Promise<Task[]>
+    public async findAll(
+        @Query() filters: FindTaskParams,
+        @Query() pagination: PaginationParams
+    ): Promise<PaginationResponse<Task>>
     {
-        return await this.tasksService.findAll();
+        const [items, total] = await this.tasksService.findAll(filters, pagination);
+
+        return {
+            data: items,
+            meta: {
+                total,
+                offset: pagination.offset,
+                limit: pagination.limit
+            }
+        }
     };
 
     @Get('/:id')
@@ -61,11 +76,11 @@ export class TasksController {
     @Post(':id/labels')
     async addLabels(
         @Param() { id }: FindOneParams,
-        @Body() labels: CreateTaskLabelDto[]): Promise<Task> 
+        @Body() createTaskLabelDto: CreateTaskLabelDto[]): Promise<Task> 
     {
         const task = await this.findOneOrFail(id);
 
-        return await this.tasksService.addLabels(task, labels);
+        return await this.tasksService.addLabels(task, createTaskLabelDto);
     };
 
     @Delete(':id/labels')

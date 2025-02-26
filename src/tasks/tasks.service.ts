@@ -8,6 +8,8 @@ import { Task } from './task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTaskLabelDto } from './dto/create-task-label.dto';
 import { TaskLabel } from './task-label.entity';
+import { FindTaskParams } from './find-task.params';
+import { PaginationParams } from 'src/common/pagination.params';
 
 @Injectable()
 export class TasksService {
@@ -20,9 +22,59 @@ export class TasksService {
         private labelsRepository: Repository<TaskLabel>
     ) {};
 
-    public async findAll(): Promise<Task[]>
+    public async findAll(filters: FindTaskParams, pagination: PaginationParams): Promise<[Task[], number]>
     {
-        return await this.tasksRepository.find();
+        //solution #1
+        const query = this.tasksRepository.createQueryBuilder('task')
+            .leftJoinAndSelect('task.labels', 'labels');
+
+        if (filters.status)
+        {
+            query.andWhere('task.status = :status', {status: filters.status});
+        }
+
+        if (filters.search?.trim())
+        {
+            query.andWhere('(task.title ILIKE :search OR task.description ILIKE :search)', {search: `%${filters.search}%`});
+        }
+
+        if (filters.labels?.length)
+        {
+            const subQuery = query.subQuery()
+            .select('labels.taskId')
+            .from('task_label', 'labels')
+            .where('labels.name IN (:...names)', {names: filters.labels})
+            .getQuery();
+
+            query.andWhere(`task.id IN ${subQuery}`);
+        }
+
+        query.orderBy(`task.${filters.sortBy}`, filters.sortOrder);
+
+        query.skip(pagination.offset).take(pagination.limit);
+
+        return query.getManyAndCount();
+
+        //solution #2
+        // const where: FindOptionsWhere<Task> = {};
+
+        // if (filters.status)
+        // {
+        //     where.status = filters.status;
+        // }
+
+        // if (filters.search?.trim())
+        // {
+        //     where.title = Like(`%${filters.search}%`);
+        //     where.description = Like(`%${filters.search}%`);
+        // }
+
+        // return await this.tasksRepository.findAndCount({
+        //     where,
+        //     relations: ['labels'],
+        //     skip: pagination.offset,
+        //     take: pagination.limit
+        // });
     };
 
     public async findOne(id: string): Promise<Task | null>

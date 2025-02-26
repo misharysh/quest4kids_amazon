@@ -30,26 +30,49 @@ Content-Type: {{contentType}}
 
 ### Get all tasks 
 # @name getAllTasks
-GET {{baseUrl}}/tasks
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+GET {{baseUrl}}/tasks?limit=2&offset=0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NTNlM2NkZi0wOWVmLTQxODQtODc5Ni1hZmZhN2I2MjE2YWMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDg2OTgwLCJleHAiOjE3NDA0OTA1ODB9.N08N_neo1r5IE0rKrzj_kNUemnBH6CN7w-EyKcqn6YY
+
+### Get all IN_PROGRESS tasks 
+# @name getAllInProgress
+GET {{baseUrl}}/tasks?status=IN_PROGRESS
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDgxNTMyLCJleHAiOjE3NDA0ODUxMzJ9.aDNXZkhMbVbkFwx1zKyZeY8-G1lIaiO4xdYS3-dM34c
+
+
+### Get all with search query 
+# @name getAllWithSearchQuery
+GET {{baseUrl}}/tasks?search=Nest
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDgxNTMyLCJleHAiOjE3NDA0ODUxMzJ9.aDNXZkhMbVbkFwx1zKyZeY8-G1lIaiO4xdYS3-dM34c
+
+
+### Get all filtered by labels
+# @name getAllFilteredByLabels
+GET {{baseUrl}}/tasks?labels=bug
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDg2MDM0LCJleHAiOjE3NDA0ODk2MzR9.oKnnY6Z6XGYkFHDds8DjPKg8hkZxDD6XhWmt3AZOnR8
+
+### Get all sorted
+# @name getAllSorted
+GET {{baseUrl}}/tasks?sortBy=createdAt&sortOrder=DESC
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDg2MDM0LCJleHAiOjE3NDA0ODk2MzR9.oKnnY6Z6XGYkFHDds8DjPKg8hkZxDD6XhWmt3AZOnR8
 
 
 ### Get one task
 GET {{baseUrl}}/tasks/{{taskId}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NTNlM2NkZi0wOWVmLTQxODQtODc5Ni1hZmZhN2I2MjE2YWMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDc3NTE0LCJleHAiOjE3NDA0ODExMTR9.n9a4i70Viqz6Pjz8nYzMj0tOtPxcwcaRaHEJ2mGwYOY
 
 
 ### Create new task
 # @name createTask
 POST {{baseUrl}}/tasks
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4NTNlM2NkZi0wOWVmLTQxODQtODc5Ni1hZmZhN2I2MjE2YWMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDg2OTgwLCJleHAiOjE3NDA0OTA1ODB9.N08N_neo1r5IE0rKrzj_kNUemnBH6CN7w-EyKcqn6YY
+
 
 {
-  "title": "Learn NestJS",
-  "description": "Complete the NestJS course",
+  "title": "Mysha",
+  "description": "Mysha Description",
   "status": "OPEN",
-  "userId": "23260601-b4e9-4090-ba8c-d9c0a779b733",
+  "userId": "853e3cdf-09ef-4184-8796-affa7b6216ac",
   "labels": [
     {
       "name": "Mysha label"
