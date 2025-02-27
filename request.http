@@ -8,10 +8,14 @@
 ### The basic request
 GET {{baseUrl}}
 
+### Profile
+GET {{baseUrl}}/auth/profile
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY1MzAxMSwiZXhwIjoxNzQwNjU2NjExfQ.tu0v1n0ot6VyCMqBQYEmIiVzlrwlWuuJt0qriohzkcc
+
 
 ### Parent Only
 GET {{baseUrl}}/auth/parent
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4MzA3OCwiZXhwIjoxNzQwNTg2Njc4fQ.uehGztM7SBuIBlWus_yHgY1rj1kjgHWsc4X55Qskfaw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhMC1lY2JhLTQ1MzgtYTcwOC1mMmRmZDc4OTU2ZWYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4NDM3NywiZXhwIjoxNzQwNTg3OTc3fQ.5o-mAiVIa9-OfxoM0n5JrXpHRmCFfEjbM8BLKBB84mc
 
 
 ### Register
@@ -19,8 +23,8 @@ POST {{baseUrl}}/auth/register
 Content-Type: {{contentType}}
 
 {
-  "email": "test@gmail.com",
-  "name": "mysharysh",
+  "email": "test3@gmail.com",
+  "name": "mysharysh3",
   "password": "Test123!"
 }
 
@@ -29,14 +33,31 @@ POST {{baseUrl}}/auth/login
 Content-Type: {{contentType}}
 
 {
-  "email": "test2@gmail.com",
+  "email": "test@gmail.com",
   "password": "Test123!"
 }
+
+### Create child account
+POST {{baseUrl}}/user/create-child-account
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY1MzAxMSwiZXhwIjoxNzQwNjU2NjExfQ.tu0v1n0ot6VyCMqBQYEmIiVzlrwlWuuJt0qriohzkcc
+
+{
+  "email": "child2@gmail.com",
+  "name": "Fedor",
+  "password": "Test123!"
+}
+
+### Get children list
+GET  {{baseUrl}}/user/get-children-list
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY1MzAxMSwiZXhwIjoxNzQwNjU2NjExfQ.tu0v1n0ot6VyCMqBQYEmIiVzlrwlWuuJt0qriohzkcc
+
+
 
 ### Get all tasks 
 # @name getAllTasks
 GET {{baseUrl}}/tasks?limit=2&offset=0
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5Mjg0YmE1My0yZDFlLTRjYjktYWVhZi0xMDE1YTY2MDU3MGYiLCJuYW1lIjoibXlzaGFyeXNoMiIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDA1ODMzNTEsImV4cCI6MTc0MDU4Njk1MX0.4Trd70Iuf4FZ5NwoDEqjgRVO9jQqeqYWSO_xyaCnm7M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhMC1lY2JhLTQ1MzgtYTcwOC1mMmRmZDc4OTU2ZWYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4NDM3NywiZXhwIjoxNzQwNTg3OTc3fQ.5o-mAiVIa9-OfxoM0n5JrXpHRmCFfEjbM8BLKBB84mc
 
 ### Get all IN_PROGRESS tasks 
 # @name getAllInProgress
@@ -63,14 +84,14 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwM
 
 ### Get one task
 #GET {{baseUrl}}/tasks/{{taskId}}
-GET {{baseUrl}}/tasks/728f8c84-08e9-41bc-b6a8-ca4bf188b44c
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5Mjg0YmE1My0yZDFlLTRjYjktYWVhZi0xMDE1YTY2MDU3MGYiLCJuYW1lIjoibXlzaGFyeXNoMiIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDA1ODMzNTEsImV4cCI6MTc0MDU4Njk1MX0.4Trd70Iuf4FZ5NwoDEqjgRVO9jQqeqYWSO_xyaCnm7M
+GET {{baseUrl}}/tasks/20ab1583-f3cd-4497-985f-9d855cd87df4
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhMC1lY2JhLTQ1MzgtYTcwOC1mMmRmZDc4OTU2ZWYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4NDM3NywiZXhwIjoxNzQwNTg3OTc3fQ.5o-mAiVIa9-OfxoM0n5JrXpHRmCFfEjbM8BLKBB84mc
 
 ### Create new task
 # @name createTask
 POST {{baseUrl}}/tasks
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI5Mjg0YmE1My0yZDFlLTRjYjktYWVhZi0xMDE1YTY2MDU3MGYiLCJuYW1lIjoibXlzaGFyeXNoMiIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDA1ODMzNTEsImV4cCI6MTc0MDU4Njk1MX0.4Trd70Iuf4FZ5NwoDEqjgRVO9jQqeqYWSO_xyaCnm7M
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhMC1lY2JhLTQ1MzgtYTcwOC1mMmRmZDc4OTU2ZWYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4NDM3NywiZXhwIjoxNzQwNTg3OTc3fQ.5o-mAiVIa9-OfxoM0n5JrXpHRmCFfEjbM8BLKBB84mc
 
 {
   "title": "Mysha",

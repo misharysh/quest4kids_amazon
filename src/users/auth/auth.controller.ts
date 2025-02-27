@@ -1,16 +1,15 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Post, Request, SerializeOptions, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Post, SerializeOptions, UseInterceptors } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../user.entity';
 import { AuthService } from './auth.service';
 import { LoginDto } from '../dto/login.dto';
 import { LoginResponse } from '../dto/login.response.dto';
-import { request } from 'http';
-import { AuthRequest } from '../auth.request';
 import { UserService } from '../user/user.service';
 import { Public } from '../decorators/public.decorator';
 import { ParentResponse } from '../dto/parent.response.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../role.enum';
+import { CurrentUserId } from '../decorators/current-user-id.decorator';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -40,9 +39,9 @@ export class AuthController {
     };
 
     @Get('profile')
-    async profile(@Request() request: AuthRequest): Promise<User>
+    async profile(@CurrentUserId() userId: string): Promise<User>
     {
-        const user = await this.usersService.findOne(request.user.sub);
+        const user = await this.usersService.findOne(userId);
 
         if (user)
         {

@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { Exclude, Expose } from "class-transformer";
 import { Task } from "../tasks/task.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "./role.enum";
@@ -17,7 +17,7 @@ export class User {
     @Expose()
     email: string;
 
-    @Column()
+    @Column({select: false})
     password: string;
 
     @CreateDateColumn()
@@ -39,4 +39,10 @@ export class User {
     })
     @Expose()
     role: Role;
+
+    @Column({
+        nullable: true
+    })
+    @Expose()
+    parentId?: string;
 }
