@@ -1,5 +1,3 @@
-
-
 ### Variables
 @baseUrl = http://localhost:3000
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
@@ -50,9 +48,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlN
 
 ### Get children list
 GET  {{baseUrl}}/user/get-children-list
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY1MzAxMSwiZXhwIjoxNzQwNjU2NjExfQ.tu0v1n0ot6VyCMqBQYEmIiVzlrwlWuuJt0qriohzkcc
-
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY2MzI4OSwiZXhwIjoxNzQwNjY2ODg5fQ.ldbu41TONGenHm_ObNRkZAvXk6n_47D6ZlN65COYQ-g
 
 ### Get all tasks 
 # @name getAllTasks
@@ -89,9 +85,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhM
 
 ### Create new task
 # @name createTask
-POST {{baseUrl}}/tasks
+POST {{baseUrl}}/kids/e7f0c34a-e79c-4980-9e0b-0a932a7f4706/task
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhMC1lY2JhLTQ1MzgtYTcwOC1mMmRmZDc4OTU2ZWYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4NDM3NywiZXhwIjoxNzQwNTg3OTc3fQ.5o-mAiVIa9-OfxoM0n5JrXpHRmCFfEjbM8BLKBB84mc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY2MzI4OSwiZXhwIjoxNzQwNjY2ODg5fQ.ldbu41TONGenHm_ObNRkZAvXk6n_47D6ZlN65COYQ-g
 
 {
   "title": "Mysha",

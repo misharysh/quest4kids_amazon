@@ -6,9 +6,6 @@ import { LoginDto } from '../dto/login.dto';
 import { LoginResponse } from '../dto/login.response.dto';
 import { UserService } from '../user/user.service';
 import { Public } from '../decorators/public.decorator';
-import { ParentResponse } from '../dto/parent.response.dto';
-import { Roles } from '../decorators/roles.decorator';
-import { Role } from '../role.enum';
 import { CurrentUserId } from '../decorators/current-user-id.decorator';
 
 @Controller('auth')
@@ -50,11 +47,4 @@ export class AuthController {
 
         throw new NotFoundException();
     };
-
-    @Get('parent')
-    @Roles(Role.PARENT)
-    async parentOnly(): Promise<ParentResponse>
-    {
-        return new ParentResponse({message: "This is for Parent role only."});
-    }
 }

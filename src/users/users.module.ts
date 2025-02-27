@@ -38,6 +38,7 @@ import { UserController } from './user/user.controller';
         useClass: RolesGuard
     },
     ],
-    controllers: [AuthController, UserController]
+    controllers: [AuthController, UserController],
+    exports: [UserService]
 })
 export class UsersModule {}

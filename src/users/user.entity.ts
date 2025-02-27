@@ -17,7 +17,7 @@ export class User {
     @Expose()
     email: string;
 
-    @Column({select: false})
+    @Column()
     password: string;
 
     @CreateDateColumn()

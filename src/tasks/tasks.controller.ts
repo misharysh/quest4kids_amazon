@@ -10,13 +10,18 @@ import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from './../common/pagination.params';
 import { PaginationResponse } from './../common/pagination.response';
 import { CurrentUserId } from './../users/decorators/current-user-id.decorator';
+import { Roles } from 'src/users/decorators/roles.decorator';
+import { Role } from 'src/users/role.enum';
+import { UserService } from 'src/users/user/user.service';
 
-@Controller('tasks')
+@Controller()
 export class TasksController {
 
-    constructor(private readonly tasksService: TasksService) {};
+    constructor(
+        private readonly tasksService: TasksService,
+        private readonly usersService: UserService) {};
 
-    @Get()
+    @Get('tasks')
     public async findAll(
         @Query() filters: FindTaskParams,
         @Query() pagination: PaginationParams,
@@ -35,7 +40,7 @@ export class TasksController {
         }
     };
 
-    @Get('/:id')
+    @Get('tasks/:id')
     public async findOne(
         @Param() params: FindOneParams,
         @CurrentUserId() userId: string,
@@ -46,16 +51,32 @@ export class TasksController {
         return task;
     };
 
-    @Post()
+    @Post('kids/:id/task')
+    @Roles(Role.PARENT)
     public async create(
+        @Param('id') id: string,
         @Body() createTaskDto: CreateTaskDto,
         @CurrentUserId() userId: string,
     ): Promise<Task>
     {
-        return await this.tasksService.createTask({...createTaskDto, userId: userId});
+        //check if there is a child user
+        const childUser = await this.usersService.findOne(id);
+
+        if (!childUser)
+        {
+            throw new NotFoundException('Child user not found');
+        }
+
+        //check if this childUser has ParentId as current user id
+        if (childUser.parentId !== userId)
+        {
+            throw new ForbiddenException('You can only access your children');
+        }
+
+        return await this.tasksService.createTask({...createTaskDto, userId: id});
     };
 
-    @Patch('/:id')
+    @Patch('tasks/:id')
     public async updateTask(
         @Param() params: FindOneParams,
         @Body() updateTaskDto: UpdateTaskDto,
@@ -78,7 +99,7 @@ export class TasksController {
         }
     };
 
-    @Delete('/:id')
+    @Delete('tasks/:id')
     @HttpCode(HttpStatus.NO_CONTENT)
     public async delete(
         @Param() params: FindOneParams,
@@ -90,7 +111,7 @@ export class TasksController {
         await this.tasksService.deleteTask(task);
     };
 
-    @Post(':id/labels')
+    @Post('tasks/:id/labels')
     async addLabels(
         @Param() { id }: FindOneParams,
         @Body() createTaskLabelDto: CreateTaskLabelDto[],
@@ -102,7 +123,7 @@ export class TasksController {
         return await this.tasksService.addLabels(task, createTaskLabelDto);
     };
 
-    @Delete(':id/labels')
+    @Delete('tasks/:id/labels')
     @HttpCode(HttpStatus.NO_CONTENT)
     async removeLabels(
         @Param() { id }: FindOneParams,
@@ -132,7 +153,7 @@ export class TasksController {
     {
         if (task.userId !== userId)
         {
-        throw new ForbiddenException('You can only access your tasks');
+            throw new ForbiddenException('You can only access your tasks');
         }
     };
 }
