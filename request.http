@@ -8,12 +8,7 @@ GET {{baseUrl}}
 
 ### Profile
 GET {{baseUrl}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY1MzAxMSwiZXhwIjoxNzQwNjU2NjExfQ.tu0v1n0ot6VyCMqBQYEmIiVzlrwlWuuJt0qriohzkcc
-
-
-### Parent Only
-GET {{baseUrl}}/auth/parent
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhMC1lY2JhLTQ1MzgtYTcwOC1mMmRmZDc4OTU2ZWYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4NDM3NywiZXhwIjoxNzQwNTg3OTc3fQ.5o-mAiVIa9-OfxoM0n5JrXpHRmCFfEjbM8BLKBB84mc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY2NTAxNiwiZXhwIjoxNzQwNjY4NjE2fQ.Zj-0BhU-uBZ0SJ6yn1p-EqGRnI9fsXD3FkM6KRktm6M
 
 
 ### Register
@@ -38,7 +33,7 @@ Content-Type: {{contentType}}
 ### Create child account
 POST {{baseUrl}}/user/create-child-account
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY1MzAxMSwiZXhwIjoxNzQwNjU2NjExfQ.tu0v1n0ot6VyCMqBQYEmIiVzlrwlWuuJt0qriohzkcc
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjcwMDQ4LCJleHAiOjE3NDA2NzM2NDh9.ktB-OId3rMtx3Ob6sudcgOvF1ow1u26yFdaxdiKgV1I
 
 {
   "email": "child2@gmail.com",
@@ -48,12 +43,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlN
 
 ### Get children list
 GET  {{baseUrl}}/user/get-children-list
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY2MzI4OSwiZXhwIjoxNzQwNjY2ODg5fQ.ldbu41TONGenHm_ObNRkZAvXk6n_47D6ZlN65COYQ-g
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjcwMDQ4LCJleHAiOjE3NDA2NzM2NDh9.ktB-OId3rMtx3Ob6sudcgOvF1ow1u26yFdaxdiKgV1I
 
 ### Get all tasks 
 # @name getAllTasks
-GET {{baseUrl}}/tasks?limit=2&offset=0
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhMC1lY2JhLTQ1MzgtYTcwOC1mMmRmZDc4OTU2ZWYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4NDM3NywiZXhwIjoxNzQwNTg3OTc3fQ.5o-mAiVIa9-OfxoM0n5JrXpHRmCFfEjbM8BLKBB84mc
+GET {{baseUrl}}/tasks?limit=10&offset=0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjczNjk2LCJleHAiOjE3NDA2NzcyOTZ9.6bcfnGDMPfERWtPAP9eKVr8MDXOr1iHdtgvW591bk1c
 
 ### Get all IN_PROGRESS tasks 
 # @name getAllInProgress
@@ -80,22 +75,22 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwM
 
 ### Get one task
 #GET {{baseUrl}}/tasks/{{taskId}}
-GET {{baseUrl}}/tasks/20ab1583-f3cd-4497-985f-9d855cd87df4
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2MGRiZDRhMC1lY2JhLTQ1MzgtYTcwOC1mMmRmZDc4OTU2ZWYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDU4NDM3NywiZXhwIjoxNzQwNTg3OTc3fQ.5o-mAiVIa9-OfxoM0n5JrXpHRmCFfEjbM8BLKBB84mc
+GET {{baseUrl}}/tasks/b516c069-5e2f-4eeb-bac1-dd62930e677a
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjczNjk2LCJleHAiOjE3NDA2NzcyOTZ9.6bcfnGDMPfERWtPAP9eKVr8MDXOr1iHdtgvW591bk1c
 
 ### Create new task
 # @name createTask
-POST {{baseUrl}}/kids/e7f0c34a-e79c-4980-9e0b-0a932a7f4706/task
+POST {{baseUrl}}/kids/2342c256-e93d-495f-bfeb-f119ad242a39/task
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY2MzI4OSwiZXhwIjoxNzQwNjY2ODg5fQ.ldbu41TONGenHm_ObNRkZAvXk6n_47D6ZlN65COYQ-g
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjcwMDQ4LCJleHAiOjE3NDA2NzM2NDh9.ktB-OId3rMtx3Ob6sudcgOvF1ow1u26yFdaxdiKgV1I
 
 {
-  "title": "Mysha",
-  "description": "Mysha Description",
+  "title": "Test1",
+  "description": "Test Description",
   "status": "OPEN",
   "labels": [
     {
-      "name": "Mysha label"
+      "name": "Test label"
     }
   ]
 }

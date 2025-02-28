@@ -9,10 +9,11 @@ import { CreateTaskLabelDto } from './dto/create-task-label.dto';
 import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from './../common/pagination.params';
 import { PaginationResponse } from './../common/pagination.response';
-import { CurrentUserId } from './../users/decorators/current-user-id.decorator';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
 import { Roles } from 'src/users/decorators/roles.decorator';
 import { Role } from 'src/users/role.enum';
 import { UserService } from 'src/users/user/user.service';
+import { CurrentUserDto } from 'src/users/dto/current-user.dto';
 
 @Controller()
 export class TasksController {
@@ -25,10 +26,10 @@ export class TasksController {
     public async findAll(
         @Query() filters: FindTaskParams,
         @Query() pagination: PaginationParams,
-        @CurrentUserId() userId: string,
+        @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<PaginationResponse<Task>>
     {
-        const [items, total] = await this.tasksService.findAll(filters, pagination,userId);
+        const [items, total] = await this.tasksService.findAll(filters, pagination, currentUser);
 
         return {
             data: items,
@@ -43,11 +44,11 @@ export class TasksController {
     @Get('tasks/:id')
     public async findOne(
         @Param() params: FindOneParams,
-        @CurrentUserId() userId: string,
+        @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<Task>
     {
         const task = await this.findOneOrFail(params.id);
-        this.checkTaskOwnership(task, userId);
+        await this.checkTaskOwnership(task, currentUser);
         return task;
     };
 
@@ -56,7 +57,7 @@ export class TasksController {
     public async create(
         @Param('id') id: string,
         @Body() createTaskDto: CreateTaskDto,
-        @CurrentUserId() userId: string,
+        @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<Task>
     {
         //check if there is a child user
@@ -68,7 +69,7 @@ export class TasksController {
         }
 
         //check if this childUser has ParentId as current user id
-        if (childUser.parentId !== userId)
+        if (childUser.parentId !== currentUser.id)
         {
             throw new ForbiddenException('You can only access your children');
         }
@@ -80,11 +81,11 @@ export class TasksController {
     public async updateTask(
         @Param() params: FindOneParams,
         @Body() updateTaskDto: UpdateTaskDto,
-        @CurrentUserId() userId: string,
+        @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<Task>
     {
         const task = await this.findOneOrFail(params.id);
-        this.checkTaskOwnership(task, userId);
+        await this.checkTaskOwnership(task, currentUser);
 
         try
         {
@@ -103,11 +104,11 @@ export class TasksController {
     @HttpCode(HttpStatus.NO_CONTENT)
     public async delete(
         @Param() params: FindOneParams,
-        @CurrentUserId() userId: string,
+        @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<void>
     {
         const task = await this.findOneOrFail(params.id);
-        this.checkTaskOwnership(task, userId);
+        await this.checkTaskOwnership(task, currentUser);
         await this.tasksService.deleteTask(task);
     };
 
@@ -115,11 +116,11 @@ export class TasksController {
     async addLabels(
         @Param() { id }: FindOneParams,
         @Body() createTaskLabelDto: CreateTaskLabelDto[],
-        @CurrentUserId() userId: string,
+        @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<Task> 
     {
         const task = await this.findOneOrFail(id);
-        this.checkTaskOwnership(task, userId);
+        await this.checkTaskOwnership(task, currentUser);
         return await this.tasksService.addLabels(task, createTaskLabelDto);
     };
 
@@ -128,11 +129,11 @@ export class TasksController {
     async removeLabels(
         @Param() { id }: FindOneParams,
         @Body() labelsNames: string[],
-        @CurrentUserId() userId: string,
+        @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<void>
     {
         const task = await this.findOneOrFail(id);
-        this.checkTaskOwnership(task, userId);
+        await this.checkTaskOwnership(task, currentUser);
         await this.tasksService.removeLabels(task, labelsNames);
     };
 
@@ -149,11 +150,26 @@ export class TasksController {
         return task;
     };
 
-    private checkTaskOwnership(task: Task, userId: string): void
+    private async checkTaskOwnership(task: Task, currentUser: CurrentUserDto): Promise<void>
     {
-        if (task.userId !== userId)
+        const isParent = currentUser.role === Role.PARENT;
+
+        if (isParent)
         {
-            throw new ForbiddenException('You can only access your tasks');
+            const pagination = new PaginationParams();
+            const [items, total] = await this.usersService.findAll(pagination, currentUser.id);
+
+            if (!items.some((user) => user.id === task.userId))
+            {
+                throw new ForbiddenException('You can only access tasks of you children');
+            }
+        }
+        else
+        {
+            if (task.userId !== currentUser.id)
+            {
+                throw new ForbiddenException('You can only access your tasks');
+            }
         }
     };
 }

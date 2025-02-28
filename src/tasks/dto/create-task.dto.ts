@@ -1,4 +1,4 @@
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, IsUUID, ValidateNested } from "class-validator";
+import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
 import { TaskStatus } from "../task.model";
 import { CreateTaskLabelDto } from "./create-task-label.dto";
 import { Type } from "class-transformer";

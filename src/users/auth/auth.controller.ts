@@ -6,7 +6,8 @@ import { LoginDto } from '../dto/login.dto';
 import { LoginResponse } from '../dto/login.response.dto';
 import { UserService } from '../user/user.service';
 import { Public } from '../decorators/public.decorator';
-import { CurrentUserId } from '../decorators/current-user-id.decorator';
+import { CurrentUser } from '../decorators/current-user.decorator';
+import { CurrentUserDto } from '../dto/current-user.dto';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -36,9 +37,9 @@ export class AuthController {
     };
 
     @Get('profile')
-    async profile(@CurrentUserId() userId: string): Promise<User>
+    async profile(@CurrentUser() currentUser: CurrentUserDto): Promise<User>
     {
-        const user = await this.usersService.findOne(userId);
+        const user = await this.usersService.findOne(currentUser.id);
 
         if (user)
         {

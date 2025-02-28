@@ -10,6 +10,9 @@ import { CreateTaskLabelDto } from './dto/create-task-label.dto';
 import { TaskLabel } from './task-label.entity';
 import { FindTaskParams } from './find-task.params';
 import { PaginationParams } from './../common/pagination.params';
+import { CurrentUserDto } from 'src/users/dto/current-user.dto';
+import { Role } from 'src/users/role.enum';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class TasksService {
@@ -22,12 +25,30 @@ export class TasksService {
         private labelsRepository: Repository<TaskLabel>
     ) {};
 
-    public async findAll(filters: FindTaskParams, pagination: PaginationParams, userId: string): Promise<[Task[], number]>
+    public async findAll(filters: FindTaskParams, pagination: PaginationParams, currentUser: CurrentUserDto): Promise<[Task[], number]>
     {
         //solution #1
         const query = this.tasksRepository.createQueryBuilder('task')
-            .leftJoinAndSelect('task.labels', 'labels')
-            .where('task.userId = :userId', {userId});
+            .leftJoinAndSelect('task.labels', 'labels');
+
+        const isParent = currentUser.role === Role.PARENT;
+        
+        if (isParent)
+        {
+            //get all tasks from all children related to Parent Id
+            const subQuery = query.subQuery()
+                .select("user.id")
+                .from(User, "user")
+                .where("user.parentId = :parentId", {parentId: currentUser.id})
+                .getQuery()
+
+            query.andWhere(`task.userId IN ${subQuery}`);
+        }
+        else
+        {
+            //get tasks only for concrete child
+            query.where('task.userId = :userId', { userId : currentUser.id });
+        }
 
         if (filters.status)
         {

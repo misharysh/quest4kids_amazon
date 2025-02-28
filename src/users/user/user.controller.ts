@@ -4,9 +4,10 @@ import { Role } from '../role.enum';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../user.entity';
 import { UserService } from './user.service';
-import { CurrentUserId } from '../decorators/current-user-id.decorator';
+import { CurrentUser } from '../decorators/current-user.decorator';
 import { PaginationResponse } from 'src/common/pagination.response';
 import { PaginationParams } from 'src/common/pagination.params';
+import { CurrentUserDto } from '../dto/current-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -18,10 +19,10 @@ export class UserController {
     @Roles(Role.PARENT)
     async createChildAccount(
         @Body() createUserDto: CreateUserDto,
-        @CurrentUserId() userId: string,
+        @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<User>
     {
-        const childAccount = await this.usersService.createChildAccount(createUserDto, userId);
+        const childAccount = await this.usersService.createChildAccount(createUserDto, currentUser.id);
 
         return childAccount;
     };
@@ -30,9 +31,10 @@ export class UserController {
     @Roles(Role.PARENT)
     async getChildrenList(
         @Query() pagination: PaginationParams,
-        @CurrentUserId() userId: string) : Promise<PaginationResponse<User>>
+        @CurrentUser() currentUser: CurrentUserDto
+    ) : Promise<PaginationResponse<User>>
     {
-        const [items, total] = await this.usersService.findAll(pagination,userId);
+        const [items, total] = await this.usersService.findAll(pagination, currentUser.id);
 
         return {
             data: items,
