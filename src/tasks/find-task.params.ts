@@ -1,4 +1,4 @@
-import { IsEnum, IsIn, IsOptional, IsString, MinLength } from "class-validator";
+import { IsEnum, IsIn, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
 import { TaskStatus } from "./task.model";
 import { Transform } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
@@ -21,6 +21,14 @@ export class FindTaskParams
     @MinLength(3)
     @IsString()
     search?: string;
+
+    @ApiProperty({
+        example: "userId",
+        required: false
+    })
+    @IsOptional()
+    @IsUUID()
+    childId?: string;
 
     @ApiProperty({
         example: "comma separated labels",

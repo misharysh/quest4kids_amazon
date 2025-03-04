@@ -36,12 +36,20 @@ export class TasksService {
         if (isParent)
         {
             //get all tasks from all children related to Parent Id
-            const subQuery = query.subQuery()
+            var queryBuilder = query.subQuery()
                 .select("user.id")
                 .from(User, "user")
-                .where("user.parentId = :parentId", {parentId: currentUser.id})
-                .getQuery()
+                .where("user.parentId = :parentId", {parentId: currentUser.id});    
 
+            //filtered by concrete child
+            if (filters.childId?.trim())
+            {
+                queryBuilder = queryBuilder
+                    .andWhere("user.id = :childId", { childId: filters.childId });
+            }
+
+            const subQuery = queryBuilder.getQuery();
+                
             query.andWhere(`task.userId IN ${subQuery}`);
         }
         else

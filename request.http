@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:3000
-#@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
+baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
 @contentType = application/json
 
 ### The basic request
@@ -33,22 +33,23 @@ Content-Type: {{contentType}}
 ### Create child account
 POST {{baseUrl}}/user/create-child-account
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjcwMDQ4LCJleHAiOjE3NDA2NzM2NDh9.ktB-OId3rMtx3Ob6sudcgOvF1ow1u26yFdaxdiKgV1I
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZGJkNGEwLWVjYmEtNDUzOC1hNzA4LWYyZGZkNzg5NTZlZiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwOTk4MTk2LCJleHAiOjE3NDEwMDE3OTZ9.C9JhUdjFpEdmR8VVlPrl4e-KRD-X0IMFgkR8PDiC3zE
 
 {
-  "email": "child2@gmail.com",
-  "name": "Fedor",
+  "email": "tetiana@gmail.com",
+  "name": "Tetiana",
   "password": "Test123!"
 }
 
 ### Get children list
 GET  {{baseUrl}}/user/get-children-list
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjcwMDQ4LCJleHAiOjE3NDA2NzM2NDh9.ktB-OId3rMtx3Ob6sudcgOvF1ow1u26yFdaxdiKgV1I
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZGJkNGEwLWVjYmEtNDUzOC1hNzA4LWYyZGZkNzg5NTZlZiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwOTk4MTk2LCJleHAiOjE3NDEwMDE3OTZ9.C9JhUdjFpEdmR8VVlPrl4e-KRD-X0IMFgkR8PDiC3zE
+
 
 ### Get all tasks 
 # @name getAllTasks
-GET {{baseUrl}}/tasks?limit=10&offset=0
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjczNjk2LCJleHAiOjE3NDA2NzcyOTZ9.6bcfnGDMPfERWtPAP9eKVr8MDXOr1iHdtgvW591bk1c
+GET {{baseUrl}}/tasks?limit=10&offset=0&childId=e7f0c34a-e79c-4980-9e0b-0a932a7f4706
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMDc2MjkwLCJleHAiOjE3NDEwNzk4OTB9.t4VOnhrhRTfCqlgakVv9z28dwwhcHxY02fv85lb8ODo
 
 ### Get all IN_PROGRESS tasks 
 # @name getAllInProgress
