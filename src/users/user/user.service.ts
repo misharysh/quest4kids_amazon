@@ -6,6 +6,7 @@ import { PasswordService } from '../password/password.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { Role } from '../role.enum';
 import { PaginationParams } from 'src/common/pagination.params';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Injectable()
 export class UserService {
@@ -64,4 +65,16 @@ export class UserService {
 
         return user;
     };
+
+    public async updateUser(user: User, updateUserDto: UpdateUserDto): Promise<User>
+    {
+        Object.assign(user, updateUserDto);
+
+        return await this.userRepository.save(user);
+    };
+
+    public async deleteUser(user: User): Promise<void>
+    {
+        await this.userRepository.remove(user);
+    }
 }

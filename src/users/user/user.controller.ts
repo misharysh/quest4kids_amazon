@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Query} from '@nestjs/common';
+import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query} from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../role.enum';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -8,6 +8,8 @@ import { CurrentUser } from '../decorators/current-user.decorator';
 import { PaginationResponse } from 'src/common/pagination.response';
 import { PaginationParams } from 'src/common/pagination.params';
 import { CurrentUserDto } from '../dto/current-user.dto';
+import { FindOneParams } from 'src/tasks/find-one.params';
+import { UpdateUserDto } from '../dto/update-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -15,21 +17,23 @@ export class UserController {
         private readonly usersService: UserService
     ) {};
 
-    @Post('create-child-account')
+    @Get('get-child-account/:id')
     @Roles(Role.PARENT)
-    async createChildAccount(
-        @Body() createUserDto: CreateUserDto,
-        @CurrentUser() currentUser: CurrentUserDto,
-    ): Promise<User>
+    public async getChild(
+        @Param() params: FindOneParams,
+        @CurrentUser() currentUser: CurrentUserDto
+    ) : Promise<User>
     {
-        const childAccount = await this.usersService.createChildAccount(createUserDto, currentUser.id);
+        const childUser = await this.findOneOrFail(params.id);
 
-        return childAccount;
+        await this.checkParentUser(childUser, currentUser);
+
+        return childUser;
     };
 
     @Get('get-children-list')
     @Roles(Role.PARENT)
-    async getChildrenList(
+    public async getChildrenList(
         @Query() pagination: PaginationParams,
         @CurrentUser() currentUser: CurrentUserDto
     ) : Promise<PaginationResponse<User>>
@@ -45,4 +49,67 @@ export class UserController {
             }
         }
     };
+
+    @Post('create-child-account')
+    @Roles(Role.PARENT)
+    public async createChildAccount(
+        @Body() createUserDto: CreateUserDto,
+        @CurrentUser() currentUser: CurrentUserDto,
+    ): Promise<User>
+    {
+        const childUser = await this.usersService.createChildAccount(createUserDto, currentUser.id);
+
+        return childUser;
+    };
+
+    @Patch('update-child-account/:id')
+    @Roles(Role.PARENT)
+    public async updateChild(
+        @Param() params: FindOneParams,
+        @Body() updateUserDto: UpdateUserDto,
+        @CurrentUser() currentUser: CurrentUserDto
+    ): Promise<User>
+    {
+        const childUser = await this.findOneOrFail(params.id);
+
+        await this.checkParentUser(childUser, currentUser);
+
+        return await this.usersService.updateUser(childUser, updateUserDto);
+    };
+
+    @Delete('remove-child-account/:id')
+    @Roles(Role.PARENT)
+    @HttpCode(HttpStatus.NO_CONTENT)
+    public async deleteChild(
+        @Param() params: FindOneParams,
+        @CurrentUser() currentUser: CurrentUserDto
+    ): Promise<void>
+    {
+        const childUser = await this.findOneOrFail(params.id);
+
+        await this.checkParentUser(childUser, currentUser);
+
+        await this.usersService.deleteUser(childUser);
+    };
+
+    private async findOneOrFail(id: string): Promise<User>
+    {
+        const user = await this.usersService.findOne(id);
+
+        if (!user)
+        {
+            throw new NotFoundException();
+        }
+        
+        return user;
+    }
+
+    private async checkParentUser(child: User, parent: CurrentUserDto)
+    {
+        //check if this childUser has ParentId as current user id
+        if (child.parentId !== parent.id)
+        {
+            throw new ForbiddenException('You can only access your children');
+        }
+    }
 }

@@ -1,6 +1,6 @@
 ### Variables
 @baseUrl = http://localhost:3000
-baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
+#@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
 @contentType = application/json
 
 ### The basic request
@@ -33,23 +33,46 @@ Content-Type: {{contentType}}
 ### Create child account
 POST {{baseUrl}}/user/create-child-account
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZGJkNGEwLWVjYmEtNDUzOC1hNzA4LWYyZGZkNzg5NTZlZiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwOTk4MTk2LCJleHAiOjE3NDEwMDE3OTZ9.C9JhUdjFpEdmR8VVlPrl4e-KRD-X0IMFgkR8PDiC3zE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
 
 {
-  "email": "tetiana@gmail.com",
-  "name": "Tetiana",
+  "email": "sergey@gmail.com",
+  "name": "Sergey",
   "password": "Test123!"
 }
 
 ### Get children list
 GET  {{baseUrl}}/user/get-children-list
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYwZGJkNGEwLWVjYmEtNDUzOC1hNzA4LWYyZGZkNzg5NTZlZiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwOTk4MTk2LCJleHAiOjE3NDEwMDE3OTZ9.C9JhUdjFpEdmR8VVlPrl4e-KRD-X0IMFgkR8PDiC3zE
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+
+
+### Get child account
+GET {{baseUrl}}/user/get-child-account/de30c98e-1b0d-481f-b245-764d347bb232
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+
+### Update child account
+PATCH  {{baseUrl}}/user/update-child-account/de30c98e-1b0d-481f-b245-764d347bb232
+Content-Type: {{contentType}}
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+
+{
+  "name": "Sergey2",
+  "email": "sergey2@gmail.com"
+}
+
+
+### Delete child account
+DELETE  {{baseUrl}}/user/remove-child-account/de30c98e-1b0d-481f-b245-764d347bb232
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+
+
 
 
 ### Get all tasks 
 # @name getAllTasks
 GET {{baseUrl}}/tasks?limit=10&offset=0&childId=e7f0c34a-e79c-4980-9e0b-0a932a7f4706
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMDc2MjkwLCJleHAiOjE3NDEwNzk4OTB9.t4VOnhrhRTfCqlgakVv9z28dwwhcHxY02fv85lb8ODo
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+
 
 ### Get all IN_PROGRESS tasks 
 # @name getAllInProgress
@@ -95,20 +118,17 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0L
     }
   ]
 }
+
 ### Set the task id
 @taskId = {{ createTask.response.body.id }}
 
 ### Update the task status
-PATCH {{baseUrl}}/tasks/{{taskId}}
+PATCH {{baseUrl}}/tasks/d39ab36a-a053-4bba-b597-1b62df4c5e51
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
 
 {
-  "status": "IN_PROGRESS",
-  "labels": [{
-    "name": "done"
-  }]
+  "title": "Mysha2"
 }
 
 ### Deleting a task
