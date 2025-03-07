@@ -60,7 +60,8 @@ export class AwsService {
         {
             const url = await this.s3.getSignedUrlPromise('getObject', {
                 Bucket: bucket,
-                Key: key
+                Key: key,
+                Expires: 60 * 60 * 24 //one day
             });
     
             return url;
