@@ -12,12 +12,13 @@ import { User } from './users/user.entity';
 import { TaskLabel } from './tasks/task-label.entity';
 import { authConfig } from './config/auth.config';
 import { UsersModule } from './users/users.module';
+import { amazonConfig } from './config/amazon.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, typeOrmConfig, authConfig],
+      load: [appConfig, typeOrmConfig, authConfig, amazonConfig],
       validationSchema: appConfigSchema,
       validationOptions: {
         abortEarly: true,

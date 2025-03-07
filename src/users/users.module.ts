@@ -13,6 +13,7 @@ import { AuthGuard } from "./auth.guard";
 import { APP_GUARD } from "@nestjs/core";
 import { RolesGuard } from "./roles.guard";
 import { UserController } from './user/user.controller';
+import { AwsService } from "./../aws/aws.service";
 
 @Module({
     imports: [
@@ -28,7 +29,7 @@ import { UserController } from './user/user.controller';
             })
         }),
     ],
-    providers: [PasswordService, UserService, AuthService, AuthGuard, RolesGuard, 
+    providers: [PasswordService, AwsService, UserService, AuthService, AuthGuard, RolesGuard, 
     {
         provide: APP_GUARD,
         useClass: AuthGuard

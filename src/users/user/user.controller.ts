@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query} from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, UploadedFile, UseInterceptors} from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../role.enum';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -10,6 +10,7 @@ import { PaginationParams } from 'src/common/pagination.params';
 import { CurrentUserDto } from '../dto/current-user.dto';
 import { FindOneParams } from 'src/tasks/find-one.params';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('user')
 export class UserController {
@@ -90,6 +91,79 @@ export class UserController {
         await this.checkParentUser(childUser, currentUser);
 
         await this.usersService.deleteUser(childUser);
+    };
+
+    @Post(':id/avatar')
+    @UseInterceptors(FileInterceptor('file',{
+        fileFilter: (req, file, callback) => {
+            return file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)
+                ? callback(null, true)
+                : callback(new BadRequestException('Only image files are allowed'), false);
+        }
+    }))
+    public async addAvatar(
+        @Param() params: FindOneParams,
+        @CurrentUser() currentUser: CurrentUserDto,
+        @UploadedFile() file: Express.Multer.File
+    ): Promise<User>
+    {
+        const user = await this.checkAvatarOwnership(params, currentUser);
+
+        return this.usersService.addAvatar(user, file);
+    };
+
+    @Get(':id/avatar')
+    public async getAvatar(
+        @Param() params: FindOneParams,
+        @CurrentUser() currentUser: CurrentUserDto
+    ): Promise<string>
+    {
+        const user = await this.checkAvatarOwnership(params, currentUser);
+
+        if (!user.avatarName)
+        {
+            throw new NotFoundException('User does not havea any avatar');
+        }
+
+        const url = await this.usersService.getAvatar(user.avatarName);
+
+        return url;
+    };
+
+    private async checkAvatarOwnership(params: FindOneParams, currentUser: CurrentUserDto): Promise<User>
+    {
+        const isParent = currentUser.role === Role.PARENT;
+
+        if (isParent)
+        {
+            const pagination = new PaginationParams();
+            const [items, total] = await this.usersService.findAll(pagination, currentUser.id);
+
+            if (!items.some((user) => user.id === params.id))
+            {
+                throw new ForbiddenException('You can only access avatars of you children');
+            }
+
+            const user = items.find((user) => user.id === params.id);
+
+            if (user)
+            {
+                return user;
+            }
+            else
+            {
+                throw new NotFoundException('User Not Found');
+            }
+        }
+        else
+        {
+            if (params.id !== currentUser.id)
+            {
+                throw new ForbiddenException('You can only access your avatar');
+            }
+
+            return await this.findOneOrFail(params.id);
+        }
     };
 
     private async findOneOrFail(id: string): Promise<User>

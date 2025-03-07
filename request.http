@@ -16,8 +16,8 @@ POST {{baseUrl}}/auth/register
 Content-Type: {{contentType}}
 
 {
-  "email": "test3@gmail.com",
-  "name": "mysharysh3",
+  "email": "test@gmail.com",
+  "name": "mysharysh",
   "password": "Test123!"
 }
 
@@ -33,7 +33,7 @@ Content-Type: {{contentType}}
 ### Create child account
 POST {{baseUrl}}/user/create-child-account
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlY2RmNmIwLWE2OWItNDNjMC05ODUwLWIzZTE2YjUxZDg4NyIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMzM2MjczLCJleHAiOjE3NDEzMzk4NzN9.Qccyc-LvBssGEJXsC2MaNValzfcVDVs0bseUMVjF30A
 
 {
   "email": "sergey@gmail.com",

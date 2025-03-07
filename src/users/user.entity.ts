@@ -45,4 +45,9 @@ export class User {
     })
     @Expose()
     parentId?: string;
+
+    @Column({
+        nullable: true
+    })
+    avatarName?: string;
 }

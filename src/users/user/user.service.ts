@@ -7,13 +7,15 @@ import { CreateUserDto } from '../dto/create-user.dto';
 import { Role } from '../role.enum';
 import { PaginationParams } from 'src/common/pagination.params';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { AwsService } from '../../aws/aws.service';
 
 @Injectable()
 export class UserService {
     constructor(
         @InjectRepository(User)
         private readonly userRepository: Repository<User>,
-        private readonly passwordService: PasswordService
+        private readonly passwordService: PasswordService,
+        private readonly awsService: AwsService 
     ) {};
 
     public async findOneByEmail (email: string): Promise<User | null>
@@ -77,4 +79,34 @@ export class UserService {
     {
         await this.userRepository.remove(user);
     }
+
+    public async addAvatar(user: User, file: Express.Multer.File): Promise<User>
+    {
+        if (user.avatarName)
+        {
+            await this.deleteAvatar(user.avatarName);
+        }
+
+        const awsResponse = await this.awsService.s3_upload(
+            file.buffer,
+            file.originalname,
+            file.mimetype
+        );
+
+        user.avatarName = awsResponse.Key;
+
+        return await this.userRepository.save(user);
+    };
+
+    public async deleteAvatar(key: string): Promise<void>
+    {
+        await this.awsService.s3_delete(key);
+    };
+
+    public async getAvatar(key: string): Promise<string>
+    {
+        const url = await this.awsService.s3_get(key);
+
+        return url;
+    };
 }
