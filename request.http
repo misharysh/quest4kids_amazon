@@ -1,4 +1,5 @@
 ### Variables
+
 @baseUrl = http://localhost:3000
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
 @contentType = application/json
