@@ -30,6 +30,11 @@ import { amazonConfig } from './config/amazon.config';
       useFactory: (configService: ConfigService<ConfigTypes>) => ({
         ...configService.get('database'),
         entities: [Task, User, TaskLabel],
+        autoLoadEntities: true,
+        synchronize: false,
+        migrationsRun: true,
+        migrations: ['dist/src/migrations/*{.ts,.js}'],
+        ssl: false
       }),
     }),
     TasksModule,
