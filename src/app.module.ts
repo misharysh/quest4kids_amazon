@@ -33,7 +33,7 @@ import { amazonConfig } from './config/amazon.config';
         autoLoadEntities: true,
         synchronize: false,
         migrationsRun: true,
-        migrations: ['dist/src/migrations/*{.ts,.js}'],
+        migrations: ['dist/migrations/*{.ts,.js}'],
         ssl: true,
         extra: {
           ssl: {
