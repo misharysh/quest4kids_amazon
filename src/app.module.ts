@@ -34,7 +34,12 @@ import { amazonConfig } from './config/amazon.config';
         synchronize: false,
         migrationsRun: true,
         migrations: ['dist/src/migrations/*{.ts,.js}'],
-        ssl: false
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false
+          }
+        },
       }),
     }),
     TasksModule,
