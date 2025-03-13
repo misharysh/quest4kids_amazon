@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { ConflictException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -8,6 +8,7 @@ import { Role } from '../role.enum';
 import { PaginationParams } from 'src/common/pagination.params';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { AwsService } from '../../aws/aws.service';
+import { CurrentUserDto } from '../dto/current-user.dto';
 
 @Injectable()
 export class UserService {
@@ -108,5 +109,69 @@ export class UserService {
         const url = await this.awsService.s3_get(key);
 
         return url;
+    };
+
+    public async findOneOrFail(id: string): Promise<User>
+    {
+        const user = await this.findOne(id);
+
+        if (!user)
+        {
+            throw new NotFoundException();
+        }
+
+        return user;
+    };
+
+    public async checkParentUser(child: User, parent: CurrentUserDto): Promise<void>
+    {
+        //check if this childUser has ParentId as current user id
+        if (child.parentId !== parent.id)
+        {
+            throw new ForbiddenException('You can only access your children');
+        }
+    }
+
+    public async checkAvatarOwnership(id: string, currentUser: CurrentUserDto): Promise<User>
+    {
+        const isParent = currentUser.role === Role.PARENT;
+
+        if (isParent)
+        {
+            if (id === currentUser.id)
+            {
+                return await this.findOneOrFail(id);
+            }
+            else
+            {
+                const pagination = new PaginationParams();
+                const [items, total] = await this.findAll(pagination, currentUser.id);
+
+                if (!items.some((user) => user.id === id))
+                {
+                    throw new ForbiddenException('You can only access avatars of your children');
+                }
+
+                const user = items.find((user) => user.id === id);
+
+                if (user)
+                {
+                    return user;
+                }
+                else
+                {
+                    throw new NotFoundException('User Not Found');
+                }
+            }
+        }
+        else
+        {
+            if (id !== currentUser.id)
+            {
+                throw new ForbiddenException('You can only access your avatar');
+            }
+
+            return await this.findOneOrFail(id);
+        }
     };
 }

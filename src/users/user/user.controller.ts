@@ -25,9 +25,9 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ) : Promise<User>
     {
-        const childUser = await this.findOneOrFail(params.id);
+        const childUser = await this.usersService.findOneOrFail(params.id);
 
-        await this.checkParentUser(childUser, currentUser);
+        await this.usersService.checkParentUser(childUser, currentUser);
 
         return childUser;
     };
@@ -71,9 +71,9 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ): Promise<User>
     {
-        const childUser = await this.findOneOrFail(params.id);
+        const childUser = await this.usersService.findOneOrFail(params.id);
 
-        await this.checkParentUser(childUser, currentUser);
+        await this.usersService.checkParentUser(childUser, currentUser);
 
         return await this.usersService.updateUser(childUser, updateUserDto);
     };
@@ -86,9 +86,9 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ): Promise<void>
     {
-        const childUser = await this.findOneOrFail(params.id);
+        const childUser = await this.usersService.findOneOrFail(params.id);
 
-        await this.checkParentUser(childUser, currentUser);
+        await this.usersService.checkParentUser(childUser, currentUser);
 
         await this.usersService.deleteUser(childUser);
     };
@@ -107,7 +107,7 @@ export class UserController {
         @UploadedFile() file: Express.Multer.File
     ): Promise<User>
     {
-        const user = await this.checkAvatarOwnership(params, currentUser);
+        const user = await this.usersService.checkAvatarOwnership(params.id, currentUser);
 
         return this.usersService.addAvatar(user, file);
     };
@@ -118,72 +118,15 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ): Promise<string>
     {
-        const user = await this.checkAvatarOwnership(params, currentUser);
+        const user = await this.usersService.checkAvatarOwnership(params.id, currentUser);
 
         if (!user.avatarName)
         {
-            throw new NotFoundException('User does not havea any avatar');
+            throw new NotFoundException('User does not have any avatar');
         }
 
         const url = await this.usersService.getAvatar(user.avatarName);
 
         return url;
     };
-
-    private async checkAvatarOwnership(params: FindOneParams, currentUser: CurrentUserDto): Promise<User>
-    {
-        const isParent = currentUser.role === Role.PARENT;
-
-        if (isParent)
-        {
-            const pagination = new PaginationParams();
-            const [items, total] = await this.usersService.findAll(pagination, currentUser.id);
-
-            if (!items.some((user) => user.id === params.id))
-            {
-                throw new ForbiddenException('You can only access avatars of you children');
-            }
-
-            const user = items.find((user) => user.id === params.id);
-
-            if (user)
-            {
-                return user;
-            }
-            else
-            {
-                throw new NotFoundException('User Not Found');
-            }
-        }
-        else
-        {
-            if (params.id !== currentUser.id)
-            {
-                throw new ForbiddenException('You can only access your avatar');
-            }
-
-            return await this.findOneOrFail(params.id);
-        }
-    };
-
-    private async findOneOrFail(id: string): Promise<User>
-    {
-        const user = await this.usersService.findOne(id);
-
-        if (!user)
-        {
-            throw new NotFoundException();
-        }
-        
-        return user;
-    }
-
-    private async checkParentUser(child: User, parent: CurrentUserDto)
-    {
-        //check if this childUser has ParentId as current user id
-        if (child.parentId !== parent.id)
-        {
-            throw new ForbiddenException('You can only access your children');
-        }
-    }
 }
