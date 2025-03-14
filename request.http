@@ -2,6 +2,7 @@
 
 @baseUrl = http://localhost:3000
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
+#@baseUrl = http://quest4kids-api.us-east-1.elasticbeanstalk.com
 @contentType = application/json
 
 ### The basic request
@@ -9,8 +10,7 @@ GET {{baseUrl}}
 
 ### Profile
 GET {{baseUrl}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI1OTdmZTRlNC1mYjUxLTQ5MzQtOTdjZi0yYTU2N2NmYWYwZTYiLCJuYW1lIjoibXlzaGFyeXNoIiwicm9sZSI6InBhcmVudCIsImlhdCI6MTc0MDY2NTAxNiwiZXhwIjoxNzQwNjY4NjE2fQ.Zj-0BhU-uBZ0SJ6yn1p-EqGRnI9fsXD3FkM6KRktm6M
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdlOTZkMWYxLTc4NDAtNGJjMC05MzZhLWQ0MzY4OTU5MTQxZSIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxODU4Nzg0LCJleHAiOjE3NDE4NjIzODR9.UnxWxPXh2BScnR-5WPb5Z2pP3yV6zmyXxb6JHnsAm4A
 
 ### Register
 POST {{baseUrl}}/auth/register
@@ -31,10 +31,18 @@ Content-Type: {{contentType}}
   "password": "Test123!"
 }
 
+### Refresh
+POST {{baseUrl}}/auth/refresh
+Content-Type: {{contentType}}
+
+{
+  "token": "ce9d2d66-0213-44fb-875e-25f4ea9289dc"
+}
+
 ### Create child account
 POST {{baseUrl}}/user/create-child-account
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlY2RmNmIwLWE2OWItNDNjMC05ODUwLWIzZTE2YjUxZDg4NyIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMzM2MjczLCJleHAiOjE3NDEzMzk4NzN9.Qccyc-LvBssGEJXsC2MaNValzfcVDVs0bseUMVjF30A
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdlOTZkMWYxLTc4NDAtNGJjMC05MzZhLWQ0MzY4OTU5MTQxZSIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxNzcwNTg3LCJleHAiOjE3NDE3NzQxODd9.n-uQoYIcoLSFcSPtm6LHKNtss-zWEoJE_pK3TsOUH9w
 
 {
   "email": "sergey@gmail.com",
@@ -44,8 +52,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImVlY2RmNmIwL
 
 ### Get children list
 GET  {{baseUrl}}/user/get-children-list
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdlOTZkMWYxLTc4NDAtNGJjMC05MzZhLWQ0MzY4OTU5MTQxZSIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxNzcwNTg3LCJleHAiOjE3NDE3NzQxODd9.n-uQoYIcoLSFcSPtm6LHKNtss-zWEoJE_pK3TsOUH9w
 
 ### Get child account
 GET {{baseUrl}}/user/get-child-account/de30c98e-1b0d-481f-b245-764d347bb232

@@ -13,6 +13,7 @@ import { TaskLabel } from './tasks/task-label.entity';
 import { authConfig } from './config/auth.config';
 import { UsersModule } from './users/users.module';
 import { amazonConfig } from './config/amazon.config';
+import { RefreshToken } from './users/refresh-token.entity';
 
 @Module({
   imports: [
@@ -29,7 +30,7 @@ import { amazonConfig } from './config/amazon.config';
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ConfigTypes>) => ({
         ...configService.get('database'),
-        entities: [Task, User, TaskLabel],
+        entities: [Task, User, TaskLabel, RefreshToken],
         autoLoadEntities: true,
         synchronize: false,
         migrationsRun: true,

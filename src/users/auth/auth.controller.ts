@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Post, SerializeOptions, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Post, SerializeOptions, UnauthorizedException, UseInterceptors } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../user.entity';
 import { AuthService } from './auth.service';
@@ -20,7 +20,7 @@ export class AuthController {
 
     @Post('register')
     @Public()
-    async register(@Body() createUserDto: CreateUserDto): Promise<User>
+    public async register(@Body() createUserDto: CreateUserDto): Promise<User>
     {
         const user = await this.authService.register(createUserDto);
 
@@ -29,15 +29,15 @@ export class AuthController {
 
     @Post('login')
     @Public()
-    async login(@Body() loginDto: LoginDto): Promise<LoginResponse>
+    public async login(@Body() loginDto: LoginDto): Promise<LoginResponse>
     {
-        const accessToken = await this.authService.login(loginDto.email, loginDto.password);
+        const {accessToken, refreshToken} = await this.authService.login(loginDto.email, loginDto.password);
 
-        return new LoginResponse({accessToken});
+        return new LoginResponse({accessToken, refreshToken});
     };
 
     @Get('profile')
-    async profile(@CurrentUser() currentUser: CurrentUserDto): Promise<User>
+    public async profile(@CurrentUser() currentUser: CurrentUserDto): Promise<User>
     {
         const user = await this.usersService.findOne(currentUser.id);
 
@@ -48,4 +48,18 @@ export class AuthController {
 
         throw new NotFoundException();
     };
+
+    @Post('refresh')
+    @Public()
+    public async refresh(@Body() body: any):  Promise<LoginResponse>
+    {
+        const {accessToken, refreshToken} = await this.authService.refreshTokens(body.token);
+
+        if (!accessToken)
+        {
+            throw new UnauthorizedException();
+        }
+
+        return new LoginResponse({accessToken, refreshToken});
+    }; 
 }
