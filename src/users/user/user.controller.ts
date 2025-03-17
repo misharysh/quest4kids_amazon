@@ -122,7 +122,7 @@ export class UserController {
 
         if (!user.avatarName)
         {
-            throw new NotFoundException('User does not have any avatar');
+            return '';
         }
 
         const url = await this.usersService.getAvatar(user.avatarName);
