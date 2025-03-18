@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { TaskStatus } from './task.model';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
@@ -22,7 +22,10 @@ export class TasksService {
         private tasksRepository: Repository<Task>,
 
         @InjectRepository(TaskLabel)
-        private labelsRepository: Repository<TaskLabel>
+        private labelsRepository: Repository<TaskLabel>,
+
+        @InjectRepository(User)
+        private usersRepository: Repository<User>
     ) {};
 
     public async findAll(filters: FindTaskParams, pagination: PaginationParams, currentUser: CurrentUserDto): Promise<[Task[], number]>
@@ -115,11 +118,20 @@ export class TasksService {
         });
     };
 
-    public async createTask(createTaskDto:CreateTaskDto): Promise<Task>
+    public async createTask(createTaskDto:CreateTaskDto, user: User): Promise<Task>
     {
         if (createTaskDto.labels)
         {
             createTaskDto.labels = this.getUniqueLabels(createTaskDto.labels);
+        }
+
+        if (createTaskDto.status === TaskStatus.DONE) //awards points in case of DONE
+        {
+            const points = createTaskDto.points ? createTaskDto.points : 0;
+            user.availablePoints += points;
+            user.totalEarnedPoints += points;
+
+            await this.usersRepository.save(user);
         }
 
         const task = await this.tasksRepository.create(createTaskDto);
@@ -131,9 +143,28 @@ export class TasksService {
 
     public async updateTask(task: Task, updateTaskDto: UpdateTaskDto): Promise<Task>
     {
-        if (updateTaskDto.status && !this.isValidStatusTransition(task.status, updateTaskDto.status))
+        if (updateTaskDto.status)
         {
-            throw new WrongTaskStatusException();
+            if (!this.isValidStatusTransition(task.status, updateTaskDto.status))
+            {
+                throw new WrongTaskStatusException();
+            }
+            
+            if (updateTaskDto.status === TaskStatus.DONE) //awards points in case of DONE
+            {
+                const user = await this.usersRepository.findOneBy({id: task.userId});
+                if (user)
+                {
+                    const points = updateTaskDto.points 
+                                    ? updateTaskDto.points 
+                                    : task.points ? task.points : 0;
+
+                    user.availablePoints += points;
+                    user.totalEarnedPoints += points;
+    
+                    await this.usersRepository.save(user);
+                }
+            }
         }
 
         if (updateTaskDto.labels)
@@ -176,6 +207,45 @@ export class TasksService {
         return await this.tasksRepository.save(task);
     };
 
+    public async findOneOrFail(id: string): Promise<Task>
+    {
+        const task = await this.findOne(id);
+
+        if (!task)
+        {
+            throw new NotFoundException();
+            
+        }
+        
+        return task;
+    };
+
+    public async checkTaskOwnership(task: Task, currentUser: CurrentUserDto): Promise<void>
+    {
+        const isParent = currentUser.role === Role.PARENT;
+
+        if (isParent)
+        {
+            const parentId = currentUser.id;
+            const query = this.usersRepository.createQueryBuilder('user')
+                .where('user.parentId = :parentId', {parentId});
+            
+            const items = await query.getMany();
+
+            if (!items.some((user) => user.id === task.userId))
+            {
+                throw new ForbiddenException('You can only access tasks of you children');
+            }
+        }
+        else
+        {
+            if (task.userId !== currentUser.id)
+            {
+                throw new ForbiddenException('You can only access your tasks');
+            }
+        }
+    };
+
     private isValidStatusTransition(
         currentStatus: TaskStatus,
         newStatus: TaskStatus,
@@ -185,7 +255,7 @@ export class TasksService {
           TaskStatus.IN_PROGRESS,
           TaskStatus.DONE,
         ];
-        return statusOrder.indexOf(currentStatus) <= statusOrder.indexOf(newStatus);
+        return statusOrder.indexOf(currentStatus) < statusOrder.indexOf(newStatus);
     };
 
     private getUniqueLabels(labelsDtos: CreateTaskLabelDto[]): CreateTaskLabelDto[]

@@ -81,6 +81,18 @@ export class UserService {
         await this.userRepository.remove(user);
     }
 
+    public async claimPoints(user: User, exchangePoints: number): Promise<User>
+    {
+        if (exchangePoints > user.availablePoints)
+        {
+            throw new ConflictException("You can't exchange that many points");
+        }
+
+        user.availablePoints -= exchangePoints;
+
+        return await this.userRepository.save(user);
+    };
+
     public async addAvatar(user: User, file: Express.Multer.File): Promise<User>
     {
         if (user.avatarName)

@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query, UploadedFile, UseInterceptors} from '@nestjs/common';
+import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UploadedFile, UseInterceptors} from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../role.enum';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -11,8 +11,10 @@ import { CurrentUserDto } from '../dto/current-user.dto';
 import { FindOneParams } from 'src/tasks/find-one.params';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { PointsDto } from '../dto/points.dto';
 
 @Controller('user')
+@UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
     constructor(
         private readonly usersService: UserService
@@ -128,5 +130,20 @@ export class UserController {
         const url = await this.usersService.getAvatar(user.avatarName);
 
         return url;
+    };
+
+    @Post(':id/claim-points')
+    @Roles(Role.PARENT)
+    public async claimPoints(
+        @Param() params: FindOneParams,
+        @CurrentUser() currentUser: CurrentUserDto,
+        @Body() pointsDto: PointsDto
+    ): Promise<User>
+    {
+        const childUser = await this.usersService.findOneOrFail(params.id);
+
+        await this.usersService.checkParentUser(childUser, currentUser);
+
+        return await this.usersService.claimPoints(childUser, pointsDto.exchangePoints);
     };
 }
