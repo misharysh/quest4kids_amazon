@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Post, SerializeOptions, UnauthorizedException, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Patch, Post, SerializeOptions, UnauthorizedException, UseInterceptors } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../user.entity';
 import { AuthService } from './auth.service';
@@ -8,6 +8,9 @@ import { UserService } from '../user/user.service';
 import { Public } from '../decorators/public.decorator';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { CurrentUserDto } from '../dto/current-user.dto';
+import { UpdateUserDto } from '../dto/update-user.dto';
+import { Roles } from '../decorators/roles.decorator';
+import { Role } from '../role.enum';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -36,19 +39,6 @@ export class AuthController {
         return new LoginResponse({accessToken, refreshToken});
     };
 
-    @Get('profile')
-    public async profile(@CurrentUser() currentUser: CurrentUserDto): Promise<User>
-    {
-        const user = await this.usersService.findOne(currentUser.id);
-
-        if (user)
-        {
-            return user;
-        }
-
-        throw new NotFoundException();
-    };
-
     @Post('refresh')
     @Public()
     public async refresh(@Body() body: any):  Promise<LoginResponse>
@@ -62,4 +52,34 @@ export class AuthController {
 
         return new LoginResponse({accessToken, refreshToken});
     }; 
+
+    @Get('profile')
+    public async profile(@CurrentUser() currentUser: CurrentUserDto): Promise<User>
+    {
+        const user = await this.usersService.findOne(currentUser.id);
+
+        if (user)
+        {
+            return user;
+        }
+
+        throw new NotFoundException();
+    };
+
+    @Patch('profile')
+    @Roles(Role.PARENT)
+    public async updateProfile(
+        @Body() updateUserDto: UpdateUserDto,
+        @CurrentUser() currentUser: CurrentUserDto
+    ): Promise<User>
+    {
+        const user = await this.usersService.findOne(currentUser.id);
+
+        if (!user)
+        {
+            throw new NotFoundException();
+        }
+
+        return await this.usersService.updateUser(user, updateUserDto);
+    };
 }
