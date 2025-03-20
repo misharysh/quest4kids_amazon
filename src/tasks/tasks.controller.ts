@@ -20,7 +20,7 @@ export class TasksController {
 
     constructor(
         private readonly tasksService: TasksService,
-        private readonly usersService: UserService) {};
+        private readonly userService: UserService) {};
 
     @Get('tasks')
     public async findAll(
@@ -61,7 +61,7 @@ export class TasksController {
     ): Promise<Task>
     {
         //check if there is a child user
-        const childUser = await this.usersService.findOne(id);
+        const childUser = await this.userService.findOne(id);
 
         if (!childUser)
         {

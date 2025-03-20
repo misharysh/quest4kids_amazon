@@ -64,4 +64,10 @@ export class User {
         default: 0
     })
     totalEarnedPoints: number;
+
+    @Expose()
+    @Column({
+        nullable: true
+    })
+    resetToken?: string;
 }

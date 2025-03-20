@@ -17,7 +17,7 @@ import { PointsDto } from '../dto/points.dto';
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
     constructor(
-        private readonly usersService: UserService
+        private readonly userService: UserService
     ) {};
 
     @Get('get-child-account/:id')
@@ -27,9 +27,9 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ) : Promise<User>
     {
-        const childUser = await this.usersService.findOneOrFail(params.id);
+        const childUser = await this.userService.findOneOrFail(params.id);
 
-        await this.usersService.checkParentUser(childUser, currentUser);
+        await this.userService.checkParentUser(childUser, currentUser);
 
         return childUser;
     };
@@ -41,7 +41,7 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ) : Promise<PaginationResponse<User>>
     {
-        const [items, total] = await this.usersService.findAll(pagination, currentUser.id);
+        const [items, total] = await this.userService.findAll(pagination, currentUser.id);
 
         return {
             data: items,
@@ -60,7 +60,7 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<User>
     {
-        const childUser = await this.usersService.createChildAccount(createUserDto, currentUser.id);
+        const childUser = await this.userService.createChildAccount(createUserDto, currentUser.id);
 
         return childUser;
     };
@@ -73,11 +73,11 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ): Promise<User>
     {
-        const childUser = await this.usersService.findOneOrFail(params.id);
+        const childUser = await this.userService.findOneOrFail(params.id);
 
-        await this.usersService.checkParentUser(childUser, currentUser);
+        await this.userService.checkParentUser(childUser, currentUser);
 
-        return await this.usersService.updateUser(childUser, updateUserDto);
+        return await this.userService.updateUser(childUser, updateUserDto);
     };
 
     @Delete('remove-child-account/:id')
@@ -88,11 +88,11 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ): Promise<void>
     {
-        const childUser = await this.usersService.findOneOrFail(params.id);
+        const childUser = await this.userService.findOneOrFail(params.id);
 
-        await this.usersService.checkParentUser(childUser, currentUser);
+        await this.userService.checkParentUser(childUser, currentUser);
 
-        await this.usersService.deleteUser(childUser);
+        await this.userService.deleteUser(childUser);
     };
 
     @Post(':id/avatar')
@@ -109,9 +109,9 @@ export class UserController {
         @UploadedFile() file: Express.Multer.File
     ): Promise<User>
     {
-        const user = await this.usersService.checkAvatarOwnership(params.id, currentUser);
+        const user = await this.userService.checkAvatarOwnership(params.id, currentUser);
 
-        return this.usersService.addAvatar(user, file);
+        return this.userService.addAvatar(user, file);
     };
 
     @Get(':id/avatar')
@@ -120,14 +120,14 @@ export class UserController {
         @CurrentUser() currentUser: CurrentUserDto
     ): Promise<string>
     {
-        const user = await this.usersService.checkAvatarOwnership(params.id, currentUser);
+        const user = await this.userService.checkAvatarOwnership(params.id, currentUser);
 
         if (!user.avatarName)
         {
             return '';
         }
 
-        const url = await this.usersService.getAvatar(user.avatarName);
+        const url = await this.userService.getAvatar(user.avatarName);
 
         return url;
     };
@@ -140,10 +140,10 @@ export class UserController {
         @Body() pointsDto: PointsDto
     ): Promise<User>
     {
-        const childUser = await this.usersService.findOneOrFail(params.id);
+        const childUser = await this.userService.findOneOrFail(params.id);
 
-        await this.usersService.checkParentUser(childUser, currentUser);
+        await this.userService.checkParentUser(childUser, currentUser);
 
-        return await this.usersService.claimPoints(childUser, pointsDto.exchangePoints);
+        return await this.userService.claimPoints(childUser, pointsDto.exchangePoints);
     };
 }

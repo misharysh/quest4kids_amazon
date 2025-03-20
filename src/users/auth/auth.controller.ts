@@ -11,6 +11,8 @@ import { CurrentUserDto } from '../dto/current-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../role.enum';
+import { ForgotPasswordDto } from '../dto/forgot-password.dto';
+import { ResetPasswordDto } from '../dto/reset-password.dto copy';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -18,7 +20,7 @@ import { Role } from '../role.enum';
 export class AuthController {
     constructor(
         private readonly authService: AuthService,
-        private readonly usersService: UserService
+        private readonly userService: UserService
     ) {};
 
     @Post('register')
@@ -56,7 +58,7 @@ export class AuthController {
     @Get('profile')
     public async profile(@CurrentUser() currentUser: CurrentUserDto): Promise<User>
     {
-        const user = await this.usersService.findOne(currentUser.id);
+        const user = await this.userService.findOne(currentUser.id);
 
         if (user)
         {
@@ -73,13 +75,31 @@ export class AuthController {
         @CurrentUser() currentUser: CurrentUserDto
     ): Promise<User>
     {
-        const user = await this.usersService.findOne(currentUser.id);
+        const user = await this.userService.findOne(currentUser.id);
 
         if (!user)
         {
             throw new NotFoundException();
         }
 
-        return await this.usersService.updateUser(user, updateUserDto);
+        return await this.userService.updateUser(user, updateUserDto);
+    };
+
+    @Post('forgot-password')
+    @Public()
+    public async forgotPassword(
+        @Body() forgotPasswordDto: ForgotPasswordDto
+    )
+    {
+        return this.authService.forgotPassword(forgotPasswordDto.email);
+    };
+
+    @Post('reset-password')
+    @Public()
+    public async resetPassword(
+        @Body() resetPasswordDto: ResetPasswordDto
+    ): Promise<void>
+    {
+        return this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.password);
     };
 }

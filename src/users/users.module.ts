@@ -15,6 +15,7 @@ import { RolesGuard } from "./roles.guard";
 import { UserController } from './user/user.controller';
 import { AwsService } from "./../aws/aws.service";
 import { RefreshToken } from "./refresh-token.entity";
+import { EmailService } from "../email/email.service";
 
 @Module({
     imports: [
@@ -30,7 +31,7 @@ import { RefreshToken } from "./refresh-token.entity";
             })
         }),
     ],
-    providers: [PasswordService, AwsService, UserService, AuthService, AuthGuard, RolesGuard, 
+    providers: [PasswordService, EmailService, AwsService, UserService, AuthService, AuthGuard, RolesGuard, 
     {
         provide: APP_GUARD,
         useClass: AuthGuard

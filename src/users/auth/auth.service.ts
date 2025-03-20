@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { UserService } from '../user/user.service';
 import { JwtService } from '@nestjs/jwt';
 import { User } from '../user.entity';
@@ -9,6 +9,7 @@ import { Repository } from 'typeorm';
 import { RefreshToken } from '../refresh-token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LoginResponse } from '../dto/login.response.dto';
+import { EmailService } from '../../email/email.service';
 const {v4: uuidv4} = require('uuid');
 
 @Injectable()
@@ -17,6 +18,7 @@ export class AuthService {
         private readonly userService: UserService,
         private readonly jwtService: JwtService,
         private readonly passwordService: PasswordService,
+        private readonly emailService: EmailService,
         @InjectRepository(RefreshToken)
         private readonly refreshTokenRepository: Repository<RefreshToken>
     ) {};
@@ -85,6 +87,38 @@ export class AuthService {
         {
             throw new InternalServerErrorException('An unexpected error occurred');
         }
+    };
+
+    public async forgotPassword(email: string)
+    {
+        //check that user exists
+        const user = await this.userService.findOneByEmail(email);
+
+        if (user)
+        {
+            const resetToken = await this.emailService.sendResetPasswordLink(email);
+
+            user.resetToken = resetToken;
+            await this.userService.saveUser(user);
+        }
+
+        return {"message": "If this user exists, they will receive an email"};
+    };
+
+    public async resetPassword(token: string, password: string): Promise<void>
+    {
+        const email = await this.emailService.decodeConfirmationToken(token);
+
+        const user = await this.userService.findOneByEmail(email);
+
+        if (!user) {
+            throw new NotFoundException(`No user found for email: ${email}`);
+        }
+
+        const hashedPassword = await this.passwordService.hash(password);
+        user.password = hashedPassword;
+        user.resetToken = '';
+        await this.userService.saveUser(user);
     };
 
     private async generateUserTokens(user: User, currentToken: RefreshToken | null): Promise<LoginResponse>

@@ -4,12 +4,14 @@ import { AppConfig } from "./app.config";
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthConfig } from './auth.config';
 import { AmazonConfig } from './amazon.config';
+import { EmailConfig } from './email.config';
 
 export interface ConfigTypes {
     app: AppConfig;
     database: TypeOrmModuleOptions;
     auth: AuthConfig;
     amazon: AmazonConfig;
+    email: EmailConfig;
 }
 
 export const appConfigSchema = Joi.object({
@@ -21,4 +23,8 @@ export const appConfigSchema = Joi.object({
     AMAZON_ACCESS_KEY_ID: Joi.string().required(),
     AMAZON_SECRET_ACCESS_KEY: Joi.string().required(),
     AMAZON_BUCKET: Joi.string().required(),
+    EMAIL_USERNAME: Joi.string().required(),
+    EMAIL_PASSWORD: Joi.string().required(),
+    URL_RESET_PASSWORD: Joi.string().required(),
+    EMAIL_HOST: Joi.string().required(),
 });

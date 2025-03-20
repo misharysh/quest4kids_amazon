@@ -14,12 +14,14 @@ import { authConfig } from './config/auth.config';
 import { UsersModule } from './users/users.module';
 import { amazonConfig } from './config/amazon.config';
 import { RefreshToken } from './users/refresh-token.entity';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { emailConfig, EmailConfig } from './config/email.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, typeOrmConfig, authConfig, amazonConfig],
+      load: [appConfig, typeOrmConfig, authConfig, amazonConfig, emailConfig],
       validationSchema: appConfigSchema,
       validationOptions: {
         abortEarly: true,
@@ -40,6 +42,21 @@ import { RefreshToken } from './users/refresh-token.entity';
           ssl: {
             rejectUnauthorized: false
           }
+        },
+      }),
+    }),
+    MailerModule.forRootAsync({
+      imports: [ConfigModule],
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService<ConfigTypes>) => ({
+        transport: {
+          host: configService.get<EmailConfig>('email')?.emailHost,
+          secure: true,
+          port: 465,
+          auth: {
+            user: configService.get<EmailConfig>('email')?.emailUsername,
+            pass: configService.get<EmailConfig>('email')?.emailPassword,
+          },
         },
       }),
     }),
