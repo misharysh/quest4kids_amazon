@@ -13,6 +13,7 @@ import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../role.enum';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto copy';
+import { RefreshDto } from '../dto/refresh.dto';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -43,9 +44,9 @@ export class AuthController {
 
     @Post('refresh')
     @Public()
-    public async refresh(@Body() body: any):  Promise<LoginResponse>
+    public async refresh(@Body() refreshDto: RefreshDto):  Promise<LoginResponse>
     {
-        const {accessToken, refreshToken} = await this.authService.refreshTokens(body.token);
+        const {accessToken, refreshToken} = await this.authService.refreshTokens(refreshDto.token);
 
         if (!accessToken)
         {
