@@ -24,7 +24,7 @@ export class EmailService
         });
 
         const url = `${this.configService.get<EmailConfig>('email')?.urlResetPassword}?token=${token}`;
-        const text = `Hi hi, \nTo reset your password, click here: ${url}`;
+        const text = `Hi, \nTo reset your password, click here: ${url}`;
         
         this.sendMail({
             to: email,
