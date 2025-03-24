@@ -16,12 +16,13 @@ import { amazonConfig } from './config/amazon.config';
 import { RefreshToken } from './users/refresh-token.entity';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { emailConfig, EmailConfig } from './config/email.config';
+import { googleConfig } from './config/google-oauth.config';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, typeOrmConfig, authConfig, amazonConfig, emailConfig],
+      load: [appConfig, typeOrmConfig, authConfig, amazonConfig, emailConfig, googleConfig],
       validationSchema: appConfigSchema,
       validationOptions: {
         abortEarly: true,

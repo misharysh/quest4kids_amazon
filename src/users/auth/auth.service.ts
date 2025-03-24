@@ -95,7 +95,7 @@ export class AuthService {
         const user = await this.userService.findOneByEmail(email);
 
         if (user)
-        {
+        {            
             const resetToken = await this.emailService.sendResetPasswordLink(email);
 
             user.resetToken = resetToken;
@@ -119,6 +119,37 @@ export class AuthService {
         user.password = hashedPassword;
         user.resetToken = '';
         await this.userService.saveUser(user);
+    };
+
+    public async loginWithGoogle(user: User): Promise<LoginResponse>
+    {
+        const refreshToken = await this.refreshTokenRepository.findOne({
+            relations: ['user'],
+            where: {
+                user: {
+                    id: user.id
+                }
+            }
+        });
+
+        return this.generateUserTokens(user, refreshToken);
+    };
+
+    public async validateGoogleUser(profile: any)
+    {
+        const user = await this.userService.findOneByEmail(profile.emails[0].value);
+
+        if (user) return user;
+
+        //create user
+        const userRole = Role.PARENT;
+        const createUserDto = new CreateUserDto ();
+        createUserDto.email = profile.emails[0].value;
+        createUserDto.name = profile.name.givenName  
+                            + profile.name.familyName ? ' ' + profile.name.familyName : '';
+        createUserDto.password = '';
+        
+        return await this.userService.createUser(createUserDto, userRole); //register as parent
     };
 
     private async generateUserTokens(user: User, currentToken: RefreshToken | null): Promise<LoginResponse>

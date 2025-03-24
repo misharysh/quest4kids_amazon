@@ -1,4 +1,4 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Patch, Post, SerializeOptions, UnauthorizedException, UseInterceptors } from '@nestjs/common';
+import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Patch, Post, Req, Res, SerializeOptions, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../user.entity';
 import { AuthService } from './auth.service';
@@ -14,6 +14,7 @@ import { Role } from '../role.enum';
 import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto copy';
 import { RefreshDto } from '../dto/refresh.dto';
+import { GoogleAuthGuard } from '../guards/google-auth.guard';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -102,5 +103,20 @@ export class AuthController {
     ): Promise<void>
     {
         return this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.password);
+    };
+
+    @Get("google/login")
+    @Public()
+    @UseGuards(GoogleAuthGuard)
+    public async googleLogin() {};
+
+    @Get("google/callback")
+    @Public()
+    @UseGuards(GoogleAuthGuard)
+    public async googleCallback(@Req() req): Promise<LoginResponse>
+    {
+        const {accessToken, refreshToken} = await this.authService.loginWithGoogle(req.user);
+
+        return new LoginResponse({accessToken, refreshToken});
     };
 }

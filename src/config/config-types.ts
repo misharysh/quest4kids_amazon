@@ -5,6 +5,7 @@ import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { AuthConfig } from './auth.config';
 import { AmazonConfig } from './amazon.config';
 import { EmailConfig } from './email.config';
+import { GoogleConfig } from './google-oauth.config';
 
 export interface ConfigTypes {
     app: AppConfig;
@@ -12,6 +13,7 @@ export interface ConfigTypes {
     auth: AuthConfig;
     amazon: AmazonConfig;
     email: EmailConfig;
+    google: GoogleConfig;
 }
 
 export const appConfigSchema = Joi.object({
@@ -27,4 +29,7 @@ export const appConfigSchema = Joi.object({
     EMAIL_PASSWORD: Joi.string().required(),
     URL_RESET_PASSWORD: Joi.string().required(),
     EMAIL_HOST: Joi.string().required(),
+    GOOGLE_CLIENT_ID: Joi.string().required(),
+    GOOGLE_CLIENT_SECRET: Joi.string().required(),
+    GOOGLE_CALLBACK_URL: Joi.string().required(),
 });
