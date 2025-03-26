@@ -1,5 +1,5 @@
 import { IsEnum, IsIn, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
-import { TaskStatus } from "./task.model";
+import { TaskStatus } from "../task.model";
 import { Transform } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
 

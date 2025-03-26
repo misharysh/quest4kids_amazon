@@ -8,7 +8,7 @@ import { CurrentUser } from '../decorators/current-user.decorator';
 import { PaginationResponse } from 'src/common/pagination.response';
 import { PaginationParams } from 'src/common/pagination.params';
 import { CurrentUserDto } from '../dto/current-user.dto';
-import { FindOneParams } from 'src/tasks/find-one.params';
+import { FindOneParams } from 'src/tasks/dto/find-one.params';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PointsDto } from '../dto/points.dto';

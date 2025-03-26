@@ -8,11 +8,13 @@ import { Task } from './task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { CreateTaskLabelDto } from './dto/create-task-label.dto';
 import { TaskLabel } from './task-label.entity';
-import { FindTaskParams } from './find-task.params';
+import { FindTaskParams } from './dto/find-task.params';
 import { PaginationParams } from './../common/pagination.params';
 import { CurrentUserDto } from 'src/users/dto/current-user.dto';
 import { Role } from 'src/users/role.enum';
 import { User } from 'src/users/user.entity';
+import { TaskStatisticsItem, TaskStatisticsResponse } from './dto/task-statistics.response';
+import { TaskStatisticsParams } from './dto/task-statistics.params';
 
 @Injectable()
 export class TasksService {
@@ -116,6 +118,57 @@ export class TasksService {
             where: {id},
             relations: ['labels']
         });
+    };
+
+    public async getTaskStatistics(
+        currentUser: CurrentUserDto,
+        filters: TaskStatisticsParams
+    ): Promise<TaskStatisticsResponse>
+    {
+        const isParent = currentUser.role === Role.PARENT;
+                
+        if (isParent)
+        {
+            //get all task statistics
+            const query = this.usersRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.tasks', 'tasks')
+            .where("user.parentId = :parentId", {parentId: currentUser.id});
+
+            //filtered by concrete child
+            if (filters.childId?.trim())
+            {
+                query.andWhere("user.id = :childId", { childId: filters.childId });
+            }
+
+            const users = await query.getMany();
+
+            var taskStatisticsItem: TaskStatisticsItem[] = [];
+
+            users.forEach((user: User) => {
+                const taskStatistics = this.createTaskStatisticsItem(user.id, user.name, user.tasks);
+                taskStatisticsItem.push(taskStatistics);
+            });
+
+            return {
+                data: taskStatisticsItem
+            };
+        }
+        else
+        {
+            //get task statistics for child
+            const tasks = await this.tasksRepository.find({
+                where: {
+                    userId: currentUser.id
+                },
+            });
+
+            const taskStatistics = this.createTaskStatisticsItem(currentUser.id, currentUser.name, tasks);
+
+            return {
+                data: [taskStatistics]
+            };
+
+        }
     };
 
     public async createTask(createTaskDto:CreateTaskDto, user: User): Promise<Task>
@@ -264,4 +317,16 @@ export class TasksService {
 
         return uniqueNames.map((name) => ({name}));
     }
+
+    private createTaskStatisticsItem(id: string, name: string, tasks: Task[]) : TaskStatisticsItem
+    {
+        const taskStatistics = new TaskStatisticsItem();
+        taskStatistics.id = id;
+        taskStatistics.name = name;
+        taskStatistics.openTasks = tasks.filter((task) => task.status === TaskStatus.OPEN).length;
+        taskStatistics.inProgressTasks = tasks.filter((task) => task.status === TaskStatus.IN_PROGRESS).length;
+        taskStatistics.doneTasks = tasks.filter((task) => task.status === TaskStatus.DONE).length;
+
+        return taskStatistics;
+    };
 }
