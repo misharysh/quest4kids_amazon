@@ -39,6 +39,18 @@ export class UserService {
         return query.getManyAndCount();
     };
 
+    public async findOneOrFail(id: string): Promise<User>
+    {
+        const user = await this.findOne(id);
+
+        if (!user)
+        {
+            throw new NotFoundException();
+        }
+
+        return user;
+    };
+
     public async createUser(createUserDto: CreateUserDto, role: Role, parentId?: string): Promise<User>
     {
         const hashedPassword = await this.passwordService.hash(createUserDto.password);
@@ -96,7 +108,7 @@ export class UserService {
     public async deleteUser(user: User): Promise<void>
     {
         await this.userRepository.remove(user);
-    }
+    };
 
     public async claimPoints(user: User, exchangePoints: number): Promise<User>
     {
@@ -108,6 +120,13 @@ export class UserService {
         user.availablePoints -= exchangePoints;
 
         return await this.userRepository.save(user);
+    };
+
+    public async getAvatar(key: string): Promise<string>
+    {
+        const url = await this.awsService.s3_get(key);
+
+        return url;
     };
 
     public async addAvatar(user: User, file: Express.Multer.File): Promise<User>
@@ -132,34 +151,6 @@ export class UserService {
     {
         await this.awsService.s3_delete(key);
     };
-
-    public async getAvatar(key: string): Promise<string>
-    {
-        const url = await this.awsService.s3_get(key);
-
-        return url;
-    };
-
-    public async findOneOrFail(id: string): Promise<User>
-    {
-        const user = await this.findOne(id);
-
-        if (!user)
-        {
-            throw new NotFoundException();
-        }
-
-        return user;
-    };
-
-    public async checkParentUser(child: User, parent: CurrentUserDto): Promise<void>
-    {
-        //check if this childUser has ParentId as current user id
-        if (child.parentId !== parent.id)
-        {
-            throw new ForbiddenException('You can only access your children');
-        }
-    }
 
     public async checkAvatarOwnership(id: string, currentUser: CurrentUserDto): Promise<User>
     {
@@ -201,6 +192,15 @@ export class UserService {
             }
 
             return await this.findOneOrFail(id);
+        }
+    };
+
+    public async checkParentUser(child: User, parent: CurrentUserDto): Promise<void>
+    {
+        //check if this childUser has ParentId as current user id
+        if (child.parentId !== parent.id)
+        {
+            throw new ForbiddenException('You can only access your children');
         }
     };
 }

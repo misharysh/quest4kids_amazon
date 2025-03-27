@@ -2,6 +2,7 @@ import { Exclude, Expose } from "class-transformer";
 import { Task } from "../tasks/task.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "./role.enum";
+import { UserTaskCompletion } from "./user-task-completion.entity";
 
 @Entity()
 export class User {
@@ -32,6 +33,9 @@ export class User {
     @OneToMany(() => Task, task => task.user)
     @Expose()
     tasks: Task[];
+
+    @OneToMany(() => UserTaskCompletion, (completion) => completion.user)
+    completedTasks: UserTaskCompletion[];
 
     @Column({
         type: 'enum',

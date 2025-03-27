@@ -1,20 +1,21 @@
 import { ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { TaskStatus } from './task.model';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { UpdateTaskDto } from './dto/update-task.dto';
-import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
+import { TaskStatus } from '../task.model';
+import { CreateTaskDto } from '../dto/create-task.dto';
+import { UpdateTaskDto } from '../dto/update-task.dto';
+import { WrongTaskStatusException } from '../exceptions/wrong-task-status.exception';
 import { Repository } from 'typeorm';
-import { Task } from './task.entity';
+import { Task } from '../task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTaskLabelDto } from './dto/create-task-label.dto';
-import { TaskLabel } from './task-label.entity';
-import { FindTaskParams } from './dto/find-task.params';
-import { PaginationParams } from './../common/pagination.params';
+import { CreateTaskLabelDto } from '../dto/create-task-label.dto';
+import { TaskLabel } from '../task-label.entity';
+import { FindTaskParams } from '../dto/find-task.params';
+import { PaginationParams } from '../../common/pagination.params';
 import { CurrentUserDto } from 'src/users/dto/current-user.dto';
 import { Role } from 'src/users/role.enum';
 import { User } from 'src/users/user.entity';
-import { TaskStatisticsItem, TaskStatisticsResponse } from './dto/task-statistics.response';
-import { TaskStatisticsParams } from './dto/task-statistics.params';
+import { TaskStatisticsItem, TaskStatisticsResponse } from '../dto/task-statistics.response';
+import { TaskStatisticsParams } from '../dto/task-statistics.params';
+import { UserTaskCompletion } from '../../users/user-task-completion.entity';
 
 @Injectable()
 export class TasksService {
@@ -27,7 +28,10 @@ export class TasksService {
         private labelsRepository: Repository<TaskLabel>,
 
         @InjectRepository(User)
-        private usersRepository: Repository<User>
+        private usersRepository: Repository<User>,
+
+        @InjectRepository(UserTaskCompletion)
+        private userTaskCompletionsRepository: Repository<UserTaskCompletion>,
     ) {};
 
     public async findAll(filters: FindTaskParams, pagination: PaginationParams, currentUser: CurrentUserDto): Promise<[Task[], number]>
@@ -112,6 +116,19 @@ export class TasksService {
         // });
     };
 
+    public async findOneOrFail(id: string): Promise<Task>
+    {
+        const task = await this.findOne(id);
+
+        if (!task)
+        {
+            throw new NotFoundException();
+            
+        }
+        
+        return task;
+    };
+
     public async findOne(id: string): Promise<Task | null>
     {
         return await this.tasksRepository.findOne({
@@ -142,15 +159,15 @@ export class TasksService {
 
             const users = await query.getMany();
 
-            var taskStatisticsItem: TaskStatisticsItem[] = [];
+            var taskStatisticsItems: TaskStatisticsItem[] = [];
 
             users.forEach((user: User) => {
                 const taskStatistics = this.createTaskStatisticsItem(user.id, user.name, user.tasks);
-                taskStatisticsItem.push(taskStatistics);
+                taskStatisticsItems.push(taskStatistics);
             });
 
             return {
-                data: taskStatisticsItem
+                data: taskStatisticsItems
             };
         }
         else
@@ -167,7 +184,6 @@ export class TasksService {
             return {
                 data: [taskStatistics]
             };
-
         }
     };
 
@@ -178,18 +194,26 @@ export class TasksService {
             createTaskDto.labels = this.getUniqueLabels(createTaskDto.labels);
         }
 
+        const task = await this.tasksRepository.create(createTaskDto);
+
+        await this.tasksRepository.save(task);
+
         if (createTaskDto.status === TaskStatus.DONE) //awards points in case of DONE
         {
             const points = createTaskDto.points ? createTaskDto.points : 0;
+
             user.availablePoints += points;
             user.totalEarnedPoints += points;
 
             await this.usersRepository.save(user);
+
+            const userTaskCompletion = new UserTaskCompletion();
+            userTaskCompletion.user = user;
+            userTaskCompletion.task = task;
+            userTaskCompletion.points = points;
+
+            await this.userTaskCompletionsRepository.save(userTaskCompletion);
         }
-
-        const task = await this.tasksRepository.create(createTaskDto);
-
-        await this.tasksRepository.save(task);
 
         return task;
     };
@@ -206,6 +230,7 @@ export class TasksService {
             if (updateTaskDto.status === TaskStatus.DONE) //awards points in case of DONE
             {
                 const user = await this.usersRepository.findOneBy({id: task.userId});
+                
                 if (user)
                 {
                     const points = updateTaskDto.points 
@@ -216,6 +241,13 @@ export class TasksService {
                     user.totalEarnedPoints += points;
     
                     await this.usersRepository.save(user);
+
+                    const userTaskCompletion = new UserTaskCompletion();
+                    userTaskCompletion.user = user;
+                    userTaskCompletion.task = task;
+                    userTaskCompletion.points = points;
+
+                    await this.userTaskCompletionsRepository.save(userTaskCompletion);
                 }
             }
         }
@@ -258,19 +290,6 @@ export class TasksService {
         task.labels = task.labels.filter((label) => !labelsToRemove.includes(label.name));
 
         return await this.tasksRepository.save(task);
-    };
-
-    public async findOneOrFail(id: string): Promise<Task>
-    {
-        const task = await this.findOne(id);
-
-        if (!task)
-        {
-            throw new NotFoundException();
-            
-        }
-        
-        return task;
     };
 
     public async checkTaskOwnership(task: Task, currentUser: CurrentUserDto): Promise<void>
@@ -316,7 +335,7 @@ export class TasksService {
         const uniqueNames = [...new Set(labelsDtos.map((label) => label.name))];
 
         return uniqueNames.map((name) => ({name}));
-    }
+    };
 
     private createTaskStatisticsItem(id: string, name: string, tasks: Task[]) : TaskStatisticsItem
     {

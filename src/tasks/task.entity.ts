@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, ManyToOne, OneToMany, PrimaryGenerate
 import { TaskStatus } from "./task.model";
 import { User } from "../users/user.entity";
 import { TaskLabel } from "./task-label.entity";
+import { UserTaskCompletion } from "./../users/user-task-completion.entity";
 
 @Entity()
 export class Task {
@@ -43,6 +44,9 @@ export class Task {
         cascade: true
     })
     labels: TaskLabel[];
+
+    @OneToMany(() => UserTaskCompletion, (completion) => completion.task)
+    completions: UserTaskCompletion[];
 
     @CreateDateColumn()
         createdAt: Date;

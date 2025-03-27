@@ -1,21 +1,21 @@
 import { BadRequestException, Body, Controller, Delete, ForbiddenException, Get, HttpCode, HttpStatus, NotFoundException, Param, Patch, Post, Query} from '@nestjs/common';
 import { TasksService } from './tasks.service';
-import { CreateTaskDto } from './dto/create-task.dto';
-import { FindOneParams } from './dto/find-one.params';
-import { UpdateTaskDto } from './dto/update-task.dto';
-import { WrongTaskStatusException } from './exceptions/wrong-task-status.exception';
-import { Task } from './task.entity';
-import { CreateTaskLabelDto } from './dto/create-task-label.dto';
-import { FindTaskParams } from './dto/find-task.params';
-import { PaginationParams } from './../common/pagination.params';
-import { PaginationResponse } from './../common/pagination.response';
-import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CreateTaskDto } from '../dto/create-task.dto';
+import { FindOneParams } from '../dto/find-one.params';
+import { UpdateTaskDto } from '../dto/update-task.dto';
+import { WrongTaskStatusException } from '../exceptions/wrong-task-status.exception';
+import { Task } from '../task.entity';
+import { CreateTaskLabelDto } from '../dto/create-task-label.dto';
+import { FindTaskParams } from '../dto/find-task.params';
+import { PaginationParams } from '../../common/pagination.params';
+import { PaginationResponse } from '../../common/pagination.response';
+import { CurrentUser } from '../../users/decorators/current-user.decorator';
 import { Roles } from 'src/users/decorators/roles.decorator';
 import { Role } from 'src/users/role.enum';
 import { UserService } from 'src/users/user/user.service';
 import { CurrentUserDto } from 'src/users/dto/current-user.dto';
-import { TaskStatisticsParams } from './dto/task-statistics.params';
-import { TaskStatisticsResponse } from './dto/task-statistics.response';
+import { TaskStatisticsParams } from '../dto/task-statistics.params';
+import { TaskStatisticsResponse } from '../dto/task-statistics.response';
 
 @Controller()
 export class TasksController {
