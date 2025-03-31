@@ -1,8 +1,9 @@
-import { IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, ValidateNested } from "class-validator";
+import { IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, ValidateNested} from "class-validator";
 import { TaskStatus } from "../task.model";
-import { CreateTaskLabelDto } from "./create-task-label.dto";
-import { Type } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
+import { TaskLabelEnum } from "../task-label.enum";
+import { TaskLabel } from "../task-label.entity";
+import { Type } from "class-transformer";
 
 export class CreateTaskDto
 {
@@ -42,11 +43,13 @@ export class CreateTaskDto
     points?: number;
 
     @ApiProperty({
-        example: "[{'name': 'Mysha label'}]",
+        example: ['HOME', 'SCHOOL'],
+        isArray: true,
+        enum: TaskLabelEnum,
         required: false
     })
     @IsOptional()
-    @ValidateNested({each: true})
-    @Type(() => CreateTaskLabelDto)
-    labels?: CreateTaskLabelDto[];
+    @IsArray()
+    @IsEnum(TaskLabelEnum, { each: true })
+    labels?: TaskLabelEnum[];
 }

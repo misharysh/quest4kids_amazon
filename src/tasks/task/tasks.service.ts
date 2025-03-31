@@ -6,7 +6,6 @@ import { WrongTaskStatusException } from '../exceptions/wrong-task-status.except
 import { Repository } from 'typeorm';
 import { Task } from '../task.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CreateTaskLabelDto } from '../dto/create-task-label.dto';
 import { TaskLabel } from '../task-label.entity';
 import { FindTaskParams } from '../dto/find-task.params';
 import { PaginationParams } from '../../common/pagination.params';
@@ -16,6 +15,7 @@ import { User } from 'src/users/user.entity';
 import { TaskStatisticsItem, TaskStatisticsResponse } from '../dto/task-statistics.response';
 import { TaskStatisticsParams } from '../dto/task-statistics.params';
 import { UserTaskCompletion } from '../../users/user-task-completion.entity';
+import { TaskLabelEnum } from '../task-label.enum';
 
 @Injectable()
 export class TasksService {
@@ -189,18 +189,15 @@ export class TasksService {
 
     public async createTask(createTaskDto:CreateTaskDto, user: User): Promise<Task>
     {
-        if (createTaskDto.labels)
-        {
-            createTaskDto.labels = this.getUniqueLabels(createTaskDto.labels);
-        }
+        const {labels, ...taskData} = createTaskDto;
 
-        const task = await this.tasksRepository.create(createTaskDto);
+        const task = await this.tasksRepository.create(taskData);
 
         await this.tasksRepository.save(task);
 
-        if (createTaskDto.status === TaskStatus.DONE) //awards points in case of DONE
+        if (taskData.status === TaskStatus.DONE) //awards points in case of DONE
         {
-            const points = createTaskDto.points ? createTaskDto.points : 0;
+            const points = taskData.points ? taskData.points : 0;
 
             user.availablePoints += points;
             user.totalEarnedPoints += points;
@@ -215,26 +212,42 @@ export class TasksService {
             await this.userTaskCompletionsRepository.save(userTaskCompletion);
         }
 
+        if (labels && labels.length > 0)
+        {
+            const uniqueLabels = this.getUniqueLabels(labels);
+
+            const newLabels = uniqueLabels.map((label) => 
+                this.labelsRepository.create({
+                    name: label,
+                    task: task
+                })
+            );
+
+            await this.labelsRepository.save(newLabels);
+        }
+
         return task;
     };
 
     public async updateTask(task: Task, updateTaskDto: UpdateTaskDto): Promise<Task>
     {
-        if (updateTaskDto.status)
+        const {labels, ...taskData} = updateTaskDto;
+
+        if (taskData.status)
         {
-            if (!this.isValidStatusTransition(task.status, updateTaskDto.status))
+            if (!this.isValidStatusTransition(task.status, taskData.status))
             {
                 throw new WrongTaskStatusException();
             }
             
-            if (updateTaskDto.status === TaskStatus.DONE) //awards points in case of DONE
+            if (taskData.status === TaskStatus.DONE) //awards points in case of DONE
             {
                 const user = await this.usersRepository.findOneBy({id: task.userId});
                 
                 if (user)
                 {
-                    const points = updateTaskDto.points 
-                                    ? updateTaskDto.points 
+                    const points = taskData.points 
+                                    ? taskData.points 
                                     : task.points ? task.points : 0;
 
                     user.availablePoints += points;
@@ -252,12 +265,15 @@ export class TasksService {
             }
         }
 
-        if (updateTaskDto.labels)
+        if (labels && labels.length > 0)
         {
-            updateTaskDto.labels = this.getUniqueLabels(updateTaskDto.labels);
+            const uniqueLabels =this.getUniqueLabels(labels)
+            .map(label => this.labelsRepository.create({ name: label }));
+
+            task.labels = uniqueLabels;
         }
 
-        Object.assign(task, updateTaskDto);
+        Object.assign(task, taskData);
 
         return await this.tasksRepository.save(task);
     };
@@ -267,13 +283,13 @@ export class TasksService {
         await this.tasksRepository.remove(task);
     };
 
-    public async addLabels(task: Task, labelsDto: CreateTaskLabelDto[]): Promise<Task>
+    public async addLabels(task: Task, labelsDto: TaskLabelEnum[]): Promise<Task>
     {
         const names = new Set(task.labels.map((label) => label.name));
 
         const labels =this.getUniqueLabels(labelsDto)
-            .filter(dto => !names.has(dto.name))
-            .map((label) => this.labelsRepository.create(label));
+            .filter(dto => !names.has(dto))
+            .map(label => this.labelsRepository.create({ name: label }));
 
         if (labels.length)
         {
@@ -285,7 +301,7 @@ export class TasksService {
         return task;
     };
 
-    public async removeLabels(task: Task, labelsToRemove: string[]): Promise<Task>
+    public async removeLabels(task: Task, labelsToRemove: TaskLabelEnum[]): Promise<Task>
     {
         task.labels = task.labels.filter((label) => !labelsToRemove.includes(label.name));
 
@@ -330,11 +346,9 @@ export class TasksService {
         return statusOrder.indexOf(currentStatus) < statusOrder.indexOf(newStatus);
     };
 
-    private getUniqueLabels(labelsDtos: CreateTaskLabelDto[]): CreateTaskLabelDto[]
+    private getUniqueLabels(labelsDtos: TaskLabelEnum[]): TaskLabelEnum[]
     {
-        const uniqueNames = [...new Set(labelsDtos.map((label) => label.name))];
-
-        return uniqueNames.map((name) => ({name}));
+        return [...new Set(labelsDtos)]; 
     };
 
     private createTaskStatisticsItem(id: string, name: string, tasks: Task[]) : TaskStatisticsItem

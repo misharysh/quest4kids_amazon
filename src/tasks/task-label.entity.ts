@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, Index, ManyToOne, PrimaryGeneratedColumn, Unique, UpdateDateColumn } from "typeorm";
 import { Task } from "./task.entity";
+import { TaskLabelEnum } from "./task-label.enum";
 
 @Entity()
 @Unique(['name', 'taskId'])
@@ -8,8 +9,11 @@ export class TaskLabel
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
-    @Column()
-    name: string;
+    @Column({
+        type: 'enum',
+        enum: TaskLabelEnum,
+    })
+    name: TaskLabelEnum;
 
     @Column()
     @Index()

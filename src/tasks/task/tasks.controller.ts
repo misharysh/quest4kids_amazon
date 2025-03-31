@@ -5,7 +5,7 @@ import { FindOneParams } from '../dto/find-one.params';
 import { UpdateTaskDto } from '../dto/update-task.dto';
 import { WrongTaskStatusException } from '../exceptions/wrong-task-status.exception';
 import { Task } from '../task.entity';
-import { CreateTaskLabelDto } from '../dto/create-task-label.dto';
+import { TaskLabelDto } from '../dto/task-label.dto';
 import { FindTaskParams } from '../dto/find-task.params';
 import { PaginationParams } from '../../common/pagination.params';
 import { PaginationResponse } from '../../common/pagination.response';
@@ -126,25 +126,25 @@ export class TasksController {
     @Post('tasks/:id/labels')
     public async addLabels(
         @Param() { id }: FindOneParams,
-        @Body() createTaskLabelDto: CreateTaskLabelDto[],
+        @Body() createTaskLabelDto: TaskLabelDto,
         @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<Task> 
     {
         const task = await this.tasksService.findOneOrFail(id);
         await this.tasksService.checkTaskOwnership(task, currentUser);
-        return await this.tasksService.addLabels(task, createTaskLabelDto);
+        return await this.tasksService.addLabels(task, createTaskLabelDto.labels);
     };
 
     @Delete('tasks/:id/labels')
     @HttpCode(HttpStatus.NO_CONTENT)
     public async removeLabels(
         @Param() { id }: FindOneParams,
-        @Body() labelsNames: string[],
+        @Body() createTaskLabelDto: TaskLabelDto,
         @CurrentUser() currentUser: CurrentUserDto,
     ): Promise<void>
     {
         const task = await this.tasksService.findOneOrFail(id);
         await this.tasksService.checkTaskOwnership(task, currentUser);
-        await this.tasksService.removeLabels(task, labelsNames);
+        await this.tasksService.removeLabels(task, createTaskLabelDto.labels);
     };
 }

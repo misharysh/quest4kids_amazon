@@ -1,7 +1,8 @@
-import { IsEnum, IsIn, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
+import { IsArray, IsEnum, IsIn, IsOptional, IsString, IsUUID, MinLength } from "class-validator";
 import { TaskStatus } from "../task.model";
 import { Transform } from "class-transformer";
 import { ApiProperty } from "@nestjs/swagger";
+import { TaskLabelEnum } from "../task-label.enum";
 
 export class FindTaskParams 
 {
@@ -35,12 +36,18 @@ export class FindTaskParams
         required: false
     })
     @IsOptional()
-    @Transform(({value}: {value?: string}) => {
-        if(!value) return undefined;
-
-        return value.split(',').map((label) => label.trim()).filter((label) => label.length);
+    @Transform(({ value }) => {
+        if (!value) return undefined;
+        
+        return value
+        .split(',')
+        .map((label) => label.trim())
+        .map((label) => label.charAt(0).toUpperCase() + label.slice(1).toLowerCase())
+        .filter((label) => label.length);
     })
-    labels?: string[];
+    @IsArray()
+    @IsEnum(TaskLabelEnum, { each: true })
+    labels?: TaskLabelEnum[];
 
     @ApiProperty({
         example: "'createdAt'|'title'|'status'",
