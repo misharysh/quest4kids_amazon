@@ -18,6 +18,8 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { emailConfig, EmailConfig } from './config/email.config';
 import { googleConfig } from './config/google-oauth.config';
 import { UserTaskCompletion } from './users/user-task-completion.entity';
+import { Badge } from './badges/badge.entity';
+import { UserBadge } from './badges/user-badge.entity';
 
 @Module({
   imports: [
@@ -34,7 +36,7 @@ import { UserTaskCompletion } from './users/user-task-completion.entity';
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ConfigTypes>) => ({
         ...configService.get('database'),
-        entities: [Task, User, TaskLabel, RefreshToken, UserTaskCompletion],
+        entities: [Task, User, TaskLabel, RefreshToken, UserTaskCompletion, Badge, UserBadge],
         autoLoadEntities: true,
         synchronize: false,
         migrationsRun: true,

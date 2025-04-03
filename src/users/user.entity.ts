@@ -3,6 +3,7 @@ import { Task } from "../tasks/task.entity";
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "./role.enum";
 import { UserTaskCompletion } from "./user-task-completion.entity";
+import { UserBadge } from "src/badges/user-badge.entity";
 
 @Entity()
 export class User {
@@ -34,8 +35,13 @@ export class User {
     @Expose()
     tasks: Task[];
 
+    @Expose()
     @OneToMany(() => UserTaskCompletion, (completion) => completion.user)
     completedTasks: UserTaskCompletion[];
+
+    @Expose()
+    @OneToMany(() => UserBadge, (userBadge) => userBadge.user)
+    badges: UserBadge[];
 
     @Column({
         type: 'enum',

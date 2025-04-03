@@ -26,12 +26,17 @@ export class UserService {
 
     public async findOne(id: string): Promise<User | null>
     {
-        return await this.userRepository.findOneBy({id});
+        return await this.userRepository.findOne({
+            where: {id: id},
+            relations: ['badges', 'badges.badge'],
+        });
     };
 
     public async findAll(pagination: PaginationParams, parentId: string): Promise<[User[], number]>
     {
         const query = this.userRepository.createQueryBuilder('user')
+            .leftJoinAndSelect('user.badges', 'userBadge')
+            .leftJoinAndSelect('userBadge.badge', 'badge')
             .where('user.parentId = :parentId', {parentId});
 
         query.skip(pagination.offset).take(pagination.limit);

@@ -7,9 +7,11 @@ import { TaskLabel } from './task-label.entity';
 import { UsersModule } from './../users/users.module';
 import { User } from './../users/user.entity';
 import { UserTaskCompletion } from './../users/user-task-completion.entity';
+import { Badge } from 'src/badges/badge.entity';
+import { UserBadge } from 'src/badges/user-badge.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task, TaskLabel, User, UserTaskCompletion]), UsersModule],
+  imports: [TypeOrmModule.forFeature([Task, TaskLabel, User, UserTaskCompletion, Badge, UserBadge]), UsersModule],
   controllers: [TasksController],
   providers: [TasksService]
 })

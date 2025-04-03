@@ -16,6 +16,8 @@ import { TaskStatisticsItem, TaskStatisticsResponse } from '../dto/task-statisti
 import { TaskStatisticsParams } from '../dto/task-statistics.params';
 import { UserTaskCompletion } from '../../users/user-task-completion.entity';
 import { TaskLabelEnum } from '../task-label.enum';
+import { Badge } from 'src/badges/badge.entity';
+import { UserBadge } from 'src/badges/user-badge.entity';
 
 @Injectable()
 export class TasksService {
@@ -32,6 +34,12 @@ export class TasksService {
 
         @InjectRepository(UserTaskCompletion)
         private userTaskCompletionsRepository: Repository<UserTaskCompletion>,
+
+        @InjectRepository(Badge)
+        private badgeRepository: Repository<Badge>,
+
+        @InjectRepository(UserBadge)
+        private userBadgeRepository: Repository<UserBadge>,
     ) {};
 
     public async findAll(filters: FindTaskParams, pagination: PaginationParams, currentUser: CurrentUserDto): Promise<[Task[], number]>
@@ -195,6 +203,22 @@ export class TasksService {
 
         await this.tasksRepository.save(task);
 
+        var newLabels: TaskLabel[] = [];
+
+        if (labels && labels.length > 0)
+        {
+            const uniqueLabels = this.getUniqueLabels(labels);
+
+            newLabels = uniqueLabels.map((label) => 
+                this.labelsRepository.create({
+                    name: label,
+                    task: task
+                })
+            );
+
+            await this.labelsRepository.save(newLabels);
+        }
+
         if (taskData.status === TaskStatus.DONE) //awards points in case of DONE
         {
             const points = taskData.points ? taskData.points : 0;
@@ -210,20 +234,8 @@ export class TasksService {
             userTaskCompletion.points = points;
 
             await this.userTaskCompletionsRepository.save(userTaskCompletion);
-        }
 
-        if (labels && labels.length > 0)
-        {
-            const uniqueLabels = this.getUniqueLabels(labels);
-
-            const newLabels = uniqueLabels.map((label) => 
-                this.labelsRepository.create({
-                    name: label,
-                    task: task
-                })
-            );
-
-            await this.labelsRepository.save(newLabels);
+            await this.setReward(newLabels, user.id);
         }
 
         return task;
@@ -232,6 +244,14 @@ export class TasksService {
     public async updateTask(task: Task, updateTaskDto: UpdateTaskDto): Promise<Task>
     {
         const {labels, ...taskData} = updateTaskDto;
+
+        if (labels && labels.length > 0)
+        {
+            const uniqueLabels =this.getUniqueLabels(labels)
+            .map(label => this.labelsRepository.create({ name: label }));
+
+            task.labels = uniqueLabels;
+        }
 
         if (taskData.status)
         {
@@ -261,16 +281,10 @@ export class TasksService {
                     userTaskCompletion.points = points;
 
                     await this.userTaskCompletionsRepository.save(userTaskCompletion);
+
+                    await this.setReward(task.labels, user.id);
                 }
             }
-        }
-
-        if (labels && labels.length > 0)
-        {
-            const uniqueLabels =this.getUniqueLabels(labels)
-            .map(label => this.labelsRepository.create({ name: label }));
-
-            task.labels = uniqueLabels;
         }
 
         Object.assign(task, taskData);
@@ -330,6 +344,40 @@ export class TasksService {
             if (task.userId !== currentUser.id)
             {
                 throw new ForbiddenException('You can only access your tasks');
+            }
+        }
+    };
+
+    private async setReward(labels: TaskLabel[], userId: string): Promise<void>
+    {
+        if (labels.length > 0)
+        {
+            for (const label of labels)
+            {
+                const {total} = await this.userTaskCompletionsRepository
+                    .createQueryBuilder('completion')
+                    .leftJoin('completion.task','task')
+                    .leftJoin('task.labels', 'label')
+                    .where('completion.userId = :userId', { userId: userId })
+                    .andWhere('label.name = :labelName', { labelName: label.name })
+                    .select('COALESCE(SUM(completion.points), 0)', 'total')
+                    .getRawOne();
+
+                console.log(total + ' ' + label.name);
+
+                const badge = await this.badgeRepository.findOne({where: {label: label.name} });
+
+                if (badge && total >= badge.requiredPoints)
+                {
+                    const existingUserBadge = await this.userBadgeRepository.findOne({
+                        where: {user: {id: userId}, badge: {id: badge.id}},
+                    });
+
+                    if (!existingUserBadge)
+                    {
+                        await this.userBadgeRepository.save({user: {id: userId}, badge});
+                    }
+                }
             }
         }
     };
