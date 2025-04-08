@@ -1,9 +1,10 @@
 import { Exclude, Expose } from "class-transformer";
 import { Task } from "../tasks/task.entity";
-import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { Role } from "./role.enum";
 import { UserTaskCompletion } from "./user-task-completion.entity";
 import { UserBadge } from "src/badges/user-badge.entity";
+import { DashboardSettings } from "src/dashboardSettings/dashboard-settings.entity";
 
 @Entity()
 export class User {
@@ -80,4 +81,10 @@ export class User {
         nullable: true
     })
     resetToken?: string;
+
+    @OneToOne(() => DashboardSettings, (settings) => settings.user, {
+        cascade: true,
+    })
+    @Expose()
+    dashboardSettings: DashboardSettings;
 }

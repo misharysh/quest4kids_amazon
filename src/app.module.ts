@@ -20,6 +20,8 @@ import { googleConfig } from './config/google-oauth.config';
 import { UserTaskCompletion } from './users/user-task-completion.entity';
 import { Badge } from './badges/badge.entity';
 import { UserBadge } from './badges/user-badge.entity';
+import { DashboardSettings } from './dashboardSettings/dashboard-settings.entity';
+import { DashboardSettingsModule } from './dashboardSettings/dashboard-settings.module';
 
 @Module({
   imports: [
@@ -36,7 +38,7 @@ import { UserBadge } from './badges/user-badge.entity';
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ConfigTypes>) => ({
         ...configService.get('database'),
-        entities: [Task, User, TaskLabel, RefreshToken, UserTaskCompletion, Badge, UserBadge],
+        entities: [Task, User, TaskLabel, RefreshToken, UserTaskCompletion, Badge, UserBadge, DashboardSettings],
         autoLoadEntities: true,
         synchronize: false,
         migrationsRun: true,
@@ -65,7 +67,8 @@ import { UserBadge } from './badges/user-badge.entity';
       }),
     }),
     TasksModule,
-    UsersModule
+    UsersModule,
+    DashboardSettingsModule
   ],
   controllers: [AppController],
   providers: [AppService],
