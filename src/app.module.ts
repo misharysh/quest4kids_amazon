@@ -22,6 +22,7 @@ import { Badge } from './badges/badge.entity';
 import { UserBadge } from './badges/user-badge.entity';
 import { DashboardSettings } from './dashboardSettings/dashboard-settings.entity';
 import { DashboardSettingsModule } from './dashboardSettings/dashboard-settings.module';
+import { BadgesModule } from './badges/badges.module';
 
 @Module({
   imports: [
@@ -68,7 +69,8 @@ import { DashboardSettingsModule } from './dashboardSettings/dashboard-settings.
     }),
     TasksModule,
     UsersModule,
-    DashboardSettingsModule
+    DashboardSettingsModule,
+    BadgesModule
   ],
   controllers: [AppController],
   providers: [AppService],

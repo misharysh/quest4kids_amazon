@@ -2,8 +2,6 @@ import { IsArray, IsEnum, IsInt, IsNotEmpty, IsOptional, IsString, ValidateNeste
 import { TaskStatus } from "../task.model";
 import { ApiProperty } from "@nestjs/swagger";
 import { TaskLabelEnum } from "../task-label.enum";
-import { TaskLabel } from "../task-label.entity";
-import { Type } from "class-transformer";
 
 export class CreateTaskDto
 {
