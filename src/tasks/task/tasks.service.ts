@@ -25,6 +25,7 @@ import { UserTaskCompletion } from '../../users/user-task-completion.entity';
 import { TaskLabelEnum } from '../task-label.enum';
 import { Badge } from 'src/badges/badge.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
+import { NotificationService } from 'src/notifications/notification.service';
 
 @Injectable()
 export class TasksService {
@@ -46,6 +47,8 @@ export class TasksService {
 
     @InjectRepository(UserBadge)
     private userBadgeRepository: Repository<UserBadge>,
+
+    private notificationService: NotificationService,
   ) {}
 
   public async findAll(
@@ -295,6 +298,13 @@ export class TasksService {
           await this.userTaskCompletionsRepository.save(userTaskCompletion);
 
           await this.setReward(task.labels, user.id);
+
+          //send notification to Parent
+          if (user.role === Role.CHILD && user.parentId)
+          {
+              const message = `${user.name} changed status of task: ${task.title} -> ${taskData.status}`;
+              await this.notificationService.createForUser(user.parentId, message);
+          }
         }
       }
     }

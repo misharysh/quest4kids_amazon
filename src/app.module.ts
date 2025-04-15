@@ -23,6 +23,7 @@ import { UserBadge } from './badges/user-badge.entity';
 import { DashboardSettings } from './dashboardSettings/dashboard-settings.entity';
 import { DashboardSettingsModule } from './dashboardSettings/dashboard-settings.module';
 import { BadgesModule } from './badges/badges.module';
+import { Notification } from './notifications/notification.entity';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { BadgesModule } from './badges/badges.module';
           Badge,
           UserBadge,
           DashboardSettings,
+          Notification
         ],
         autoLoadEntities: true,
         synchronize: false,

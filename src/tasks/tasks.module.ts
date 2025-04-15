@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TasksService } from './task/tasks.service';
 import { TasksController } from './task/tasks.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -9,6 +9,7 @@ import { User } from './../users/user.entity';
 import { UserTaskCompletion } from './../users/user-task-completion.entity';
 import { Badge } from 'src/badges/badge.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
+import { NotificationModule } from 'src/notifications/notification.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserBadge } from 'src/badges/user-badge.entity';
       UserBadge,
     ]),
     UsersModule,
+    forwardRef(() => NotificationModule)
   ],
   controllers: [TasksController],
   providers: [TasksService],
