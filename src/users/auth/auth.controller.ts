@@ -1,4 +1,18 @@
-import { Body, ClassSerializerInterceptor, Controller, Get, NotFoundException, Patch, Post, Req, Res, SerializeOptions, UnauthorizedException, UseGuards, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Get,
+  NotFoundException,
+  Patch,
+  Post,
+  Req,
+  Res,
+  SerializeOptions,
+  UnauthorizedException,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../user.entity';
 import { AuthService } from './auth.service';
@@ -18,105 +32,103 @@ import { GoogleAuthGuard } from '../guards/google-auth.guard';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
-@SerializeOptions({strategy: 'excludeAll'})
+@SerializeOptions({ strategy: 'excludeAll' })
 export class AuthController {
-    constructor(
-        private readonly authService: AuthService,
-        private readonly userService: UserService
-    ) {};
+  constructor(
+    private readonly authService: AuthService,
+    private readonly userService: UserService,
+  ) {}
 
-    @Post('register')
-    @Public()
-    public async register(@Body() createUserDto: CreateUserDto): Promise<User>
-    {
-        const user = await this.authService.register(createUserDto);
+  @Post('register')
+  @Public()
+  public async register(@Body() createUserDto: CreateUserDto): Promise<User> {
+    const user = await this.authService.register(createUserDto);
 
-        return user;
-    };
+    return user;
+  }
 
-    @Post('login')
-    @Public()
-    public async login(@Body() loginDto: LoginDto): Promise<LoginResponse>
-    {
-        const {accessToken, refreshToken} = await this.authService.login(loginDto.email, loginDto.password);
+  @Post('login')
+  @Public()
+  public async login(@Body() loginDto: LoginDto): Promise<LoginResponse> {
+    const { accessToken, refreshToken } = await this.authService.login(
+      loginDto.email,
+      loginDto.password,
+    );
 
-        return new LoginResponse({accessToken, refreshToken});
-    };
+    return new LoginResponse({ accessToken, refreshToken });
+  }
 
-    @Post('refresh')
-    @Public()
-    public async refresh(@Body() refreshDto: RefreshDto):  Promise<LoginResponse>
-    {
-        const {accessToken, refreshToken} = await this.authService.refreshTokens(refreshDto.token);
+  @Post('refresh')
+  @Public()
+  public async refresh(@Body() refreshDto: RefreshDto): Promise<LoginResponse> {
+    const { accessToken, refreshToken } = await this.authService.refreshTokens(
+      refreshDto.token,
+    );
 
-        if (!accessToken)
-        {
-            throw new UnauthorizedException();
-        }
+    if (!accessToken) {
+      throw new UnauthorizedException();
+    }
 
-        return new LoginResponse({accessToken, refreshToken});
-    }; 
+    return new LoginResponse({ accessToken, refreshToken });
+  }
 
-    @Get('profile')
-    public async profile(@CurrentUser() currentUser: CurrentUserDto): Promise<User>
-    {
-        const user = await this.userService.findOne(currentUser.id);
+  @Get('profile')
+  public async profile(
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<User> {
+    const user = await this.userService.findOne(currentUser.id);
 
-        if (user)
-        {
-            return user;
-        }
+    if (user) {
+      return user;
+    }
 
-        throw new NotFoundException();
-    };
+    throw new NotFoundException();
+  }
 
-    @Patch('profile')
-    @Roles(Role.PARENT)
-    public async updateProfile(
-        @Body() updateUserDto: UpdateUserDto,
-        @CurrentUser() currentUser: CurrentUserDto
-    ): Promise<User>
-    {
-        const user = await this.userService.findOne(currentUser.id);
+  @Patch('profile')
+  @Roles(Role.PARENT)
+  public async updateProfile(
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<User> {
+    const user = await this.userService.findOne(currentUser.id);
 
-        if (!user)
-        {
-            throw new NotFoundException();
-        }
+    if (!user) {
+      throw new NotFoundException();
+    }
 
-        return await this.userService.updateUser(user, updateUserDto);
-    };
+    return await this.userService.updateUser(user, updateUserDto);
+  }
 
-    @Post('forgot-password')
-    @Public()
-    public async forgotPassword(
-        @Body() forgotPasswordDto: ForgotPasswordDto
-    )
-    {
-        return this.authService.forgotPassword(forgotPasswordDto.email);
-    };
+  @Post('forgot-password')
+  @Public()
+  public async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
+    return this.authService.forgotPassword(forgotPasswordDto.email);
+  }
 
-    @Post('reset-password')
-    @Public()
-    public async resetPassword(
-        @Body() resetPasswordDto: ResetPasswordDto
-    ): Promise<void>
-    {
-        return this.authService.resetPassword(resetPasswordDto.token, resetPasswordDto.password);
-    };
+  @Post('reset-password')
+  @Public()
+  public async resetPassword(
+    @Body() resetPasswordDto: ResetPasswordDto,
+  ): Promise<void> {
+    return this.authService.resetPassword(
+      resetPasswordDto.token,
+      resetPasswordDto.password,
+    );
+  }
 
-    @Get("google/login")
-    @Public()
-    @UseGuards(GoogleAuthGuard)
-    public async googleLogin() {};
+  @Get('google/login')
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  public async googleLogin() {}
 
-    @Get("google/callback")
-    @Public()
-    @UseGuards(GoogleAuthGuard)
-    public async googleCallback(@Req() req): Promise<LoginResponse>
-    {
-        const {accessToken, refreshToken} = await this.authService.loginWithGoogle(req.user);
+  @Get('google/callback')
+  @Public()
+  @UseGuards(GoogleAuthGuard)
+  public async googleCallback(@Req() req): Promise<LoginResponse> {
+    const { accessToken, refreshToken } =
+      await this.authService.loginWithGoogle(req.user);
 
-        return new LoginResponse({accessToken, refreshToken});
-    };
+    return new LoginResponse({ accessToken, refreshToken });
+  }
 }

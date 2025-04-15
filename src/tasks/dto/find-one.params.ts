@@ -4,7 +4,7 @@ import { IsNotEmpty, IsString, IsUUID } from 'class-validator';
 export class FindOneParams {
   @ApiProperty({
     required: true,
-    example: "id"
+    example: 'id',
   })
   @IsNotEmpty()
   @IsString()

@@ -1,5 +1,4 @@
-export enum Role
-{
-    CHILD = 'child',
-    PARENT = 'parent'
+export enum Role {
+  CHILD = 'child',
+  PARENT = 'parent',
 }

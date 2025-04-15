@@ -4,13 +4,14 @@
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
 #@baseUrl = http://quest4kids-api.us-east-1.elasticbeanstalk.com
 @contentType = application/json
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDQ3MTI4MzcsImV4cCI6MTc0NDcxNjQzN30.shU8bqjp1ToMU7aUFtOPZ3Ak76Ewfi9vB5PuUCw6H64
 
 ### The basic request
 GET {{baseUrl}}
 
 ### Profile
 GET {{baseUrl}}/auth/profile
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdlOTZkMWYxLTc4NDAtNGJjMC05MzZhLWQ0MzY4OTU5MTQxZSIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxODU4Nzg0LCJleHAiOjE3NDE4NjIzODR9.UnxWxPXh2BScnR-5WPb5Z2pP3yV6zmyXxb6JHnsAm4A
+Authorization: Bearer {{token}}
 
 ### Register
 POST {{baseUrl}}/auth/register
@@ -18,7 +19,7 @@ Content-Type: {{contentType}}
 
 {
   "email": "test@gmail.com",
-  "name": "mysharysh",
+  "name": "john dou",
   "password": "Test123!"
 }
 
@@ -42,7 +43,7 @@ Content-Type: {{contentType}}
 ### Create child account
 POST {{baseUrl}}/user/create-child-account
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdlOTZkMWYxLTc4NDAtNGJjMC05MzZhLWQ0MzY4OTU5MTQxZSIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxNzcwNTg3LCJleHAiOjE3NDE3NzQxODd9.n-uQoYIcoLSFcSPtm6LHKNtss-zWEoJE_pK3TsOUH9w
+Authorization: Bearer {{token}}
 
 {
   "email": "sergey@gmail.com",
@@ -52,16 +53,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdlOTZkMWYxL
 
 ### Get children list
 GET  {{baseUrl}}/user/get-children-list
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjdlOTZkMWYxLTc4NDAtNGJjMC05MzZhLWQ0MzY4OTU5MTQxZSIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxNzcwNTg3LCJleHAiOjE3NDE3NzQxODd9.n-uQoYIcoLSFcSPtm6LHKNtss-zWEoJE_pK3TsOUH9w
+Authorization: Bearer {{token}}
 
 ### Get child account
 GET {{baseUrl}}/user/get-child-account/de30c98e-1b0d-481f-b245-764d347bb232
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+Authorization: Bearer {{token}}
 
 ### Update child account
 PATCH  {{baseUrl}}/user/update-child-account/de30c98e-1b0d-481f-b245-764d347bb232
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+Authorization: Bearer {{token}}
 
 {
   "name": "Sergey2",
@@ -71,7 +72,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0L
 
 ### Delete child account
 DELETE  {{baseUrl}}/user/remove-child-account/de30c98e-1b0d-481f-b245-764d347bb232
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+Authorization: Bearer {{token}}
 
 
 
@@ -79,76 +80,72 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0L
 ### Get all tasks 
 # @name getAllTasks
 GET {{baseUrl}}/tasks?limit=10&offset=0&childId=e7f0c34a-e79c-4980-9e0b-0a932a7f4706
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+Authorization: Bearer {{token}}
 
 
 ### Get all IN_PROGRESS tasks 
 # @name getAllInProgress
 GET {{baseUrl}}/tasks?status=IN_PROGRESS
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDgxNTMyLCJleHAiOjE3NDA0ODUxMzJ9.aDNXZkhMbVbkFwx1zKyZeY8-G1lIaiO4xdYS3-dM34c
+Authorization: Bearer {{token}}
 
 
 ### Get all with search query 
 # @name getAllWithSearchQuery
 GET {{baseUrl}}/tasks?search=Nest
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDgxNTMyLCJleHAiOjE3NDA0ODUxMzJ9.aDNXZkhMbVbkFwx1zKyZeY8-G1lIaiO4xdYS3-dM34c
+Authorization: Bearer {{token}}
 
 
 ### Get all filtered by labels
 # @name getAllFilteredByLabels
 GET {{baseUrl}}/tasks?labels=bug
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDg2MDM0LCJleHAiOjE3NDA0ODk2MzR9.oKnnY6Z6XGYkFHDds8DjPKg8hkZxDD6XhWmt3AZOnR8
+Authorization: Bearer {{token}}
 
 ### Get all sorted
 # @name getAllSorted
 GET {{baseUrl}}/tasks?sortBy=createdAt&sortOrder=DESC
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDg2MDM0LCJleHAiOjE3NDA0ODk2MzR9.oKnnY6Z6XGYkFHDds8DjPKg8hkZxDD6XhWmt3AZOnR8
+Authorization: Bearer {{token}}
 
 
 ### Get one task
 #GET {{baseUrl}}/tasks/{{taskId}}
-GET {{baseUrl}}/tasks/b516c069-5e2f-4eeb-bac1-dd62930e677a
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjczNjk2LCJleHAiOjE3NDA2NzcyOTZ9.6bcfnGDMPfERWtPAP9eKVr8MDXOr1iHdtgvW591bk1c
+GET {{baseUrl}}/tasks/366cbef7-6094-4023-a3f5-22a2161dd34f
+Authorization: Bearer {{token}}
 
 ### Create new task
 # @name createTask
-POST {{baseUrl}}/kids/2342c256-e93d-495f-bfeb-f119ad242a39/task
+POST {{baseUrl}}/kids/bf54b043-3891-4ac0-8a44-a698e682b79b/task
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQwNjcwMDQ4LCJleHAiOjE3NDA2NzM2NDh9.ktB-OId3rMtx3Ob6sudcgOvF1ow1u26yFdaxdiKgV1I
+Authorization: Bearer {{token}}
 
 {
   "title": "Test1",
   "description": "Test Description",
   "status": "OPEN",
-  "labels": [
-    {
-      "name": "Test label"
-    }
-  ]
+  "labels": ["School"]
 }
 
 ### Set the task id
 @taskId = {{ createTask.response.body.id }}
 
 ### Update the task status
-PATCH {{baseUrl}}/tasks/d39ab36a-a053-4bba-b597-1b62df4c5e51
+PATCH {{baseUrl}}/tasks/366cbef7-6094-4023-a3f5-22a2161dd34f
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjU5N2ZlNGU0LWZiNTEtNDkzNC05N2NmLTJhNTY3Y2ZhZjBlNiIsIm5hbWUiOiJteXNoYXJ5c2giLCJyb2xlIjoicGFyZW50IiwiaWF0IjoxNzQxMTc5MzI3LCJleHAiOjE3NDExODI5Mjd9.omkbddfIYKmIVOIWF94JOcXXgpAiNexLD0L_rjOkSSY
+Authorization: Bearer {{token}}
 
 {
-  "title": "Mysha2"
+  "labels": ["Home", "Music"]
 }
 
 ### Deleting a task
 DELETE {{ baseUrl }}/tasks/{{taskId}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+Authorization: Bearer {{token}}
 
 
 ### Add specific labels to task
 # @name addLabels
 POST {{baseUrl}}/tasks/{{taskId}}/labels
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+Authorization: Bearer {{token}}
 
 
 [
@@ -160,7 +157,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwM
 # @name removeLabels
 DELETE {{baseUrl}}/tasks/{{taskId}}/labels
 Content-Type: {{contentType}}
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMzI2MDYwMS1iNGU5LTQwOTAtYmE4Yy1kOWMwYTc3OWI3MzMiLCJuYW1lIjoibXlzaGFyeXNoIiwiaWF0IjoxNzQwNDczNjgwLCJleHAiOjE3NDA0NzcyODB9.xsCtheYmx43HJm5SpI9ARWMCV7Urb9ztT69S-YhkTbg
+Authorization: Bearer {{token}}
 
 
 ["prioritized"]

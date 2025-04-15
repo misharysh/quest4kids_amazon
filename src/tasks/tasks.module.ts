@@ -11,8 +11,18 @@ import { Badge } from 'src/badges/badge.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Task, TaskLabel, User, UserTaskCompletion, Badge, UserBadge]), UsersModule],
+  imports: [
+    TypeOrmModule.forFeature([
+      Task,
+      TaskLabel,
+      User,
+      UserTaskCompletion,
+      Badge,
+      UserBadge,
+    ]),
+    UsersModule,
+  ],
   controllers: [TasksController],
-  providers: [TasksService]
+  providers: [TasksService],
 })
 export class TasksModule {}

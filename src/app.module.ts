@@ -28,7 +28,14 @@ import { BadgesModule } from './badges/badges.module';
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [appConfig, typeOrmConfig, authConfig, amazonConfig, emailConfig, googleConfig],
+      load: [
+        appConfig,
+        typeOrmConfig,
+        authConfig,
+        amazonConfig,
+        emailConfig,
+        googleConfig,
+      ],
       validationSchema: appConfigSchema,
       validationOptions: {
         abortEarly: true,
@@ -39,17 +46,26 @@ import { BadgesModule } from './badges/badges.module';
       inject: [ConfigService],
       useFactory: (configService: ConfigService<ConfigTypes>) => ({
         ...configService.get('database'),
-        entities: [Task, User, TaskLabel, RefreshToken, UserTaskCompletion, Badge, UserBadge, DashboardSettings],
+        entities: [
+          Task,
+          User,
+          TaskLabel,
+          RefreshToken,
+          UserTaskCompletion,
+          Badge,
+          UserBadge,
+          DashboardSettings,
+        ],
         autoLoadEntities: true,
         synchronize: false,
         migrationsRun: true,
         migrations: ['dist/migrations/*{.ts,.js}'],
-        ssl: true,
-        extra: {
-          ssl: {
-            rejectUnauthorized: false
-          }
-        },
+        // ssl: true,
+        // extra: {
+        //   ssl: {
+        //     rejectUnauthorized: false,
+        //   },
+        // },
       }),
     }),
     MailerModule.forRootAsync({
@@ -70,7 +86,7 @@ import { BadgesModule } from './badges/badges.module';
     TasksModule,
     UsersModule,
     DashboardSettingsModule,
-    BadgesModule
+    BadgesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

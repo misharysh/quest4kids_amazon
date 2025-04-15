@@ -1,4 +1,19 @@
-import { BadRequestException, Body, ClassSerializerInterceptor, Controller, Delete, Get, HttpCode, HttpStatus, Param, Patch, Post, Query, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {
+  BadRequestException,
+  Body,
+  ClassSerializerInterceptor,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Patch,
+  Post,
+  Query,
+  UploadedFile,
+  UseInterceptors,
+} from '@nestjs/common';
 import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../role.enum';
 import { CreateUserDto } from '../dto/create-user.dto';
@@ -16,134 +31,143 @@ import { PointsDto } from '../dto/points.dto';
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
-    constructor(
-        private readonly userService: UserService
-    ) {};
+  constructor(private readonly userService: UserService) {}
 
-    @Get('get-child-account/:id')
-    @Roles(Role.PARENT)
-    public async getChild(
-        @Param() params: FindOneParams,
-        @CurrentUser() currentUser: CurrentUserDto
-    ) : Promise<User>
-    {
-        const childUser = await this.userService.findOneOrFail(params.id);
+  @Get('get-child-account/:id')
+  @Roles(Role.PARENT)
+  public async getChild(
+    @Param() params: FindOneParams,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<User> {
+    const childUser = await this.userService.findOneOrFail(params.id);
 
-        await this.userService.checkParentUser(childUser, currentUser);
+    await this.userService.checkParentUser(childUser, currentUser);
 
-        return childUser;
+    return childUser;
+  }
+
+  @Get('get-children-list')
+  @Roles(Role.PARENT)
+  public async getChildrenList(
+    @Query() pagination: PaginationParams,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<PaginationResponse<User>> {
+    const [items, total] = await this.userService.findAll(
+      pagination,
+      currentUser.id,
+    );
+
+    return {
+      data: items,
+      meta: {
+        total,
+        offset: pagination.offset,
+        limit: pagination.limit,
+      },
     };
+  }
 
-    @Get('get-children-list')
-    @Roles(Role.PARENT)
-    public async getChildrenList(
-        @Query() pagination: PaginationParams,
-        @CurrentUser() currentUser: CurrentUserDto
-    ) : Promise<PaginationResponse<User>>
-    {
-        const [items, total] = await this.userService.findAll(pagination, currentUser.id);
+  @Post('create-child-account')
+  @Roles(Role.PARENT)
+  public async createChildAccount(
+    @Body() createUserDto: CreateUserDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<User> {
+    const childUser = await this.userService.createChildAccount(
+      createUserDto,
+      currentUser.id,
+    );
 
-        return {
-            data: items,
-            meta: {
-                total,
-                offset: pagination.offset,
-                limit: pagination.limit
-            }
-        }
-    };
+    return childUser;
+  }
 
-    @Post('create-child-account')
-    @Roles(Role.PARENT)
-    public async createChildAccount(
-        @Body() createUserDto: CreateUserDto,
-        @CurrentUser() currentUser: CurrentUserDto,
-    ): Promise<User>
-    {
-        const childUser = await this.userService.createChildAccount(createUserDto, currentUser.id);
+  @Patch('update-child-account/:id')
+  @Roles(Role.PARENT)
+  public async updateChild(
+    @Param() params: FindOneParams,
+    @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<User> {
+    const childUser = await this.userService.findOneOrFail(params.id);
 
-        return childUser;
-    };
+    await this.userService.checkParentUser(childUser, currentUser);
 
-    @Patch('update-child-account/:id')
-    @Roles(Role.PARENT)
-    public async updateChild(
-        @Param() params: FindOneParams,
-        @Body() updateUserDto: UpdateUserDto,
-        @CurrentUser() currentUser: CurrentUserDto
-    ): Promise<User>
-    {
-        const childUser = await this.userService.findOneOrFail(params.id);
+    return await this.userService.updateUser(childUser, updateUserDto);
+  }
 
-        await this.userService.checkParentUser(childUser, currentUser);
+  @Delete('remove-child-account/:id')
+  @Roles(Role.PARENT)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  public async deleteChild(
+    @Param() params: FindOneParams,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<void> {
+    const childUser = await this.userService.findOneOrFail(params.id);
 
-        return await this.userService.updateUser(childUser, updateUserDto);
-    };
+    await this.userService.checkParentUser(childUser, currentUser);
 
-    @Delete('remove-child-account/:id')
-    @Roles(Role.PARENT)
-    @HttpCode(HttpStatus.NO_CONTENT)
-    public async deleteChild(
-        @Param() params: FindOneParams,
-        @CurrentUser() currentUser: CurrentUserDto
-    ): Promise<void>
-    {
-        const childUser = await this.userService.findOneOrFail(params.id);
+    await this.userService.deleteUser(childUser);
+  }
 
-        await this.userService.checkParentUser(childUser, currentUser);
+  @Post(':id/avatar')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      fileFilter: (req, file, callback) => {
+        return file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)
+          ? callback(null, true)
+          : callback(
+              new BadRequestException('Only image files are allowed'),
+              false,
+            );
+      },
+    }),
+  )
+  public async addAvatar(
+    @Param() params: FindOneParams,
+    @CurrentUser() currentUser: CurrentUserDto,
+    @UploadedFile() file: Express.Multer.File,
+  ): Promise<User> {
+    const user = await this.userService.checkAvatarOwnership(
+      params.id,
+      currentUser,
+    );
 
-        await this.userService.deleteUser(childUser);
-    };
+    return this.userService.addAvatar(user, file);
+  }
 
-    @Post(':id/avatar')
-    @UseInterceptors(FileInterceptor('file',{
-        fileFilter: (req, file, callback) => {
-            return file.mimetype.match(/image\/(jpg|jpeg|png|gif)$/)
-                ? callback(null, true)
-                : callback(new BadRequestException('Only image files are allowed'), false);
-        }
-    }))
-    public async addAvatar(
-        @Param() params: FindOneParams,
-        @CurrentUser() currentUser: CurrentUserDto,
-        @UploadedFile() file: Express.Multer.File
-    ): Promise<User>
-    {
-        const user = await this.userService.checkAvatarOwnership(params.id, currentUser);
+  @Get(':id/avatar')
+  public async getAvatar(
+    @Param() params: FindOneParams,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<string> {
+    const user = await this.userService.checkAvatarOwnership(
+      params.id,
+      currentUser,
+    );
 
-        return this.userService.addAvatar(user, file);
-    };
+    if (!user.avatarName) {
+      return '';
+    }
 
-    @Get(':id/avatar')
-    public async getAvatar(
-        @Param() params: FindOneParams,
-        @CurrentUser() currentUser: CurrentUserDto
-    ): Promise<string>
-    {
-        const user = await this.userService.checkAvatarOwnership(params.id, currentUser);
+    const url = await this.userService.getAvatar(user.avatarName);
 
-        if (!user.avatarName)
-        {
-            return '';
-        }
+    return url;
+  }
 
-        const url = await this.userService.getAvatar(user.avatarName);
+  @Post(':id/claim-points')
+  @Roles(Role.PARENT)
+  public async claimPoints(
+    @Param() params: FindOneParams,
+    @CurrentUser() currentUser: CurrentUserDto,
+    @Body() pointsDto: PointsDto,
+  ): Promise<User> {
+    const childUser = await this.userService.findOneOrFail(params.id);
 
-        return url;
-    };
+    await this.userService.checkParentUser(childUser, currentUser);
 
-    @Post(':id/claim-points')
-    @Roles(Role.PARENT)
-    public async claimPoints(
-        @Param() params: FindOneParams,
-        @CurrentUser() currentUser: CurrentUserDto,
-        @Body() pointsDto: PointsDto
-    ): Promise<User>
-    {
-        const childUser = await this.userService.findOneOrFail(params.id);
-
-        await this.userService.checkParentUser(childUser, currentUser);
-
-        return await this.userService.claimPoints(childUser, pointsDto.exchangePoints);
-    };
+    return await this.userService.claimPoints(
+      childUser,
+      pointsDto.exchangePoints,
+    );
+  }
 }

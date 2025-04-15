@@ -1,21 +1,20 @@
-import { TaskLabelEnum } from "src/tasks/task-label.enum";
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { TaskLabelEnum } from 'src/tasks/task-label.enum';
+import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
-export class Badge
-{
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+export class Badge {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    name: string;
+  @Column()
+  name: string;
 
-    @Column()
-    requiredPoints: number;
+  @Column()
+  requiredPoints: number;
 
-    @Column({
-        type: 'enum',
-        enum: TaskLabelEnum,
-    })
-    label: TaskLabelEnum;
+  @Column({
+    type: 'enum',
+    enum: TaskLabelEnum,
+  })
+  label: TaskLabelEnum;
 }
