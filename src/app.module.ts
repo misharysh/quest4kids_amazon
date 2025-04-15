@@ -60,12 +60,12 @@ import { BadgesModule } from './badges/badges.module';
         synchronize: false,
         migrationsRun: true,
         migrations: ['dist/migrations/*{.ts,.js}'],
-        // ssl: true,
-        // extra: {
-        //   ssl: {
-        //     rejectUnauthorized: false,
-        //   },
-        // },
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
       }),
     }),
     MailerModule.forRootAsync({
