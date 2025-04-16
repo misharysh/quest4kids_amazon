@@ -17,10 +17,12 @@ import { AwsService } from './../aws/aws.service';
 import { RefreshToken } from './refresh-token.entity';
 import { EmailService } from '../email/email.service';
 import { GoogleStrategy } from './strategies/google.strategy';
+import { DashboardSettingsService } from 'src/dashboardSettings/dashboard-settings.service';
+import { DashboardSettings } from 'src/dashboardSettings/dashboard-settings.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, RefreshToken]),
+    TypeOrmModule.forFeature([User, RefreshToken, DashboardSettings]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -38,6 +40,7 @@ import { GoogleStrategy } from './strategies/google.strategy';
     AwsService,
     UserService,
     AuthService,
+    DashboardSettingsService,
     GoogleStrategy,
     AuthGuard,
     RolesGuard,

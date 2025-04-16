@@ -28,7 +28,13 @@ export interface DashboardElement {
   y: number;
   w: number;
   h: number;
-  minH: number;
-  isStatic: boolean;
+  minH?: number;
+  maxH?: number;
+  minW?: number;
+  maxW?: number;
+  static: boolean;
+  moved: boolean;
+  isResizable: boolean;
+  isDraggable: boolean;
   isVisible: boolean;
 }

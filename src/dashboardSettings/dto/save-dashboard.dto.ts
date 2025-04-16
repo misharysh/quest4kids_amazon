@@ -24,10 +24,28 @@ export class DashboardElementDto {
   h: number;
 
   @IsNumber()
-  minH: number;
+  minH?: number;
+
+  @IsNumber()
+  maxH?: number;
+
+  @IsNumber()
+  minW?: number;
+
+  @IsNumber()
+  maxW?: number;
 
   @IsBoolean()
-  isStatic: boolean;
+  static: boolean;
+
+  @IsBoolean()
+  moved: boolean;
+
+  @IsBoolean()
+  isResizable: boolean;
+
+  @IsBoolean()
+  isDraggable: boolean;
 
   @IsBoolean()
   isVisible: boolean;

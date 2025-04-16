@@ -15,6 +15,7 @@ import { PaginationParams } from 'src/common/pagination.params';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { AwsService } from '../../aws/aws.service';
 import { CurrentUserDto } from '../dto/current-user.dto';
+import { DashboardSettingsService } from 'src/dashboardSettings/dashboard-settings.service';
 
 @Injectable()
 export class UserService {
@@ -23,6 +24,7 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     private readonly passwordService: PasswordService,
     private readonly awsService: AwsService,
+    private readonly dashboardSettings: DashboardSettingsService
   ) {}
 
   public async findOneByEmail(email: string): Promise<User | null> {
@@ -77,7 +79,15 @@ export class UserService {
       parentId: parentId,
     });
 
-    return await this.userRepository.save(user);
+    const savedUser = await this.userRepository.save(user);
+
+    //created default dashboard settings only for PARENT
+    if (role == Role.PARENT)
+    {
+      await this.dashboardSettings.createDefaultForUser(savedUser);
+    }
+    
+    return savedUser;
   }
 
   public async createChildAccount(
