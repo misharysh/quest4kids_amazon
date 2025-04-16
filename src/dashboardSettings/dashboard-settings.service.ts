@@ -4,8 +4,7 @@ import { DashboardSettings } from './dashboard-settings.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/users/user.entity';
 import { DashboardElementDto } from './dto/save-dashboard.dto';
-import * as fs from 'fs';
-import * as path from 'path';
+import { defaultDashboardLayout } from './default-dashboard-layout';
 
 @Injectable()
 export class DashboardSettingsService {
@@ -51,11 +50,9 @@ export class DashboardSettingsService {
   };
 
   public async createDefaultForUser(user: User): Promise<DashboardSettings> {
-    const layout = JSON.parse(
-      fs.readFileSync(path.join(__dirname, '..', '..', 'config', 'default-dashboard-layout.json'), 'utf-8')
-    );
-
-    const settings = this.settingsRepository.create({user, layout});
+    const settings = this.settingsRepository.create({
+      user,
+      layout: defaultDashboardLayout});
 
     return this.settingsRepository.save(settings);
   };

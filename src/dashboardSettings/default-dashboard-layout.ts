@@ -1,4 +1,6 @@
-[
+import { DashboardElement } from "./dashboard-settings.entity";
+
+export const defaultDashboardLayout: DashboardElement[] = [
     {
       "w": 5,
       "h": 4,
@@ -6,9 +8,9 @@
       "y": 0,
       "i": "taskByChildren",
       "minH": 3,
-      "maxH": null,
-      "minW": null,
-      "maxW": null,
+      "maxH": undefined,
+      "minW": undefined,
+      "maxW": undefined,
       "moved": false,
       "static": false,
       "isResizable": true,
@@ -22,9 +24,9 @@
       "y": 2,
       "i": "countOfTasks",
       "minH": 3,
-      "maxH": null,
-      "minW": null,
-      "maxW": null,
+      "maxH": undefined,
+      "minW": undefined,
+      "maxW": undefined,
       "moved": false,
       "static": false,
       "isResizable": true,
@@ -38,9 +40,9 @@
       "y": 0,
       "i": "children",
       "minH": 2,
-      "maxH": null,
-      "minW": null,
-      "maxW": null,
+      "maxH": undefined,
+      "minW": undefined,
+      "maxW": undefined,
       "moved": false,
       "static": false,
       "isResizable": true,
@@ -54,13 +56,13 @@
       "y": 4,
       "i": "weather",
       "minH": 0,
-      "maxH": null,
-      "minW": null,
-      "maxW": null,
+      "maxH": undefined,
+      "minW": undefined,
+      "maxW": undefined,
       "moved": false,
       "static": false,
       "isResizable": true,
       "isDraggable": true,
       "isVisible": true
     }
-]
+];
