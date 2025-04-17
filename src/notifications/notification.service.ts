@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { Notification } from "./notification.entity";
 import { NotificationGateway } from "./notification.gateway";
+import { FindNotificationParams } from "./dto/find-notification.params";
 
 @Injectable()
 export class NotificationService
@@ -28,18 +29,20 @@ export class NotificationService
         return savedNotification;
     };
 
-    public async getUserNotifications(userId: string): Promise<Notification[]>
+    public async getUserNotifications(
+        userId: string,
+        filters: FindNotificationParams
+    ): Promise<Notification[]>
     {
-        return this.notificationRepository.find({
-            where: {userId},
-            order: {createdAt: 'DESC'},
-        });
-    };
+        const where: any = {userId};
 
-    public async getUnreadUserNotifications(userId: string): Promise<Notification[]>
-    {
+        if (filters.isRead !== undefined)
+        {
+            where.isRead = filters.isRead;
+        }
+
         return this.notificationRepository.find({
-            where: {userId, isRead: false},
+            where,
             order: {createdAt: 'DESC'},
         });
     };

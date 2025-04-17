@@ -1,9 +1,10 @@
-import { Controller, Delete, Get, Param, Patch } from "@nestjs/common";
+import { Controller, Delete, Get, Param, Patch, Query } from "@nestjs/common";
 import { NotificationService } from "./notification.service";
 import { Roles } from "src/users/decorators/roles.decorator";
 import { Role } from "src/users/role.enum";
 import { CurrentUser } from "src/users/decorators/current-user.decorator";
 import { CurrentUserDto } from "src/users/dto/current-user.dto";
+import { FindNotificationParams } from "./dto/find-notification.params";
 
 @Controller('notifications')
 export class NotificationController
@@ -14,16 +15,11 @@ export class NotificationController
 
     @Get()
     @Roles(Role.PARENT)
-    public async getAll(@CurrentUser() currentUser: CurrentUserDto)
+    public async getAll(
+        @Query() filters: FindNotificationParams,
+        @CurrentUser() currentUser: CurrentUserDto)
     {
-        return this.notificationService.getUserNotifications(currentUser.id);
-    };
-
-    @Get('unread')
-    @Roles(Role.PARENT)
-    public async getUnread(@CurrentUser() currentUser: CurrentUserDto)
-    {
-        return this.notificationService.getUnreadUserNotifications(currentUser.id);
+        return this.notificationService.getUserNotifications(currentUser.id, filters);
     };
 
     @Patch(':id/read')
