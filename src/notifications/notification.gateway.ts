@@ -1,6 +1,7 @@
 import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from 'socket.io';
 import { Message } from "src/messages/message.entity";
+import { Notification } from "./notification.entity";
 
 @WebSocketGateway({ cors: { origin: '*' } })
 export class NotificationGateway implements OnGatewayConnection, OnGatewayDisconnect
@@ -20,10 +21,15 @@ export class NotificationGateway implements OnGatewayConnection, OnGatewayDiscon
         
     };
 
-    sendNotification(userId: string, message: string)
+    sendNotification(userId: string, notification: Notification)
     {
         this.server.to(`user-${userId}`).emit('notification', {
-            message,
+            message: notification.message,
+            createdAt: notification.createdAt,
+            id: notification.id,
+            isRead: notification.isRead,
+            userId: notification.userId,
+            username: notification.user.name,
             timeStamp: new Date(),
         });
     };

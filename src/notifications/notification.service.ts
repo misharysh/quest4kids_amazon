@@ -24,7 +24,16 @@ export class NotificationService
 
         const savedNotification = await this.notificationRepository.save(notification);
 
-        this.notificationGateway.sendNotification(userId, message);
+        const fullNotification = await this.notificationRepository.findOne({
+            where: { id: savedNotification.id },
+            relations: ['user'],
+        });
+
+        if (!fullNotification) {
+            throw new Error('Notification not found after save');
+        }
+
+        this.notificationGateway.sendNotification(userId, fullNotification);
 
         return savedNotification;
     };
