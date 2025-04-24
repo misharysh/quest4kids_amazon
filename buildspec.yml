@@ -13,7 +13,7 @@ phases:
         # Verify AWS CLI Version        
         - echo "Verify AWS CLI Version..."
         - aws --version
-        # Login to ECR Registry for docker to push the image to ECR Repository
+        # Login to ECR Registry for docker to push the image to ECR Registry
         - echo "Login in to Amazon ECR..."
         - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 154926408400.dkr.ecr.us-east-1.amazonaws.com
         # Update Kube config Home Directory
