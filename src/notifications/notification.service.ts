@@ -56,6 +56,22 @@ export class NotificationService
         });
     };
 
+    public async getUserNotificationCount(
+        userId: string,
+        filters: FindNotificationParams
+    ): Promise<number> 
+    {
+        const query = await this.notificationRepository.createQueryBuilder('notification')
+        .where('notification.userId = :userId', { userId });
+
+        if (filters.isRead !== undefined)
+        {
+            query.andWhere('notification.isRead =:isRead', {isRead: filters.isRead});
+        }
+
+        return query.getCount();
+    };
+
     public async markAsRead(id: string): Promise<void>
     {
         await this.notificationRepository.update(id, {isRead: true});

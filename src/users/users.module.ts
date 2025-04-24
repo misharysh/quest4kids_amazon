@@ -19,10 +19,13 @@ import { EmailService } from '../email/email.service';
 import { GoogleStrategy } from './strategies/google.strategy';
 import { DashboardSettingsService } from 'src/dashboardSettings/dashboard-settings.service';
 import { DashboardSettings } from 'src/dashboardSettings/dashboard-settings.entity';
+import { NotificationService } from 'src/notifications/notification.service';
+import { Notification } from 'src/notifications/notification.entity';
+import { NotificationGateway } from 'src/notifications/notification.gateway';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, RefreshToken, DashboardSettings]),
+    TypeOrmModule.forFeature([User, RefreshToken, DashboardSettings, Notification]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -40,7 +43,9 @@ import { DashboardSettings } from 'src/dashboardSettings/dashboard-settings.enti
     AwsService,
     UserService,
     AuthService,
+    NotificationService,
     DashboardSettingsService,
+    NotificationGateway,
     GoogleStrategy,
     AuthGuard,
     RolesGuard,

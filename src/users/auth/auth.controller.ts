@@ -29,6 +29,9 @@ import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto copy';
 import { RefreshDto } from '../dto/refresh.dto';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
+import { NotificationService } from 'src/notifications/notification.service';
+import { ProfileResponseDto } from '../dto/profile.response.dto';
+import { plainToInstance } from 'class-transformer';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -37,6 +40,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
+    private readonly notificationService: NotificationService
   ) {}
 
   @Post('register')
@@ -75,14 +79,21 @@ export class AuthController {
   @Get('profile')
   public async profile(
     @CurrentUser() currentUser: CurrentUserDto,
-  ): Promise<User> {
+  ): Promise<ProfileResponseDto> {
     const user = await this.userService.findOne(currentUser.id);
 
-    if (user) {
-      return user;
+    if (!user) {
+      throw new NotFoundException();
     }
 
-    throw new NotFoundException();
+    const unreadNotificationCount = await this.notificationService.getUserNotificationCount(user.id, {isRead: false});
+
+    const profile = plainToInstance(ProfileResponseDto, {
+      ...user,
+      unreadNotificationCount,
+    }, {excludeExtraneousValues: true});
+
+    return profile;
   }
 
   @Patch('profile')
