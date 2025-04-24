@@ -14,7 +14,7 @@ RUN npm run build
 
 # Stage 2: Production
 #FROM node:20-alpine
-FROM ghcr.io/library/node:20-alpine AS builder
+FROM ghcr.io/library/node:20-alpine
 
 WORKDIR /app
 
