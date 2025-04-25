@@ -10,6 +10,7 @@ import { UserTaskCompletion } from './../users/user-task-completion.entity';
 import { Badge } from 'src/badges/badge.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
 import { NotificationModule } from 'src/notifications/notification.module';
+import { PdfService } from 'src/pdf/pdf.service';
 
 @Module({
   imports: [
@@ -25,6 +26,6 @@ import { NotificationModule } from 'src/notifications/notification.module';
     forwardRef(() => NotificationModule)
   ],
   controllers: [TasksController],
-  providers: [TasksService],
+  providers: [TasksService, PdfService],
 })
 export class TasksModule {}

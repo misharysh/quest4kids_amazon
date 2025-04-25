@@ -12,6 +12,7 @@ import {
   Patch,
   Post,
   Query,
+  Res,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from '../dto/create-task.dto';
@@ -30,6 +31,7 @@ import { UserService } from 'src/users/user/user.service';
 import { CurrentUserDto } from 'src/users/dto/current-user.dto';
 import { TaskStatisticsParams } from '../dto/task-statistics.params';
 import { TaskStatisticsResponse } from '../dto/task-statistics.response';
+import { Response } from 'express';
 
 @Controller()
 export class TasksController {
@@ -65,7 +67,22 @@ export class TasksController {
     @Query() filters: TaskStatisticsParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<TaskStatisticsResponse> {
-    return await this.tasksService.getTaskStatistics(currentUser, filters);
+    const taskStatisticsItems = await this.tasksService.getTaskStatistics(currentUser, filters);
+    
+    return {
+      data: taskStatisticsItems,
+    };
+  }
+
+  @Get('tasks/statistics-report')
+  public async taskStatisticsReport(
+    @CurrentUser() currentUser: CurrentUserDto,
+    @Res() res: Response
+  ) {
+    const filters = new TaskStatisticsParams();
+    const taskStatisticsItems = await this.tasksService.getTaskStatistics(currentUser, filters);
+
+    await this.tasksService.generateTaskStatisticsPdf(taskStatisticsItems, res);
   }
 
   @Get('tasks/:id')

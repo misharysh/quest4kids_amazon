@@ -26,6 +26,8 @@ import { TaskLabelEnum } from '../task-label.enum';
 import { Badge } from 'src/badges/badge.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
 import { NotificationService } from 'src/notifications/notification.service';
+import { PdfService } from 'src/pdf/pdf.service';
+import { Response } from 'express';
 
 @Injectable()
 export class TasksService {
@@ -48,7 +50,9 @@ export class TasksService {
     @InjectRepository(UserBadge)
     private userBadgeRepository: Repository<UserBadge>,
 
-    private notificationService: NotificationService,
+    private readonly notificationService: NotificationService,
+
+    private readonly pdfService: PdfService
   ) {}
 
   public async findAll(
@@ -153,10 +157,28 @@ export class TasksService {
     });
   }
 
+  public async generateTaskStatisticsPdf(items: TaskStatisticsItem[], res: Response)
+  {
+    const title = 'Tasks Statistics';
+
+    const contentLines: string[] = [];
+    items.forEach((item: TaskStatisticsItem) => {
+      contentLines.push(`User: ${item.name}`);
+      contentLines.push(`Open Tasks: ${item.openTasks}`);
+      contentLines.push(`In Progress Tasks: ${item.inProgressTasks}`);
+      contentLines.push(`Done Tasks: ${item.doneTasks}`);
+      contentLines.push(`-----------------------------`);
+    });
+
+    const content = contentLines.join('\n');
+
+    this.pdfService.generatePdf(res, {title, content});
+  }
+
   public async getTaskStatistics(
     currentUser: CurrentUserDto,
     filters: TaskStatisticsParams,
-  ): Promise<TaskStatisticsResponse> {
+  ): Promise<TaskStatisticsItem[]> {
     const isParent = currentUser.role === Role.PARENT;
 
     if (isParent) {
@@ -184,9 +206,7 @@ export class TasksService {
         taskStatisticsItems.push(taskStatistics);
       });
 
-      return {
-        data: taskStatisticsItems,
-      };
+      return taskStatisticsItems;
     } else {
       //get task statistics for child
       const tasks = await this.tasksRepository.find({
@@ -201,9 +221,7 @@ export class TasksService {
         tasks,
       );
 
-      return {
-        data: [taskStatistics],
-      };
+      return [taskStatistics];
     }
   }
 
