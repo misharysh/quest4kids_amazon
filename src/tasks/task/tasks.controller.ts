@@ -13,6 +13,8 @@ import {
   Post,
   Query,
   Res,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from '../dto/create-task.dto';
@@ -32,6 +34,9 @@ import { CurrentUserDto } from 'src/users/dto/current-user.dto';
 import { TaskStatisticsParams } from '../dto/task-statistics.params';
 import { TaskStatisticsResponse } from '../dto/task-statistics.response';
 import { Response } from 'express';
+import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 
 @Controller()
 export class TasksController {
@@ -118,6 +123,53 @@ export class TasksController {
       { ...createTaskDto, userId: id },
       childUser,
     );
+  }
+
+  @ApiOperation({summary: 'Upload CSV file enpdoint'})
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({schema: {type: 'object', properties: {file: {type: 'string', format: 'binary'} }},})
+  @Post('kids/upload-file')
+  @UseInterceptors(
+    FileInterceptor('file', {
+      storage: memoryStorage(),
+      limits: {files: 1, fileSize: 1024 * 1024 * 50}, //10mb
+      fileFilter: (req, file, callback) => {
+        const allowedMimeTypes = ['text/csv'];
+        if (!allowedMimeTypes.includes(file.mimetype)) {
+          callback(new BadRequestException('Invalid file type'), false);
+        }
+        else if (file?.size > 1024 * 1024 * 50)
+        {
+          callback(new BadRequestException('Max File Size Reached. Max Allowed 10MB'), false);
+        }
+        callback(null, true);
+      },
+    }),
+  )
+  public async uploadCsvFile(
+    @CurrentUser() currentUser: CurrentUserDto,
+    @UploadedFile() file: Express.Multer.File
+  )
+  {
+    let response: any = await this.tasksService.validateCsvData(file,currentUser);
+    if(!response.error) {
+      // process data (create tasks for children)
+      for (const item of response.validData)
+      {
+        await this.tasksService.createTask(
+          item.csvDto,
+          item.childUser,
+        );
+      }
+    }
+
+    return {
+      error: false,
+      statusCode: response?.status || HttpStatus.OK,
+      message: response?.message || 'File Uploaded successfully',
+      data: response?.validData || [],
+      errorsArray: response?.errorsArray || []
+    };
   }
 
   @Patch('tasks/:id')
