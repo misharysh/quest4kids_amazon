@@ -59,20 +59,21 @@ export class FindTaskParams {
   labels?: TaskLabelEnum[];
 
   @ApiProperty({
-    example: "'createdAt'|'title'|'status'",
+    example: "'createdAt'|'updatedAt'|'title'|'status'",
     required: false,
     default: 'createdAt',
   })
   @IsOptional()
-  @IsIn(['createdAt', 'title', 'status'])
+  @IsIn(['createdAt', 'updatedAt', 'title', 'status'])
   sortBy?: string = 'createdAt';
 
   @ApiProperty({
-    example: "'ASC'|'DESC'",
+    example: "'asc'|'desc'",
     required: false,
-    default: 'DESC',
+    default: 'desc',
   })
   @IsOptional()
-  @IsEnum(['ASC', 'DESC'])
-  sortOrder?: 'ASC' | 'DESC' = 'DESC';
+  @IsEnum(['asc', 'desc'])
+  @Transform(({ value }) => value?.toUpperCase())
+  sortOrder?: 'asc' | 'desc' = 'desc';
 }

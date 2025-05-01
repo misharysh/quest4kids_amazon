@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   ForbiddenException,
   Injectable,
@@ -36,6 +37,26 @@ export class UserService {
       where: { id: id },
       relations: ['badges', 'badges.badge'],
     });
+  }
+
+  public async findParentByChildId(id: string): Promise<User | null> {
+    const child = await this.userRepository.findOne({
+      where: {id: id}, 
+    });
+
+    if (!child) {
+      throw new NotFoundException('Child not found');
+    }
+
+    if (!child.parentId) {
+      throw new BadRequestException('This user has no parent');
+    }
+
+    const parent = await this.userRepository.findOne({
+      where: {id: child.parentId}, 
+    });
+
+    return parent;
   }
 
   public async findAll(

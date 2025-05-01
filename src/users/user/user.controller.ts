@@ -27,11 +27,16 @@ import { FindOneParams } from 'src/tasks/dto/find-one.params';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PointsDto } from '../dto/points.dto';
+import { UserWithOnlineStatusDto } from '../dto/user-with-online-status.dto';
+import { OnlineService } from '../online/online.service';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly onlineService: OnlineService
+  ) {}
 
   @Get('get-child-account/:id')
   @Roles(Role.PARENT)
@@ -65,6 +70,35 @@ export class UserController {
         limit: pagination.limit,
       },
     };
+  }
+
+  @Get('get-online-users')
+  public async getOnlineUsers(
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<UserWithOnlineStatusDto[]>
+  {
+    const isParent = currentUser.role === Role.PARENT;
+
+    let usersWithOnlineStatus: User[] = [];
+
+    if (isParent) {
+      const pagination = new PaginationParams();
+      const [items, total] = await this.userService.findAll(pagination, currentUser.id);
+
+      usersWithOnlineStatus = items;
+    }
+    else {
+      const parentUser = await this.userService.findParentByChildId(currentUser.id);
+      if (parentUser)
+      {
+        usersWithOnlineStatus.push(parentUser);
+      }
+    }
+
+    return usersWithOnlineStatus.map(user => ({
+      ...user,
+      isOnline: this.onlineService.isUserOnline(user.id)
+    }));
   }
 
   @Post('create-child-account')

@@ -1,17 +1,19 @@
-import { ConnectedSocket, MessageBody, OnGatewayConnection, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket  } from 'socket.io';
 import { MessageService } from "./message.service";
+import { OnlineService } from "src/users/online/online.service";
 
 
 @WebSocketGateway({ cors: { origin: '*' } })
-export class MessageGateway implements OnGatewayConnection {
+export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect {
 
     constructor(
-        private readonly messageService: MessageService
+        private readonly messageService: MessageService,
+        private readonly onlineService: OnlineService
     ) {
 
-    };
-
+    }
+    
     @WebSocketServer()
     server: Server;
 
@@ -20,6 +22,15 @@ export class MessageGateway implements OnGatewayConnection {
         if (userId)
         {
             client.join(`user-${userId}`);
+            this.onlineService.addUser(userId);
+        }
+    };
+
+    handleDisconnect(client: any) {
+        const userId = client.handshake.query.userId as string;
+        if (userId)
+        {
+            this.onlineService.deleteUser(userId);
         }
     };
 

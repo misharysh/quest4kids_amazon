@@ -22,6 +22,7 @@ import { DashboardSettings } from 'src/dashboardSettings/dashboard-settings.enti
 import { NotificationService } from 'src/notifications/notification.service';
 import { Notification } from 'src/notifications/notification.entity';
 import { NotificationGateway } from 'src/notifications/notification.gateway';
+import { OnlineService } from './online/online.service';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { NotificationGateway } from 'src/notifications/notification.gateway';
   ],
   providers: [
     PasswordService,
+    OnlineService,
     EmailService,
     AwsService,
     UserService,

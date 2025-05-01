@@ -114,7 +114,8 @@ export class TasksService {
       query.andWhere(`task.id IN ${subQuery}`);
     }
 
-    query.orderBy(`task.${filters.sortBy}`, filters.sortOrder);
+    const sortOrder = (filters.sortOrder?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC') as 'ASC' | 'DESC'
+    query.orderBy(`task.${filters.sortBy}`, sortOrder);
 
     query.skip(pagination.offset).take(pagination.limit);
 
