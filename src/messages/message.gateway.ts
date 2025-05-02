@@ -41,7 +41,5 @@ export class MessageGateway implements OnGatewayConnection, OnGatewayDisconnect 
     ) {
         const senderId = client.handshake.query.userId as string;
         const message = await this.messageService.sendMessage(senderId, body.receiverId, body.content);
-
-        return message;
     };
 }
