@@ -25,6 +25,7 @@ import { DashboardSettingsModule } from './dashboardSettings/dashboard-settings.
 import { BadgesModule } from './badges/badges.module';
 import { Notification } from './notifications/notification.entity';
 import { Message } from './messages/message.entity';
+import { MessageModule } from './messages/message.module';
 
 @Module({
   imports: [
@@ -91,6 +92,7 @@ import { Message } from './messages/message.entity';
     UsersModule,
     DashboardSettingsModule,
     BadgesModule,
+    MessageModule
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -243,4 +243,32 @@ export class UserService {
       throw new ForbiddenException('You can only access your children');
     }
   }
+
+  public async checkUserCompatibility(
+    withUserId: string,
+    currentUser: CurrentUserDto,
+  ): Promise<boolean>
+  {
+    const isParent = currentUser.role === Role.PARENT;
+    if (isParent)
+    {
+      //check if parent has child 'withUserId'
+      const childUser = await this.findOne(withUserId);
+      if (childUser && childUser.parentId === currentUser.id)
+      {
+        return true;
+      }
+    }
+    else
+    {
+      //check if child has parent 'withUserId' 
+      const childUser = await this.findOne(currentUser.id);
+      if (childUser && childUser.parentId === withUserId)
+      {
+        return true;
+      }
+    }
+
+    return false;
+  }
 }
