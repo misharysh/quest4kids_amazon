@@ -73,7 +73,9 @@ export class FindTaskParams {
     default: 'desc',
   })
   @IsOptional()
-  @IsEnum(['asc', 'desc'])
-  @Transform(({ value }) => value?.toUpperCase())
+  @Transform(({ value }) => {
+    const val = value?.toLowerCase();
+    return val === 'asc' || val === 'desc' ? val : 'desc';
+  })
   sortOrder?: 'asc' | 'desc' = 'desc';
 }
