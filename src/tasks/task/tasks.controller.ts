@@ -72,8 +72,11 @@ export class TasksController {
     @Query() filters: TaskStatisticsParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<TaskStatisticsResponse> {
-    const taskStatisticsItems = await this.tasksService.getTaskStatistics(currentUser, filters);
-    
+    const taskStatisticsItems = await this.tasksService.getTaskStatistics(
+      currentUser,
+      filters,
+    );
+
     return {
       data: taskStatisticsItems,
     };
@@ -82,10 +85,13 @@ export class TasksController {
   @Get('tasks/statistics-report')
   public async taskStatisticsReport(
     @CurrentUser() currentUser: CurrentUserDto,
-    @Res() res: Response
+    @Res() res: Response,
   ) {
     const filters = new TaskStatisticsParams();
-    const taskStatisticsItems = await this.tasksService.getTaskStatistics(currentUser, filters);
+    const taskStatisticsItems = await this.tasksService.getTaskStatistics(
+      currentUser,
+      filters,
+    );
 
     await this.tasksService.generateTaskStatisticsPdf(taskStatisticsItems, res);
   }
@@ -125,22 +131,28 @@ export class TasksController {
     );
   }
 
-  @ApiOperation({summary: 'Upload CSV file enpdoint'})
+  @ApiOperation({ summary: 'Upload CSV file enpdoint' })
   @ApiConsumes('multipart/form-data')
-  @ApiBody({schema: {type: 'object', properties: {file: {type: 'string', format: 'binary'} }},})
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: { file: { type: 'string', format: 'binary' } },
+    },
+  })
   @Post('kids/upload-file')
   @UseInterceptors(
     FileInterceptor('file', {
       storage: memoryStorage(),
-      limits: {files: 1, fileSize: 1024 * 1024 * 50}, //10mb
+      limits: { files: 1, fileSize: 1024 * 1024 * 50 }, //10mb
       fileFilter: (req, file, callback) => {
         const allowedMimeTypes = ['text/csv'];
         if (!allowedMimeTypes.includes(file.mimetype)) {
           callback(new BadRequestException('Invalid file type'), false);
-        }
-        else if (file?.size > 1024 * 1024 * 50)
-        {
-          callback(new BadRequestException('Max File Size Reached. Max Allowed 10MB'), false);
+        } else if (file?.size > 1024 * 1024 * 50) {
+          callback(
+            new BadRequestException('Max File Size Reached. Max Allowed 10MB'),
+            false,
+          );
         }
         callback(null, true);
       },
@@ -148,18 +160,16 @@ export class TasksController {
   )
   public async uploadCsvFile(
     @CurrentUser() currentUser: CurrentUserDto,
-    @UploadedFile() file: Express.Multer.File
-  )
-  {
-    let response: any = await this.tasksService.validateCsvData(file,currentUser);
-    if(!response.error) {
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    const response: any = await this.tasksService.validateCsvData(
+      file,
+      currentUser,
+    );
+    if (!response.error) {
       // process data (create tasks for children)
-      for (const item of response.validData)
-      {
-        await this.tasksService.createTask(
-          item.csvDto,
-          item.childUser,
-        );
+      for (const item of response.validData) {
+        await this.tasksService.createTask(item.csvDto, item.childUser);
       }
     }
 
@@ -168,7 +178,7 @@ export class TasksController {
       statusCode: response?.status || HttpStatus.OK,
       message: response?.message || 'File Uploaded successfully',
       data: response?.validData || [],
-      errorsArray: response?.errorsArray || []
+      errorsArray: response?.errorsArray || [],
     };
   }
 

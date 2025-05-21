@@ -13,6 +13,8 @@ import { Role } from './role.enum';
 import { UserTaskCompletion } from './user-task-completion.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
 import { DashboardSettings } from 'src/dashboardSettings/dashboard-settings.entity';
+import { TaskCommentsEntity } from '../tasks/entities/task-comments.entity';
+import { TaskStatusLogsEntity } from '../tasks/entities/task-status-logs.entity';
 
 @Entity()
 export class User {
@@ -95,4 +97,10 @@ export class User {
   })
   @Expose()
   dashboardSettings: DashboardSettings;
+
+  @OneToMany(() => TaskCommentsEntity, (comment) => comment.user)
+  comments: TaskCommentsEntity[];
+
+  @OneToMany(() => TaskStatusLogsEntity, (log) => log.user)
+  logs: TaskStatusLogsEntity[];
 }

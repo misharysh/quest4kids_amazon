@@ -55,4 +55,28 @@ export class CreateTaskDto {
   @IsArray()
   @IsEnum(TaskLabelEnum, { each: true })
   labels?: TaskLabelEnum[];
+
+  @ApiProperty({
+    example: 30,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  estimatedTime?: number;
+
+  @ApiProperty({
+    example: 0,
+    required: false,
+  })
+  @IsInt()
+  @IsOptional()
+  actualTime?: number;
+
+  @ApiProperty({
+    example: 'Task Comment',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  comment: string;
 }

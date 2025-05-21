@@ -11,6 +11,8 @@ import { TaskStatus } from './task.model';
 import { User } from '../users/user.entity';
 import { TaskLabel } from './task-label.entity';
 import { UserTaskCompletion } from './../users/user-task-completion.entity';
+import { TaskCommentsEntity } from './entities/task-comments.entity';
+import { TaskStatusLogsEntity } from './entities/task-status-logs.entity';
 
 @Entity()
 export class Task {
@@ -55,6 +57,18 @@ export class Task {
 
   @OneToMany(() => UserTaskCompletion, (completion) => completion.task)
   completions: UserTaskCompletion[];
+
+  @Column({ type: 'smallint', nullable: true, default: 0 })
+  estimatedTime: number;
+
+  @Column({ type: 'smallint', nullable: true, default: 0 })
+  actualTime: number;
+
+  @OneToMany(() => TaskCommentsEntity, (comment) => comment.task)
+  comments: TaskCommentsEntity[];
+
+  @OneToMany(() => TaskStatusLogsEntity, (log) => log.task)
+  logs: TaskStatusLogsEntity[];
 
   @CreateDateColumn()
   createdAt: Date;

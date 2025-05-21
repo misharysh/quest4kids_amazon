@@ -4,7 +4,7 @@
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
 #@baseUrl = http://quest4kids-api.us-east-1.elasticbeanstalk.com
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDQ3MTI4MzcsImV4cCI6MTc0NDcxNjQzN30.shU8bqjp1ToMU7aUFtOPZ3Ak76Ewfi9vB5PuUCw6H64
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDc4MTMwMzEsImV4cCI6MTc0NzgxNjYzMX0.4s0LNPR5SvidPt8oMkR_Sevxmx8Km08Cyfh_pql1yQ0
 
 ### The basic request
 GET {{baseUrl}}
@@ -37,7 +37,7 @@ POST {{baseUrl}}/auth/refresh
 Content-Type: {{contentType}}
 
 {
-  "token": "ce9d2d66-0213-44fb-875e-25f4ea9289dc"
+  "token": {{token}}
 }
 
 ### Create child account
@@ -79,7 +79,7 @@ Authorization: Bearer {{token}}
 
 ### Get all tasks 
 # @name getAllTasks
-GET {{baseUrl}}/tasks?limit=10&offset=0&childId=e7f0c34a-e79c-4980-9e0b-0a932a7f4706
+GET {{baseUrl}}/tasks?limit=10&offset=0&childId=bf54b043-3891-4ac0-8a44-a698e682b79b
 Authorization: Bearer {{token}}
 
 
@@ -121,19 +121,23 @@ Authorization: Bearer {{token}}
   "title": "Test1",
   "description": "Test Description",
   "status": "OPEN",
-  "labels": ["School"]
+  "labels": ["School"],
+  "estimatedTime": 60,
+  "actualTime": 0,
+  "comment": "init comment"
 }
 
 ### Set the task id
 @taskId = {{ createTask.response.body.id }}
 
 ### Update the task status
-PATCH {{baseUrl}}/tasks/366cbef7-6094-4023-a3f5-22a2161dd34f
+PATCH {{baseUrl}}/tasks/52fc93b0-bd32-4106-92f0-7636fdc8c765
 Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "labels": ["Home", "Music"]
+  "status": "IN_PROGRESS",
+  "comment": "start working on task"
 }
 
 ### Deleting a task

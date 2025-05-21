@@ -59,7 +59,7 @@ import { MessageModule } from './messages/message.module';
           UserBadge,
           DashboardSettings,
           Notification,
-          Message
+          Message,
         ],
         autoLoadEntities: true,
         synchronize: false,
@@ -92,7 +92,7 @@ import { MessageModule } from './messages/message.module';
     UsersModule,
     DashboardSettingsModule,
     BadgesModule,
-    MessageModule
+    MessageModule,
   ],
   controllers: [AppController],
   providers: [AppService],

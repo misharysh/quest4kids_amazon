@@ -16,9 +16,7 @@ import { PaginationParams } from '../../common/pagination.params';
 import { CurrentUserDto } from 'src/users/dto/current-user.dto';
 import { Role } from 'src/users/role.enum';
 import { User } from 'src/users/user.entity';
-import {
-  TaskStatisticsItem,
-} from '../dto/task-statistics.response';
+import { TaskStatisticsItem } from '../dto/task-statistics.response';
 import { TaskStatisticsParams } from '../dto/task-statistics.params';
 import { UserTaskCompletion } from '../../users/user-task-completion.entity';
 import { TaskLabelEnum } from '../task-label.enum';
@@ -30,6 +28,8 @@ import { Response } from 'express';
 import * as csv from 'csv-parse';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
+import { TaskCommentsEntity } from '../entities/task-comments.entity';
+import { TaskStatusLoggerService } from '../task-status-log/task-status-logger.service';
 
 @Injectable()
 export class TasksService {
@@ -52,9 +52,14 @@ export class TasksService {
     @InjectRepository(UserBadge)
     private userBadgeRepository: Repository<UserBadge>,
 
+    @InjectRepository(TaskCommentsEntity)
+    private taskCommentsRepository: Repository<TaskCommentsEntity>,
+
+    private readonly statusLogger: TaskStatusLoggerService,
+
     private readonly notificationService: NotificationService,
 
-    private readonly pdfService: PdfService
+    private readonly pdfService: PdfService,
   ) {}
 
   public async findAll(
@@ -114,7 +119,8 @@ export class TasksService {
       query.andWhere(`task.id IN ${subQuery}`);
     }
 
-    const sortOrder = (filters.sortOrder?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC') as 'ASC' | 'DESC'
+    const sortOrder =
+      filters.sortOrder?.toUpperCase() === 'ASC' ? 'ASC' : 'DESC';
     query.orderBy(`task.${filters.sortBy}`, sortOrder);
 
     query.skip(pagination.offset).take(pagination.limit);
@@ -160,8 +166,10 @@ export class TasksService {
     });
   }
 
-  public async generateTaskStatisticsPdf(items: TaskStatisticsItem[], res: Response)
-  {
+  public async generateTaskStatisticsPdf(
+    items: TaskStatisticsItem[],
+    res: Response,
+  ) {
     const title = 'Tasks Statistics';
 
     const contentLines: string[] = [];
@@ -175,7 +183,7 @@ export class TasksService {
 
     const content = contentLines.join('\n');
 
-    this.pdfService.generatePdf(res, {title, content});
+    this.pdfService.generatePdf(res, { title, content });
   }
 
   public async getTaskStatistics(
@@ -233,7 +241,7 @@ export class TasksService {
     user: User,
   ): Promise<Task> {
     const { labels, ...taskData } = createTaskDto;
-
+    const comment = createTaskDto.comment;
     const task = await this.tasksRepository.create(taskData);
 
     await this.tasksRepository.save(task);
@@ -252,6 +260,8 @@ export class TasksService {
 
       await this.labelsRepository.save(newLabels);
     }
+
+    await this.createTaskComment(user, task, comment);
 
     if (taskData.status === TaskStatus.DONE) {
       //awards points in case of DONE
@@ -280,6 +290,7 @@ export class TasksService {
     updateTaskDto: UpdateTaskDto,
   ): Promise<Task> {
     const { labels, ...taskData } = updateTaskDto;
+    const comment = updateTaskDto.comment as string;
 
     if (labels && labels.length > 0) {
       const uniqueLabels = this.getUniqueLabels(labels).map((label) =>
@@ -290,14 +301,26 @@ export class TasksService {
       task.updatedAt = new Date();
     }
 
+    const userForComment = await this.usersRepository.findOneBy({
+      id: task.userId,
+    });
+    await this.createTaskComment(userForComment, task, comment);
+
     if (taskData.status) {
       if (!this.isValidStatusTransition(task.status, taskData.status)) {
         throw new WrongTaskStatusException();
       }
 
+      const user = await this.usersRepository.findOneBy({ id: task.userId });
+      await this.statusLogger.createStatusLog(
+        user,
+        task,
+        taskData.status,
+        task.status,
+      );
+
       if (taskData.status === TaskStatus.DONE) {
         //awards points in case of DONE
-        const user = await this.usersRepository.findOneBy({ id: task.userId });
 
         if (user) {
           const points = taskData.points
@@ -321,10 +344,12 @@ export class TasksService {
           await this.setReward(task.labels, user.id);
 
           //send notification to Parent
-          if (user.role === Role.CHILD && user.parentId)
-          {
-              const message = `${user.name} changed status of task: ${task.title} -> ${taskData.status}`;
-              await this.notificationService.createForUser(user.parentId, message);
+          if (user.role === Role.CHILD && user.parentId) {
+            const message = `${user.name} changed status of task: ${task.title} -> ${taskData.status}`;
+            await this.notificationService.createForUser(
+              user.parentId,
+              message,
+            );
           }
         }
       }
@@ -397,37 +422,58 @@ export class TasksService {
 
   public async validateCsvData(
     file: Express.Multer.File,
-    currentUser: CurrentUserDto): Promise<any> {
+    currentUser: CurrentUserDto,
+  ): Promise<any> {
     const csvContent = file.buffer;
 
     const parsedData: any = await new Promise((resolve, reject) => {
-      csv.parse(csvContent, {columns: true, relax_quotes: true, skip_empty_lines: true, cast: true}, (err, records) => {
-        if (err) {
-          reject(err);
-          
-          return {error: true, message: 'Unable to parse file'};
-        }
-        
-        resolve(records);
-      });
+      csv.parse(
+        csvContent,
+        {
+          columns: true,
+          relax_quotes: true,
+          skip_empty_lines: true,
+          cast: true,
+        },
+        (err, records) => {
+          if (err) {
+            reject(err);
+
+            return { error: true, message: 'Unable to parse file' };
+          }
+
+          resolve(records);
+        },
+      );
     });
 
     const errors: string[] = [];
-    const validDtos: { csvDto: CreateTaskDto; childUser: User | null}[] = [];
+    const validDtos: { csvDto: CreateTaskDto; childUser: User | null }[] = [];
 
-    if (!parsedData.length)
-    {
+    if (!parsedData.length) {
       errors.push('Empty file Provided');
 
-      return {error: true, message: 'File Validation Failed', errorsArray: errors};
+      return {
+        error: true,
+        message: 'File Validation Failed',
+        errorsArray: errors,
+      };
     }
 
     //validate rows
     for await (const [index, rowData] of parsedData.entries()) {
-      const validationErrors = await this.validateFileRow(rowData, currentUser, validDtos);
+      const validationErrors = await this.validateFileRow(
+        rowData,
+        currentUser,
+        validDtos,
+      );
 
       if (validationErrors.length) {
-        return {error: true, message: `File Rows Validation Failed at row ${index + 1}`, errorsArray: validationErrors};
+        return {
+          error: true,
+          message: `File Rows Validation Failed at row ${index + 1}`,
+          errorsArray: validationErrors,
+        };
       }
     }
 
@@ -437,15 +483,15 @@ export class TasksService {
   private async validateFileRow(
     rowData: any,
     currentUser: CurrentUserDto,
-    validDtos: {csvDto: CreateTaskDto; childUser: User | null}[]) {
+    validDtos: { csvDto: CreateTaskDto; childUser: User | null }[],
+  ) {
     const errors: string[] = [];
 
     const csvDto = plainToInstance(CreateTaskDto, rowData);
 
     const validationErrors = await validate(csvDto);
 
-    if(validationErrors.length > 0)
-    {
+    if (validationErrors.length > 0) {
       validationErrors.forEach((error) => {
         const { property, constraints } = error;
         if (constraints) {
@@ -459,14 +505,13 @@ export class TasksService {
 
     let childUser: User | null = null;
 
-    if (csvDto.userId !== undefined)
-    {
+    if (csvDto.userId !== undefined) {
       childUser = await this.usersRepository.findOneBy({ id: csvDto.userId });
 
       if (!childUser) {
         errors.push('Child user not found');
       }
-  
+
       //check if this childUser has ParentId as current user id
       if (childUser?.parentId !== currentUser.id) {
         errors.push('You can only access your children');
@@ -474,9 +519,9 @@ export class TasksService {
     }
 
     if (errors.length === 0) {
-      validDtos.push({ csvDto, childUser});
+      validDtos.push({ csvDto, childUser });
     }
-    
+
     return errors;
   }
 
@@ -549,5 +594,21 @@ export class TasksService {
     ).length;
 
     return taskStatistics;
+  }
+
+  private async createTaskComment(
+    user: User | null,
+    task: Task,
+    comment: string,
+  ): Promise<void> {
+    if (comment && comment.trim().length > 0 && user) {
+      const taskComment = this.taskCommentsRepository.create({
+        task: task,
+        comment: comment.trim(),
+        user: user,
+      });
+
+      await this.taskCommentsRepository.save(taskComment);
+    }
   }
 }

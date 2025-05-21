@@ -11,6 +11,9 @@ import { Badge } from 'src/badges/badge.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
 import { NotificationModule } from 'src/notifications/notification.module';
 import { PdfService } from 'src/pdf/pdf.service';
+import { TaskCommentsEntity } from './entities/task-comments.entity';
+import { TaskStatusLogsEntity } from './entities/task-status-logs.entity';
+import { TaskStatusLoggerService } from './task-status-log/task-status-logger.service';
 
 @Module({
   imports: [
@@ -21,11 +24,13 @@ import { PdfService } from 'src/pdf/pdf.service';
       UserTaskCompletion,
       Badge,
       UserBadge,
+      TaskCommentsEntity,
+      TaskStatusLogsEntity,
     ]),
     UsersModule,
-    forwardRef(() => NotificationModule)
+    forwardRef(() => NotificationModule),
   ],
   controllers: [TasksController],
-  providers: [TasksService, PdfService],
+  providers: [TasksService, PdfService, TaskStatusLoggerService],
 })
 export class TasksModule {}
