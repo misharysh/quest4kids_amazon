@@ -4,7 +4,7 @@
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
 #@baseUrl = http://quest4kids-api.us-east-1.elasticbeanstalk.com
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDc4MTMwMzEsImV4cCI6MTc0NzgxNjYzMX0.4s0LNPR5SvidPt8oMkR_Sevxmx8Km08Cyfh_pql1yQ0
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDgyNTk3MTYsImV4cCI6MTc0ODI2MzMxNn0.hJPvdtvTZsPDD9eydyuEtc_GRA35HWaIp0u1IVhLdT0
 
 ### The basic request
 GET {{baseUrl}}
@@ -136,8 +136,8 @@ Content-Type: {{contentType}}
 Authorization: Bearer {{token}}
 
 {
-  "status": "IN_PROGRESS",
-  "comment": "start working on task"
+  "status": "DONE",
+  "comment": "finish"
 }
 
 ### Deleting a task

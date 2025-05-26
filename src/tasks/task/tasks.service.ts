@@ -343,6 +343,8 @@ export class TasksService {
 
           await this.setReward(task.labels, user.id);
 
+          task.actualTime = await this.statusLogger.getTaskTime(task.id);
+
           //send notification to Parent
           if (user.role === Role.CHILD && user.parentId) {
             const message = `${user.name} changed status of task: ${task.title} -> ${taskData.status}`;

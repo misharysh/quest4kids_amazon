@@ -38,4 +38,19 @@ export class TaskStatusLoggerService {
       order: { changedAt: 'DESC' },
     });
   }
+
+  async getTaskTime(id: string): Promise<number> {
+    const log: TaskStatusLogsEntity | null = await this.taskStatusLogsRepository
+      .createQueryBuilder('taskStatusLog')
+      .where('taskStatusLog.task_id = :taskId', { taskId: id })
+      .andWhere('taskStatusLog.prev_status = :openStatus', {
+        openStatus: TaskStatus.OPEN,
+      })
+      .orderBy({ 'taskStatusLog.changedAt': 'DESC' })
+      .getOne();
+
+    if (!log) return 0;
+
+    return Math.floor((Date.now() - log.changedAt.getTime()) / (1000 * 60));
+  }
 }
