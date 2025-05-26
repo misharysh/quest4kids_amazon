@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -23,13 +24,14 @@ import { TaskLabelEnum } from '../task-label.enum';
 import { Badge } from 'src/badges/badge.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
 import { NotificationService } from 'src/notifications/notification.service';
-import { PdfService } from 'src/pdf/pdf.service';
 import { Response } from 'express';
 import * as csv from 'csv-parse';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { TaskCommentsEntity } from '../entities/task-comments.entity';
 import { TaskStatusLoggerService } from '../task-status-log/task-status-logger.service';
+import { ClientProxy } from '@nestjs/microservices';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class TasksService {
@@ -59,7 +61,7 @@ export class TasksService {
 
     private readonly notificationService: NotificationService,
 
-    private readonly pdfService: PdfService,
+    @Inject('COMMUNICATION') private readonly microserviceClient: ClientProxy
   ) {}
 
   public async findAll(
@@ -166,6 +168,15 @@ export class TasksService {
     });
   }
 
+  public async pingMicroserviceTest(): Promise<string>
+  {
+    const result = await firstValueFrom(
+      this.microserviceClient.send<string>('ping', {})
+    );
+
+    return result;
+  }
+
   public async generateTaskStatisticsPdf(
     items: TaskStatisticsItem[],
     res: Response,
@@ -183,7 +194,15 @@ export class TasksService {
 
     const content = contentLines.join('\n');
 
-    this.pdfService.generatePdf(res, { title, content });
+    const result = await firstValueFrom(
+      this.microserviceClient.send<Buffer>('generate_pdf', { title, content })
+    );
+                          
+    const pdfBuffer = Buffer.isBuffer(result) ? result : Buffer.from((result as any).data);
+              
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', 'inline; filename=tasks.pdf');
+    res.end(pdfBuffer);
   }
 
   public async getTaskStatistics(
