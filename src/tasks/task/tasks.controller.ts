@@ -96,6 +96,12 @@ export class TasksController {
     await this.tasksService.generateTaskStatisticsPdf(taskStatisticsItems, res);
   }
 
+  @Get('tasks/ping-microservice')
+  public async pingMicroservice()
+  {
+    return await this.tasksService.pingMicroserviceTest();
+  }
+
   @Get('tasks/:id')
   public async findOne(
     @Param() params: FindOneParams,

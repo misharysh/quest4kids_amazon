@@ -10,10 +10,10 @@ import { UserTaskCompletion } from './../users/user-task-completion.entity';
 import { Badge } from 'src/badges/badge.entity';
 import { UserBadge } from 'src/badges/user-badge.entity';
 import { NotificationModule } from 'src/notifications/notification.module';
-import { PdfService } from 'src/pdf/pdf.service';
 import { TaskCommentsEntity } from './entities/task-comments.entity';
 import { TaskStatusLogsEntity } from './entities/task-status-logs.entity';
 import { TaskStatusLoggerService } from './task-status-log/task-status-logger.service';
+import { CommunicationClientModule } from 'src/communication/communication-client.module';
 
 @Module({
   imports: [
@@ -28,9 +28,10 @@ import { TaskStatusLoggerService } from './task-status-log/task-status-logger.se
       TaskStatusLogsEntity,
     ]),
     UsersModule,
+    CommunicationClientModule,
     forwardRef(() => NotificationModule),
   ],
   controllers: [TasksController],
-  providers: [TasksService, PdfService, TaskStatusLoggerService],
+  providers: [TasksService, TaskStatusLoggerService],
 })
 export class TasksModule {}
