@@ -40,17 +40,23 @@ export class TaskStatusLoggerService {
   }
 
   async getTaskTime(id: string): Promise<number> {
-    const log: TaskStatusLogsEntity | null = await this.taskStatusLogsRepository
+    const logs: TaskStatusLogsEntity[] = await this.taskStatusLogsRepository
       .createQueryBuilder('taskStatusLog')
       .where('taskStatusLog.task_id = :taskId', { taskId: id })
-      .andWhere('taskStatusLog.prev_status = :openStatus', {
-        openStatus: TaskStatus.OPEN,
-      })
+      .andWhere(
+        '(taskStatusLog.prev_status = :openStatus OR taskStatusLog.new_status = :doneStatus)',
+        {
+          openStatus: TaskStatus.OPEN,
+          doneStatus: TaskStatus.DONE,
+        },
+      )
       .orderBy({ 'taskStatusLog.changedAt': 'DESC' })
-      .getOne();
+      .getMany();
 
-    if (!log) return 0;
+    if (logs.length < 2) return 0;
 
-    return Math.floor((Date.now() - log.changedAt.getTime()) / (1000 * 60));
+    return Math.floor(
+      (logs[0].changedAt.getTime() - logs[1].changedAt.getTime()) / (1000 * 60),
+    );
   }
 }

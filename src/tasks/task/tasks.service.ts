@@ -61,7 +61,7 @@ export class TasksService {
 
     private readonly notificationService: NotificationService,
 
-    @Inject('COMMUNICATION') private readonly microserviceClient: ClientProxy
+    @Inject('COMMUNICATION') private readonly microserviceClient: ClientProxy,
   ) {}
 
   public async findAll(
@@ -168,10 +168,9 @@ export class TasksService {
     });
   }
 
-  public async pingMicroserviceTest(): Promise<string>
-  {
+  public async pingMicroserviceTest(): Promise<string> {
     const result = await firstValueFrom(
-      this.microserviceClient.send<string>('ping', {})
+      this.microserviceClient.send<string>('ping', {}),
     );
 
     return result;
@@ -195,11 +194,13 @@ export class TasksService {
     const content = contentLines.join('\n');
 
     const result = await firstValueFrom(
-      this.microserviceClient.send<Buffer>('generate_pdf', { title, content })
+      this.microserviceClient.send<Buffer>('generate_pdf', { title, content }),
     );
-                          
-    const pdfBuffer = Buffer.isBuffer(result) ? result : Buffer.from((result as any).data);
-              
+
+    const pdfBuffer = Buffer.isBuffer(result)
+      ? result
+      : Buffer.from((result as any).data);
+
     res.setHeader('Content-Type', 'application/pdf');
     res.setHeader('Content-Disposition', 'inline; filename=tasks.pdf');
     res.end(pdfBuffer);
@@ -362,8 +363,6 @@ export class TasksService {
 
           await this.setReward(task.labels, user.id);
 
-          task.actualTime = await this.statusLogger.getTaskTime(task.id);
-
           //send notification to Parent
           if (user.role === Role.CHILD && user.parentId) {
             const message = `${user.name} changed status of task: ${task.title} -> ${taskData.status}`;
@@ -377,6 +376,8 @@ export class TasksService {
     }
 
     Object.assign(task, taskData);
+    await this.tasksRepository.save(task);
+    task.actualTime = await this.statusLogger.getTaskTime(task.id);
 
     return await this.tasksRepository.save(task);
   }
