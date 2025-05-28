@@ -14,9 +14,12 @@ jobs:
         uses: actions/checkout@v3
 
       - name: Setup SSH key
-        uses: webfactory/ssh-agent@v0.8.1
-        with:
-          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_rsa
 
       - name: Copy files to EC2
         run: |
@@ -27,7 +30,7 @@ jobs:
       - name: SSH and deploy
         run: |
           ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
-            cd /home/ec2-user/nestjs-app
+            cd /home/ubuntu/nestjs-app
             docker build -t nestjs-api .
             docker stop nestjs-api || true
             docker rm nestjs-api || true
