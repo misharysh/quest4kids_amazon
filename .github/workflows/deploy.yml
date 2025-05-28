@@ -3,7 +3,7 @@ name: Deploy NestJS to EC2
 on:
   push:
     branches:
-      - main  # или твоя ветка деплоя
+      - main
 
 jobs:
   deploy:
@@ -13,11 +13,15 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH key
+      - name: Setup SSH key and known_hosts
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
+
+          # Добавляем EC2 в known_hosts чтобы избежать ошибки проверки ключа
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_rsa
 
