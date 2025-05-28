@@ -1,0 +1,37 @@
+name: Deploy NestJS to EC2
+ 
+on:
+  push:
+    branches:
+      - main  # или твоя ветка деплоя
+ 
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+ 
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+ 
+      - name: Setup SSH key
+        uses: webfactory/ssh-agent@v0.8.1
+        with:
+          ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+ 
+      - name: Copy files to EC2
+        run: |
+          rsync -avz --exclude='.git*' ./ ubuntu@${{ secrets.EC2_HOST }}:/home/ubuntu/nestjs-app
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
+ 
+      - name: SSH and deploy
+        run: |
+          ssh ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+            cd /home/ec2-user/nestjs-app
+            docker build -t nestjs-api .
+            docker stop nestjs-api || true
+            docker rm nestjs-api || true
+            docker run -d -p 3000:3000 --name nestjs-api nestjs-api
+          EOF
+        env:
+          EC2_HOST: ${{ secrets.EC2_HOST }}
