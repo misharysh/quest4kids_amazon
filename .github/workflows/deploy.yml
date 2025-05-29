@@ -68,4 +68,3 @@ jobs:
               -e AMAZON_BUCKET="${{ secrets.AMAZON_BUCKET }}" \
               -e URL_RESET_PASSWORD="${{ secrets.URL_RESET_PASSWORD }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/nestjs-api:latest
-EOF
