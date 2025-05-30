@@ -60,7 +60,7 @@ jobs:
             echo "🚀 Running new container..."
             docker run -d --restart unless-stopped \
               --name nestjs-api \
-              --network q4knetwork
+              --network q4knetwork \
               -p 3000:3000 \
               -e NODE_ENV="${{ secrets.NODE_ENV }}" \
               -e DB_URL="${{ secrets.DB_URL }}" \
