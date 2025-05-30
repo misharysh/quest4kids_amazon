@@ -4,7 +4,7 @@
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
 #@baseUrl = http://quest4kids-api.us-east-1.elasticbeanstalk.com
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDg2MDA1NzIsImV4cCI6MTc0ODYwNDE3Mn0.hFgaVV_kKuwuEim-4jYs_Rse-rNXUkjnQUDiLuvA3zw
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDg2MDcxMTMsImV4cCI6MTc0ODYxMDcxM30.MVDgYSdqAs2EtJ6TY-sNSEz0dg7rDKYdzprslO_VS7A
 
 ### The basic request
 GET {{baseUrl}}
