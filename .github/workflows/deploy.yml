@@ -48,7 +48,7 @@ jobs:
         run: |
           ssh -o StrictHostKeyChecking=no ubuntu@${{ secrets.EC2_HOST }} <<EOF
             echo "🧹 Cleaning unused Docker data..."
-            docker image prune -f
+            docker image prune -a -f
 
             echo "⬇️ Pulling image with tag: ${SHORT_SHA}"
             docker pull ${{ secrets.DOCKERHUB_USERNAME }}/nestjs-api:${{ env.SHORT_SHA }}
