@@ -1,8 +1,8 @@
-import { Module } from "@nestjs/common";
-import { ClientsModule, Transport } from "@nestjs/microservices";
+import { Module } from '@nestjs/common';
+import { ClientsModule, Transport } from '@nestjs/microservices';
 
 @Module({
-    imports: [
+  imports: [
     ClientsModule.register([
       {
         name: 'COMMUNICATION',
@@ -13,7 +13,7 @@ import { ClientsModule, Transport } from "@nestjs/microservices";
         },
       },
     ]),
-    ],
-    exports: [ClientsModule]
+  ],
+  exports: [ClientsModule],
 })
 export class CommunicationClientModule {}

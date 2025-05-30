@@ -4,7 +4,7 @@
 #@baseUrl = https://quest4kids-a7fd24f91954.herokuapp.com
 #@baseUrl = http://quest4kids-api.us-east-1.elasticbeanstalk.com
 @contentType = application/json
-@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDgzNTA3MTAsImV4cCI6MTc0ODM1NDMxMH0.ZXCP5yDMT20mfxQXvtIGhG4_uqBrDCO8IKWxh7P0NFc
+@token = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImZhNjZmMjYxLWNmNGQtNDA0OC1hMjBiLTdhZjI3NTliNTk1YSIsIm5hbWUiOiJqb2huIGRvdSIsInJvbGUiOiJwYXJlbnQiLCJpYXQiOjE3NDg2MDA1NzIsImV4cCI6MTc0ODYwNDE3Mn0.hFgaVV_kKuwuEim-4jYs_Rse-rNXUkjnQUDiLuvA3zw
 
 ### The basic request
 GET {{baseUrl}}
@@ -165,3 +165,8 @@ Authorization: Bearer {{token}}
 
 
 ["prioritized"]
+
+### Ping microservice
+# @name pingMicroservice
+GET {{baseUrl}}//statistics/ping
+Authorization: Bearer {{token}}

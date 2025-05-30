@@ -97,8 +97,7 @@ export class TasksController {
   }
 
   @Get('tasks/ping-microservice')
-  public async pingMicroservice()
-  {
+  public async pingMicroservice() {
     return await this.tasksService.pingMicroserviceTest();
   }
 

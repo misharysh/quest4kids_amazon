@@ -26,6 +26,7 @@ import { BadgesModule } from './badges/badges.module';
 import { Notification } from './notifications/notification.entity';
 import { Message } from './messages/message.entity';
 import { MessageModule } from './messages/message.module';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
@@ -65,12 +66,12 @@ import { MessageModule } from './messages/message.module';
         synchronize: false,
         migrationsRun: true,
         migrations: ['dist/migrations/*{.ts,.js}'],
-        ssl: true,
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
-          },
-        },
+        // ssl: true,
+        // extra: {
+        //   ssl: {
+        //     rejectUnauthorized: false,
+        //   },
+        // },
       }),
     }),
     MailerModule.forRootAsync({
@@ -93,6 +94,7 @@ import { MessageModule } from './messages/message.module';
     DashboardSettingsModule,
     BadgesModule,
     MessageModule,
+    StatisticsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
