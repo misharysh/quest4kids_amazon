@@ -75,6 +75,8 @@ jobs:
               -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
               -e JWT_EXPIRES_IN="${{ secrets.JWT_EXPIRES_IN }}" \
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
+              -e MICRO_HOST="${{ secrets.MICRO_HOST }}" \
+              -e MICRO_PORT="${{ secrets.MICRO_PORT }}" \
               -e AMAZON_BUCKET="${{ secrets.AMAZON_BUCKET }}" \
               -e URL_RESET_PASSWORD="${{ secrets.URL_RESET_PASSWORD }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/nestjs-api:${{ env.SHORT_SHA }}
