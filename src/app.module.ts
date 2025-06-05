@@ -67,12 +67,12 @@ import { StatisticsModule } from './statistics/statistics.module';
         synchronize: false,
         migrationsRun: true,
         migrations: ['dist/migrations/*{.ts,.js}'],
-        // ssl: true,
-        // extra: {
-        //   ssl: {
-        //     rejectUnauthorized: false,
-        //   },
-        // },
+        ssl: true,
+        extra: {
+          ssl: {
+            rejectUnauthorized: false,
+          },
+        },
       }),
     }),
     TasksModule,
@@ -85,7 +85,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     BullModule.forRoot({
       connection: {
         host: 'localhost',
-        port: 6379
+        port: 6379,
       },
     }),
   ],
