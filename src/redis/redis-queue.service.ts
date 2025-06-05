@@ -5,7 +5,7 @@ import { Queue } from "bullmq";
 @Injectable()
 export class RedisQueueService {
     constructor(
-        @InjectQueue('task-statistics') private queue: Queue
+        @InjectQueue('task-statistics{queue}') private queue: Queue
     ) {};
 
     public async addToQueue(data: any)

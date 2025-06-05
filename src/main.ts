@@ -34,7 +34,7 @@ async function bootstrap() {
     credentials: true,
   });
 
-  const taskStatisticsQueue = new Queue('task-statistics', redisConfig);
+  const taskStatisticsQueue = new Queue('task-statistics{queue}', redisConfig);
 
   const serverAdapter = new ExpressAdapter();
   serverAdapter.setBasePath('/admin/queues');

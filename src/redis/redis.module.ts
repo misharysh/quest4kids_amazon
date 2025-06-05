@@ -8,7 +8,7 @@ import { TasksModule } from "src/tasks/tasks.module";
     imports: [
         forwardRef(() => TasksModule),
         BullModule.registerQueue({
-            name: 'task-statistics',
+            name: 'task-statistics{queue}',
             ...redisConfig,
             defaultJobOptions: {
                 removeOnComplete: false,
