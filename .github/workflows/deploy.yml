@@ -75,6 +75,8 @@ jobs:
               -e JWT_SECRET="${{ secrets.JWT_SECRET }}" \
               -e MICRO_HOST="${{ secrets.MICRO_HOST }}" \
               -e MICRO_PORT="${{ secrets.MICRO_PORT }}" \
+              -e REDIS_HOST="${{ secrets.REDIS_HOST }}" \
+              -e REDIS_PORT="${{ secrets.REDIS_PORT }}" \
               -e AMAZON_BUCKET="${{ secrets.AMAZON_BUCKET }}" \
               -e URL_RESET_PASSWORD="${{ secrets.URL_RESET_PASSWORD }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/nestjs-api:${{ env.SHORT_SHA }}
