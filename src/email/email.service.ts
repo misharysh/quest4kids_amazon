@@ -1,16 +1,16 @@
-import { ISendMailOptions, MailerService } from '@nestjs-modules/mailer';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthConfig } from '../config/auth.config';
 import { EmailConfig } from '../config/email.config';
+import { RedisQueueService } from 'src/redis/redis-queue.service';
 
 @Injectable()
 export class EmailService {
   constructor(
-    private readonly mailerService: MailerService,
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
+    private readonly redisQueueService: RedisQueueService
   ) {}
 
   public async sendResetPasswordLink(email: string): Promise<string> {
@@ -24,11 +24,7 @@ export class EmailService {
     const url = `${this.configService.get<EmailConfig>('email')?.urlResetPassword}?token=${token}`;
     const text = `Hi, \nTo reset your password, click here: ${url}`;
 
-    this.sendMail({
-      to: email,
-      subject: 'Reset Password',
-      text,
-    });
+    await this.redisQueueService.addToQueue({email, text});
 
     return token;
   }
@@ -50,14 +46,6 @@ export class EmailService {
       }
 
       throw new BadRequestException('Bad confirmation token');
-    }
-  }
-
-  private sendMail(options: ISendMailOptions): void {
-    try {
-      this.mailerService.sendMail(options);
-    } catch (err) {
-      console.log(err);
     }
   }
 }

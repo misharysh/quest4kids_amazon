@@ -23,9 +23,11 @@ import { NotificationService } from 'src/notifications/notification.service';
 import { Notification } from 'src/notifications/notification.entity';
 import { NotificationGateway } from 'src/notifications/notification.gateway';
 import { OnlineService } from './online/online.service';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
   imports: [
+    RedisModule,
     TypeOrmModule.forFeature([User, RefreshToken, DashboardSettings, Notification]),
     JwtModule.registerAsync({
       imports: [ConfigModule],

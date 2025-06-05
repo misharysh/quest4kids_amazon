@@ -14,8 +14,7 @@ import { authConfig } from './config/auth.config';
 import { UsersModule } from './users/users.module';
 import { amazonConfig } from './config/amazon.config';
 import { RefreshToken } from './users/refresh-token.entity';
-import { MailerModule } from '@nestjs-modules/mailer';
-import { emailConfig, EmailConfig } from './config/email.config';
+import { emailConfig } from './config/email.config';
 import { googleConfig } from './config/google-oauth.config';
 import { UserTaskCompletion } from './users/user-task-completion.entity';
 import { Badge } from './badges/badge.entity';
@@ -26,6 +25,8 @@ import { BadgesModule } from './badges/badges.module';
 import { Notification } from './notifications/notification.entity';
 import { Message } from './messages/message.entity';
 import { MessageModule } from './messages/message.module';
+import { BullModule } from '@nestjs/bullmq';
+import { RedisModule } from './redis/redis.module';
 import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
@@ -74,27 +75,19 @@ import { StatisticsModule } from './statistics/statistics.module';
         },
       }),
     }),
-    MailerModule.forRootAsync({
-      imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<ConfigTypes>) => ({
-        transport: {
-          host: configService.get<EmailConfig>('email')?.emailHost,
-          secure: true,
-          port: 465,
-          auth: {
-            user: configService.get<EmailConfig>('email')?.emailUsername,
-            pass: configService.get<EmailConfig>('email')?.emailPassword,
-          },
-        },
-      }),
-    }),
     TasksModule,
     UsersModule,
     DashboardSettingsModule,
     BadgesModule,
     MessageModule,
     StatisticsModule,
+    RedisModule,
+    BullModule.forRoot({
+      connection: {
+        host: 'localhost',
+        port: 6379
+      },
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -68,9 +68,6 @@ jobs:
               -e AMAZON_SECRET_ACCESS_KEY="${{ secrets.AMAZON_SECRET_ACCESS_KEY }}" \
               -e APP_MESSAGE_PREFIX="${{ secrets.APP_MESSAGE_PREFIX }}" \
               -e DB_SYNC="${{ secrets.DB_SYNC }}" \
-              -e EMAIL_HOST="${{ secrets.EMAIL_HOST }}" \
-              -e EMAIL_PASSWORD="${{ secrets.EMAIL_PASSWORD }}" \
-              -e EMAIL_USERNAME="${{ secrets.EMAIL_USERNAME }}" \
               -e GOOGLE_CALLBACK_URL="${{ secrets.GOOGLE_CALLBACK_URL }}" \
               -e GOOGLE_CLIENT_ID="${{ secrets.GOOGLE_CLIENT_ID }}" \
               -e GOOGLE_CLIENT_SECRET="${{ secrets.GOOGLE_CLIENT_SECRET }}" \
