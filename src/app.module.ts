@@ -28,6 +28,7 @@ import { MessageModule } from './messages/message.module';
 import { BullModule } from '@nestjs/bullmq';
 import { RedisModule } from './redis/redis.module';
 import { StatisticsModule } from './statistics/statistics.module';
+import { redisConfig } from './config/bull.config';
 
 @Module({
   imports: [
@@ -82,12 +83,7 @@ import { StatisticsModule } from './statistics/statistics.module';
     MessageModule,
     StatisticsModule,
     RedisModule,
-    BullModule.forRoot({
-      connection: {
-        host: 'localhost',
-        port: 6379,
-      },
-    }),
+    BullModule.forRoot(redisConfig),
   ],
   controllers: [AppController],
   providers: [AppService],
