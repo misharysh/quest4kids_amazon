@@ -29,7 +29,7 @@ import { ForgotPasswordDto } from '../dto/forgot-password.dto';
 import { ResetPasswordDto } from '../dto/reset-password.dto copy';
 import { RefreshDto } from '../dto/refresh.dto';
 import { GoogleAuthGuard } from '../guards/google-auth.guard';
-import { NotificationService } from 'src/notifications/notification.service';
+import { NotificationService } from '../../notifications/notification.service';
 import { ProfileResponseDto } from '../dto/profile.response.dto';
 import { plainToInstance } from 'class-transformer';
 

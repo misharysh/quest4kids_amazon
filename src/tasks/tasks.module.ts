@@ -7,14 +7,14 @@ import { TaskLabel } from './task-label.entity';
 import { UsersModule } from './../users/users.module';
 import { User } from './../users/user.entity';
 import { UserTaskCompletion } from './../users/user-task-completion.entity';
-import { Badge } from 'src/badges/badge.entity';
-import { UserBadge } from 'src/badges/user-badge.entity';
-import { NotificationModule } from 'src/notifications/notification.module';
-import { RedisModule } from 'src/redis/redis.module';
+import { Badge } from '../badges/badge.entity';
+import { UserBadge } from '../badges/user-badge.entity';
+import { NotificationModule } from '../notifications/notification.module';
+import { RedisModule } from '../redis/redis.module';
 import { TaskCommentsEntity } from './entities/task-comments.entity';
 import { TaskStatusLogsEntity } from './entities/task-status-logs.entity';
 import { TaskStatusLoggerService } from './task-status-log/task-status-logger.service';
-import { CommunicationClientModule } from 'src/communication/communication-client.module';
+import { CommunicationClientModule } from '../communication/communication-client.module';
 
 @Module({
   imports: [

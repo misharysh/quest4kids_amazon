@@ -3,7 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { AuthConfig } from '../config/auth.config';
 import { EmailConfig } from '../config/email.config';
-import { RedisQueueService } from 'src/redis/redis-queue.service';
+import { RedisQueueService } from '../redis/redis-queue.service';
 
 @Injectable()
 export class EmailService {

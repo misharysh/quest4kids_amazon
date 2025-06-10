@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { DashboardSettings } from './dashboard-settings.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { User } from 'src/users/user.entity';
+import { User } from '../users/user.entity';
 import { DashboardElementDto } from './dto/save-dashboard.dto';
 import { defaultDashboardLayout } from './default-dashboard-layout';
 

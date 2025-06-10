@@ -1,14 +1,14 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { Notification } from "./notification.entity";
-import { TasksModule } from "src/tasks/tasks.module";
+import { TasksModule } from "../tasks/tasks.module";
 import { NotificationController } from "./notification.controller";
 import { NotificationGateway } from "./notification.gateway";
 import { NotificationService } from "./notification.service";
-import { MessageGateway } from "src/messages/message.gateway";
-import { MessageService } from "src/messages/message.service";
-import { Message } from "src/messages/message.entity";
-import { OnlineService } from "src/users/online/online.service";
+import { MessageGateway } from "../messages/message.gateway";
+import { MessageService } from "../messages/message.service";
+import { Message } from "../messages/message.entity";
+import { OnlineService } from "../users/online/online.service";
 
 @Module({
     imports: [TypeOrmModule.forFeature([Notification, Message]), forwardRef(() => TasksModule)],

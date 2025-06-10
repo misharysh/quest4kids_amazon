@@ -1,11 +1,11 @@
 import { Body, Controller, Get, NotFoundException, Put } from '@nestjs/common';
 import { DashboardSettingsService } from './dashboard-settings.service';
-import { Roles } from 'src/users/decorators/roles.decorator';
-import { Role } from 'src/users/role.enum';
-import { CurrentUser } from 'src/users/decorators/current-user.decorator';
-import { CurrentUserDto } from 'src/users/dto/current-user.dto';
+import { Roles } from '../users/decorators/roles.decorator';
+import { Role } from '../users/role.enum';
+import { CurrentUser } from '../users/decorators/current-user.decorator';
+import { CurrentUserDto } from '../users/dto/current-user.dto';
 import { SaveDashboardDto } from './dto/save-dashboard.dto';
-import { UserService } from 'src/users/user/user.service';
+import { UserService } from '../users/user/user.service';
 
 @Controller('dashboard-settings')
 export class DashboardSettingsController {

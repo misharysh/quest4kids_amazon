@@ -1,9 +1,9 @@
 import { Controller, Delete, Get, Param, Patch, Query } from "@nestjs/common";
 import { NotificationService } from "./notification.service";
-import { Roles } from "src/users/decorators/roles.decorator";
-import { Role } from "src/users/role.enum";
-import { CurrentUser } from "src/users/decorators/current-user.decorator";
-import { CurrentUserDto } from "src/users/dto/current-user.dto";
+import { Roles } from "../users/decorators/roles.decorator";
+import { Role } from "../users/role.enum";
+import { CurrentUser } from "../users/decorators/current-user.decorator";
+import { CurrentUserDto } from "../users/dto/current-user.dto";
 import { FindNotificationParams } from "./dto/find-notification.params";
 
 @Controller('notifications')

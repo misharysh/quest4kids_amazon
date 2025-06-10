@@ -1,8 +1,8 @@
 import { forwardRef, Module } from "@nestjs/common";
 import { BullModule } from '@nestjs/bullmq';
-import { redisConfig } from "src/config/bull.config";
+import { redisConfig } from "../config/bull.config";
 import { RedisQueueService } from "./redis-queue.service";
-import { TasksModule } from "src/tasks/tasks.module";
+import { TasksModule } from "../tasks/tasks.module";
 
 @Module({
     imports: [

@@ -1,4 +1,4 @@
-import { Badge } from "src/badges/badge.entity";
+import { Badge } from "../../badges/badge.entity";
 import { Role } from "../role.enum";
 import { Expose } from "class-transformer";
 

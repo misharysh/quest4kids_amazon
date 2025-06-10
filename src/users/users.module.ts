@@ -17,13 +17,13 @@ import { AwsService } from './../aws/aws.service';
 import { RefreshToken } from './refresh-token.entity';
 import { EmailService } from '../email/email.service';
 import { GoogleStrategy } from './strategies/google.strategy';
-import { DashboardSettingsService } from 'src/dashboardSettings/dashboard-settings.service';
-import { DashboardSettings } from 'src/dashboardSettings/dashboard-settings.entity';
-import { NotificationService } from 'src/notifications/notification.service';
-import { Notification } from 'src/notifications/notification.entity';
-import { NotificationGateway } from 'src/notifications/notification.gateway';
+import { DashboardSettingsService } from '../dashboardSettings/dashboard-settings.service';
+import { DashboardSettings } from '../dashboardSettings/dashboard-settings.entity';
+import { NotificationService } from '../notifications/notification.service';
+import { Notification } from '../notifications/notification.entity';
+import { NotificationGateway } from '../notifications/notification.gateway';
 import { OnlineService } from './online/online.service';
-import { RedisModule } from 'src/redis/redis.module';
+import { RedisModule } from '../redis/redis.module';
 
 @Module({
   imports: [

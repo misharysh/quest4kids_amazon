@@ -12,11 +12,11 @@ import { Repository } from 'typeorm';
 import { PasswordService } from '../password/password.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { Role } from '../role.enum';
-import { PaginationParams } from 'src/common/pagination.params';
+import { PaginationParams } from '../../common/pagination.params';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { AwsService } from '../../aws/aws.service';
 import { CurrentUserDto } from '../dto/current-user.dto';
-import { DashboardSettingsService } from 'src/dashboardSettings/dashboard-settings.service';
+import { DashboardSettingsService } from '../../dashboardSettings/dashboard-settings.service';
 
 @Injectable()
 export class UserService {

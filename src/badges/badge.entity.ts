@@ -1,4 +1,4 @@
-import { TaskLabelEnum } from 'src/tasks/task-label.enum';
+import { TaskLabelEnum } from '../tasks/task-label.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()

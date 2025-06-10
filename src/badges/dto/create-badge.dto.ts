@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsEnum, IsInt, IsNotEmpty, IsString, Max, Min } from 'class-validator';
-import { TaskLabelEnum } from 'src/tasks/task-label.enum';
+import { TaskLabelEnum } from '../../tasks/task-label.enum';
 
 export class CreateBadgeDto {
   @ApiProperty({

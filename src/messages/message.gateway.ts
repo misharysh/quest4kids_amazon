@@ -1,7 +1,7 @@
 import { ConnectedSocket, MessageBody, OnGatewayConnection, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket  } from 'socket.io';
 import { MessageService } from "./message.service";
-import { OnlineService } from "src/users/online/online.service";
+import { OnlineService } from "../users/online/online.service";
 
 
 @WebSocketGateway({ cors: { origin: '*' } })

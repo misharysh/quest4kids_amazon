@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { BadgesService } from './badges.service';
-import { PaginationParams } from 'src/common/pagination.params';
+import { PaginationParams } from '../common/pagination.params';
 import { Badge } from './badge.entity';
-import { PaginationResponse } from 'src/common/pagination.response';
-import { Roles } from 'src/users/decorators/roles.decorator';
-import { Role } from 'src/users/role.enum';
+import { PaginationResponse } from '../common/pagination.response';
+import { Roles } from '../users/decorators/roles.decorator';
+import { Role } from '../users/role.enum';
 import { CreateBadgeDto } from './dto/create-badge.dto';
 
 @Controller('badges')

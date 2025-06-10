@@ -1,9 +1,9 @@
 import { Controller, Get, Query } from "@nestjs/common";
 import { MessageService } from "./message.service";
-import { CurrentUser } from "src/users/decorators/current-user.decorator";
-import { CurrentUserDto } from "src/users/dto/current-user.dto";
+import { CurrentUser } from "../users/decorators/current-user.decorator";
+import { CurrentUserDto } from "../users/dto/current-user.dto";
 import { MessageParams } from "./dto/message.params";
-import { UserService } from "src/users/user/user.service";
+import { UserService } from "../users/user/user.service";
 import { Message } from "./message.entity";
 
 @Controller()

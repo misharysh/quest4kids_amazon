@@ -11,8 +11,8 @@ import {
 } from 'typeorm';
 import { Role } from './role.enum';
 import { UserTaskCompletion } from './user-task-completion.entity';
-import { UserBadge } from 'src/badges/user-badge.entity';
-import { DashboardSettings } from 'src/dashboardSettings/dashboard-settings.entity';
+import { UserBadge } from '../badges/user-badge.entity';
+import { DashboardSettings } from '../dashboardSettings/dashboard-settings.entity';
 import { TaskCommentsEntity } from '../tasks/entities/task-comments.entity';
 import { TaskStatusLogsEntity } from '../tasks/entities/task-status-logs.entity';
 

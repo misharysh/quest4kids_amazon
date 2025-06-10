@@ -2,9 +2,8 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { Repository } from 'typeorm';
 import { Badge } from './badge.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { PaginationParams } from 'src/common/pagination.params';
+import { PaginationParams } from '../common/pagination.params';
 import { CreateBadgeDto } from './dto/create-badge.dto';
-import { PaginationResponse } from 'src/common/pagination.response';
 
 @Injectable()
 export class BadgesService {
