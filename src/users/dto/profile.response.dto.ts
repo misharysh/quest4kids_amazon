@@ -1,45 +1,44 @@
-import { Badge } from "../../badges/badge.entity";
-import { Role } from "../role.enum";
-import { Expose } from "class-transformer";
+import { Badge } from '../../badges/badge.entity';
+import { Role } from '../role.enum';
+import { Expose } from 'class-transformer';
 
-export class ProfileResponseDto
-{
-    @Expose()
-    id: string;
+export class ProfileResponseDto {
+  @Expose()
+  id: string;
 
-    @Expose()
-    email: string;
+  @Expose()
+  email: string;
 
-    @Expose()
-    name: string;
+  @Expose()
+  name: string;
 
-    @Expose()
-    createdAt: Date;
+  @Expose()
+  createdAt: Date;
 
-    @Expose()
-    updatedAt: Date;
+  @Expose()
+  updatedAt: Date;
 
-    @Expose()
-    badges: Badge[];
+  @Expose()
+  badges: Badge[];
 
-    @Expose()
-    role: Role;
+  @Expose()
+  role: Role;
 
-    @Expose()
-    parentId?: string;
+  @Expose()
+  parentId?: string;
 
-    @Expose()
-    avatarName?: string;
+  @Expose()
+  avatarName?: string;
 
-    @Expose()
-    availablePoints: number;
+  @Expose()
+  availablePoints: number;
 
-    @Expose()
-    totalEarnedPoints: number;
+  @Expose()
+  totalEarnedPoints: number;
 
-    @Expose()
-    resetToken?: string;
+  @Expose()
+  resetToken?: string;
 
-    @Expose()
-    unreadNotificationCount: number;
+  @Expose()
+  unreadNotificationCount: number;
 }

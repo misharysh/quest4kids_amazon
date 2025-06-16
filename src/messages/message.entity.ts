@@ -1,22 +1,27 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Message {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column()
-    senderId: string;
+  @Column()
+  senderId: string;
 
-    @Column()
-    receiverId: string;
+  @Column()
+  receiverId: string;
 
-    @Column('text')
-    content: string;
+  @Column('text')
+  content: string;
 
-    @CreateDateColumn()
-    createdAt: Date;
+  @CreateDateColumn()
+  createdAt: Date;
 
-    @Column({default: false})
-    isRead: boolean;
+  @Column({ default: false })
+  isRead: boolean;
 }

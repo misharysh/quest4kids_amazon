@@ -40,7 +40,7 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UserService,
-    private readonly notificationService: NotificationService
+    private readonly notificationService: NotificationService,
   ) {}
 
   @Post('register')
@@ -86,12 +86,19 @@ export class AuthController {
       throw new NotFoundException();
     }
 
-    const unreadNotificationCount = await this.notificationService.getUserNotificationCount(user.id, {isRead: false});
+    const unreadNotificationCount =
+      await this.notificationService.getUserNotificationCount(user.id, {
+        isRead: false,
+      });
 
-    const profile = plainToInstance(ProfileResponseDto, {
-      ...user,
-      unreadNotificationCount,
-    }, {excludeExtraneousValues: true});
+    const profile = plainToInstance(
+      ProfileResponseDto,
+      {
+        ...user,
+        unreadNotificationCount,
+      },
+      { excludeExtraneousValues: true },
+    );
 
     return profile;
   }
@@ -114,7 +121,9 @@ export class AuthController {
   @Post('forgot-password')
   @Public()
   public async forgotPassword(@Body() forgotPasswordDto: ForgotPasswordDto) {
-    const result = await this.authService.forgotPassword(forgotPasswordDto.email);
+    const result = await this.authService.forgotPassword(
+      forgotPasswordDto.email,
+    );
 
     console.log('RETURNING:', result);
     return result;

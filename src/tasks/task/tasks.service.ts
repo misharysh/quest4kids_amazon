@@ -193,21 +193,22 @@ export class TasksService {
 
     const content = contentLines.join('\n');
 
-    try
-    {
+    try {
       const result = await firstValueFrom(
-      this.microserviceClient.send<Buffer>('generate_pdf', { title, content }),
+        this.microserviceClient.send<Buffer>('generate_pdf', {
+          title,
+          content,
+        }),
       );
-      
+
       const pdfBuffer = Buffer.isBuffer(result)
-      ? result
-      : Buffer.from((result as any).data);
+        ? result
+        : Buffer.from((result as any).data);
 
       res.setHeader('Content-Type', 'application/pdf');
       res.setHeader('Content-Disposition', 'inline; filename=tasks.pdf');
       res.end(pdfBuffer);
-    }
-    catch (err) {
+    } catch (err) {
       console.error('Error when calling microservice:', err);
     }
   }

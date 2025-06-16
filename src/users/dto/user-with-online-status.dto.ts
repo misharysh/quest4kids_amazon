@@ -1,16 +1,16 @@
-import { Expose } from "class-transformer";
+import { Expose } from 'class-transformer';
 
 export class UserWithOnlineStatusDto {
-    constructor(private readonly partial?: Partial<UserWithOnlineStatusDto>) {
-        Object.assign(this, partial);
-    }
+  constructor(private readonly partial?: Partial<UserWithOnlineStatusDto>) {
+    Object.assign(this, partial);
+  }
 
-    @Expose()
-    id: string;
+  @Expose()
+  id: string;
 
-    @Expose()
-    name: string;
+  @Expose()
+  name: string;
 
-    @Expose()
-    isOnline: boolean;
+  @Expose()
+  isOnline: boolean;
 }

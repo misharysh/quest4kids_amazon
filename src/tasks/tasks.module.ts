@@ -31,7 +31,7 @@ import { CommunicationClientModule } from '../communication/communication-client
     UsersModule,
     forwardRef(() => RedisModule),
     CommunicationClientModule,
-    forwardRef(() => NotificationModule)
+    forwardRef(() => NotificationModule),
   ],
   controllers: [TasksController],
   providers: [TasksService, TaskStatusLoggerService],

@@ -28,7 +28,12 @@ import { RedisModule } from '../redis/redis.module';
 @Module({
   imports: [
     RedisModule,
-    TypeOrmModule.forFeature([User, RefreshToken, DashboardSettings, Notification]),
+    TypeOrmModule.forFeature([
+      User,
+      RefreshToken,
+      DashboardSettings,
+      Notification,
+    ]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],

@@ -13,7 +13,7 @@ export class DashboardSettingsService {
     private readonly settingsRepository: Repository<DashboardSettings>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {};
+  ) {}
 
   public async saveOrUpdateLayout(
     userId: string,
@@ -38,7 +38,7 @@ export class DashboardSettingsService {
     }
 
     return user.dashboardSettings.layout;
-  };
+  }
 
   public async getLayout(userId: string) {
     const user = await this.userRepository.findOne({
@@ -47,13 +47,14 @@ export class DashboardSettingsService {
     });
 
     return user?.dashboardSettings?.layout || [];
-  };
+  }
 
   public async createDefaultForUser(user: User): Promise<DashboardSettings> {
     const settings = this.settingsRepository.create({
       user,
-      layout: defaultDashboardLayout});
+      layout: defaultDashboardLayout,
+    });
 
     return this.settingsRepository.save(settings);
-  };
+  }
 }

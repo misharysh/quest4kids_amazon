@@ -35,7 +35,7 @@ import { OnlineService } from '../online/online.service';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly onlineService: OnlineService
+    private readonly onlineService: OnlineService,
   ) {}
 
   @Get('get-child-account/:id')
@@ -75,29 +75,31 @@ export class UserController {
   @Get('get-online-users')
   public async getOnlineUsers(
     @CurrentUser() currentUser: CurrentUserDto,
-  ): Promise<UserWithOnlineStatusDto[]>
-  {
+  ): Promise<UserWithOnlineStatusDto[]> {
     const isParent = currentUser.role === Role.PARENT;
 
     let usersWithOnlineStatus: User[] = [];
 
     if (isParent) {
       const pagination = new PaginationParams();
-      const [items, total] = await this.userService.findAll(pagination, currentUser.id);
+      const [items, total] = await this.userService.findAll(
+        pagination,
+        currentUser.id,
+      );
 
       usersWithOnlineStatus = items;
-    }
-    else {
-      const parentUser = await this.userService.findParentByChildId(currentUser.id);
-      if (parentUser)
-      {
+    } else {
+      const parentUser = await this.userService.findParentByChildId(
+        currentUser.id,
+      );
+      if (parentUser) {
         usersWithOnlineStatus.push(parentUser);
       }
     }
 
-    return usersWithOnlineStatus.map(user => ({
+    return usersWithOnlineStatus.map((user) => ({
       ...user,
-      isOnline: this.onlineService.isUserOnline(user.id)
+      isOnline: this.onlineService.isUserOnline(user.id),
     }));
   }
 

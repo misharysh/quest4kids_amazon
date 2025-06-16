@@ -10,7 +10,7 @@ export class EmailService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly configService: ConfigService,
-    private readonly redisQueueService: RedisQueueService
+    private readonly redisQueueService: RedisQueueService,
   ) {}
 
   public async sendResetPasswordLink(email: string): Promise<string> {
@@ -24,7 +24,7 @@ export class EmailService {
     const url = `${this.configService.get<EmailConfig>('email')?.urlResetPassword}?token=${token}`;
     const text = `Hi, \nTo reset your password, click here: ${url}`;
 
-    await this.redisQueueService.addToQueue({email, text});
+    await this.redisQueueService.addToQueue({ email, text });
 
     return token;
   }

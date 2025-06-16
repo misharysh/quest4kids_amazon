@@ -25,7 +25,7 @@ export class UserService {
     private readonly userRepository: Repository<User>,
     private readonly passwordService: PasswordService,
     private readonly awsService: AwsService,
-    private readonly dashboardSettings: DashboardSettingsService
+    private readonly dashboardSettings: DashboardSettingsService,
   ) {}
 
   public async findOneByEmail(email: string): Promise<User | null> {
@@ -41,7 +41,7 @@ export class UserService {
 
   public async findParentByChildId(id: string): Promise<User | null> {
     const child = await this.userRepository.findOne({
-      where: {id: id}, 
+      where: { id: id },
     });
 
     if (!child) {
@@ -53,7 +53,7 @@ export class UserService {
     }
 
     const parent = await this.userRepository.findOne({
-      where: {id: child.parentId}, 
+      where: { id: child.parentId },
     });
 
     return parent;
@@ -103,11 +103,10 @@ export class UserService {
     const savedUser = await this.userRepository.save(user);
 
     //created default dashboard settings only for PARENT
-    if (role == Role.PARENT)
-    {
+    if (role == Role.PARENT) {
       await this.dashboardSettings.createDefaultForUser(savedUser);
     }
-    
+
     return savedUser;
   }
 
@@ -247,24 +246,18 @@ export class UserService {
   public async checkUserCompatibility(
     withUserId: string,
     currentUser: CurrentUserDto,
-  ): Promise<boolean>
-  {
+  ): Promise<boolean> {
     const isParent = currentUser.role === Role.PARENT;
-    if (isParent)
-    {
+    if (isParent) {
       //check if parent has child 'withUserId'
       const childUser = await this.findOne(withUserId);
-      if (childUser && childUser.parentId === currentUser.id)
-      {
+      if (childUser && childUser.parentId === currentUser.id) {
         return true;
       }
-    }
-    else
-    {
-      //check if child has parent 'withUserId' 
+    } else {
+      //check if child has parent 'withUserId'
       const childUser = await this.findOne(currentUser.id);
-      if (childUser && childUser.parentId === withUserId)
-      {
+      if (childUser && childUser.parentId === withUserId) {
         return true;
       }
     }

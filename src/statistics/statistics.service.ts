@@ -16,4 +16,8 @@ export class StatisticsService implements OnModuleInit {
   async ping(): Promise<any> {
     return await this.client.send('ping', {}).toPromise();
   }
+
+  async getLatestReport(): Promise<any> {
+    return await this.client.send('get-latest-report', {}).toPromise();
+  }
 }
