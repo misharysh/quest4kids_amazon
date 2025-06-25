@@ -529,7 +529,7 @@ export class TasksService {
             You are an assistant that converts user task descriptions into JSON with fields:
             - title: take from ${prompt},
             - description: detailed task description (create if short or vague),
-            - points: an estimated number of points (an integer  1 or 3 or 5 or 8 or 10 or 15),
+            - points: an estimated number of points (an integer 5 or 8 or 10 or 15),
             - status: always set to "OPEN",
             - labels: an array with at least one label from the allowed list below.
 
