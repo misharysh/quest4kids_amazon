@@ -37,6 +37,7 @@ import { Response } from 'express';
 import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
+import { GenerateTaskDto } from '../dto/generate-task.dto';
 
 @Controller()
 export class TasksController {
@@ -109,6 +110,12 @@ export class TasksController {
     const task = await this.tasksService.findOneOrFail(params.id);
     await this.tasksService.checkTaskOwnership(task, currentUser);
     return task;
+  }
+
+  @Post('tasks/generate')
+  public async generateTask(@Body() dto: GenerateTaskDto)
+  {
+    return this.tasksService.generateTaskFromPrompt(dto.prompt);
   }
 
   @Post('kids/:id/task')
