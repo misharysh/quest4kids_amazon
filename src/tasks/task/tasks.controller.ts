@@ -38,6 +38,7 @@ import { ApiBody, ApiConsumes, ApiOperation } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { GenerateTaskDto } from '../dto/generate-task.dto';
+import { TasksCacheInterceptor } from 'src/interceptors/tasks-cache.interceptors';
 
 @Controller()
 export class TasksController {
@@ -48,6 +49,29 @@ export class TasksController {
 
   @Get('tasks')
   public async findAll(
+    @Query() filters: FindTaskParams,
+    @Query() pagination: PaginationParams,
+    @CurrentUser() currentUser: CurrentUserDto,
+  ): Promise<PaginationResponse<Task>> {
+    const [items, total] = await this.tasksService.findAll(
+      filters,
+      pagination,
+      currentUser,
+    );
+
+    return {
+      data: items,
+      meta: {
+        total,
+        offset: pagination.offset,
+        limit: pagination.limit,
+      },
+    };
+  }
+
+  @UseInterceptors(TasksCacheInterceptor)
+  @Get('tasks-with-cache')
+  public async findAllCached(
     @Query() filters: FindTaskParams,
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
