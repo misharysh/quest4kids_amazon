@@ -264,4 +264,17 @@ export class UserService {
 
     return false;
   }
+
+  async updateTelegramChatId(
+    userId: string,
+    telegramChatId: string,
+  ): Promise<User> {
+    const user = await this.userRepository.findOneBy({ id: userId });
+    if (!user) {
+      throw new NotFoundException('User not found');
+    }
+
+    user.telegramChatId = telegramChatId;
+    return this.userRepository.save(user);
+  }
 }

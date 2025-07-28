@@ -32,6 +32,7 @@ import { TaskCommentsEntity } from '../entities/task-comments.entity';
 import { TaskStatusLoggerService } from '../task-status-log/task-status-logger.service';
 import { ClientProxy } from '@nestjs/microservices';
 import { firstValueFrom } from 'rxjs';
+import { TelegramService } from 'src/telegram/telegram.service';
 
 @Injectable()
 export class TasksService {
@@ -62,6 +63,8 @@ export class TasksService {
     private readonly notificationService: NotificationService,
 
     @Inject('COMMUNICATION') private readonly microserviceClient: ClientProxy,
+
+    private readonly telegramService: TelegramService,
   ) {}
 
   public async findAll(
@@ -345,6 +348,24 @@ export class TasksService {
         taskData.status,
         task.status,
       );
+
+      if (user?.role === Role.CHILD && user.parentId) {
+        const parent = await this.usersRepository.findOneBy({
+          id: user.parentId,
+        });
+        if (parent?.telegramChatId) {
+          const message =
+            `👶 <b>Обновление задачи ребенка</b>\n\n` +
+            `Ребенок: <b>${user.name}</b>\n` +
+            `Задача: <b>${task.title}</b>\n` +
+            `Новый статус: <b>${taskData.status}</b>`;
+
+          await this.telegramService.sendMessage(
+            parent.telegramChatId,
+            message,
+          );
+        }
+      }
 
       if (taskData.status === TaskStatus.DONE) {
         //awards points in case of DONE
@@ -638,6 +659,25 @@ export class TasksService {
       });
 
       await this.taskCommentsRepository.save(taskComment);
+
+      if (user?.role === Role.CHILD && user.parentId) {
+        const parent = await this.usersRepository.findOneBy({
+          id: user.parentId,
+        });
+        if (parent?.telegramChatId) {
+          const message =
+            `👶 💬 <b>Новый комментарий к задаче ребенка</b>\n\n` +
+            `Ребенок: <b>${user.name}</b>\n` +
+            `Задача: <b>${task.title}</b>\n` +
+            `От: <b>${user.name}</b>\n` +
+            `Комментарий: <i>${comment}</i>`;
+
+          await this.telegramService.sendMessage(
+            parent.telegramChatId,
+            message,
+          );
+        }
+      }
     }
   }
 }

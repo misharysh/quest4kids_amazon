@@ -29,6 +29,8 @@ import { BullModule } from '@nestjs/bullmq';
 import { RedisModule } from './redis/redis.module';
 import { StatisticsModule } from './statistics/statistics.module';
 import { redisConfig } from './config/bull.config';
+import { TelegramService } from './telegram/telegram.service';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -84,8 +86,9 @@ import { redisConfig } from './config/bull.config';
     StatisticsModule,
     RedisModule,
     BullModule.forRoot(redisConfig),
+    TelegramModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, TelegramService],
 })
 export class AppModule {}

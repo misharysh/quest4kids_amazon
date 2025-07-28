@@ -103,4 +103,11 @@ export class User {
 
   @OneToMany(() => TaskStatusLogsEntity, (log) => log.user)
   logs: TaskStatusLogsEntity[];
+
+  @Expose()
+  @Column({
+    nullable: true,
+    default: null,
+  })
+  telegramChatId?: string;
 }

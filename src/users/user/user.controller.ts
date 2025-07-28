@@ -29,6 +29,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { PointsDto } from '../dto/points.dto';
 import { UserWithOnlineStatusDto } from '../dto/user-with-online-status.dto';
 import { OnlineService } from '../online/online.service';
+import { UpdateTelegramChatIdDto } from '../dto/update-telegram-chat-id.dto';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -204,6 +205,17 @@ export class UserController {
     return await this.userService.claimPoints(
       childUser,
       pointsDto.exchangePoints,
+    );
+  }
+
+  @Patch('telegram-chat-id')
+  async updateTelegramChatId(
+    @CurrentUser() currentUser: CurrentUserDto,
+    @Body() updateTelegramChatIdDto: UpdateTelegramChatIdDto,
+  ) {
+    return await this.userService.updateTelegramChatId(
+      currentUser.id,
+      updateTelegramChatIdDto.telegramChatId,
     );
   }
 }
