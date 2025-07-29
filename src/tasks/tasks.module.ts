@@ -15,6 +15,7 @@ import { TaskCommentsEntity } from './entities/task-comments.entity';
 import { TaskStatusLogsEntity } from './entities/task-status-logs.entity';
 import { TaskStatusLoggerService } from './task-status-log/task-status-logger.service';
 import { CommunicationClientModule } from '../communication/communication-client.module';
+import { TelegramModule } from '../telegram/telegram.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { CommunicationClientModule } from '../communication/communication-client
     forwardRef(() => RedisModule),
     CommunicationClientModule,
     forwardRef(() => NotificationModule),
+    TelegramModule,
   ],
   controllers: [TasksController],
   providers: [TasksService, TaskStatusLoggerService],
