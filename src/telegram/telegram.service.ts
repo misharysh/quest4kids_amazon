@@ -4,6 +4,7 @@ import { Telegraf } from 'telegraf';
 
 @Injectable()
 export class TelegramService implements OnModuleInit {
+  private static launched = false;
   private bot: Telegraf;
 
   constructor(private configService: ConfigService) {
@@ -18,6 +19,10 @@ export class TelegramService implements OnModuleInit {
   }
 
   async onModuleInit() {
+    const enabled =
+      this.configService.get<string>('TELEGRAM_ENABLE', '1') === '1';
+    if (!enabled || TelegramService.launched) return;
+
     this.bot.command('start', (ctx) => {
       const chatId = ctx.chat.id;
       ctx.reply(
@@ -26,6 +31,7 @@ export class TelegramService implements OnModuleInit {
     });
 
     await this.bot.launch();
+    TelegramService.launched = true;
   }
 
   async sendMessage(chatId: string, message: string): Promise<void> {

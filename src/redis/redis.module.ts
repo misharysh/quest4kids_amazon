@@ -19,15 +19,7 @@ import { TasksCacheInterceptor } from 'src/interceptors/tasks-cache.interceptors
       },
     }),
   ],
-  providers: [
-    RedisQueueService,
-    RedisCacheService,
-    TasksCacheInterceptor  
-  ],
-  exports: [
-    RedisQueueService,
-    RedisCacheService,
-    TasksCacheInterceptor
-  ],
+  providers: [RedisQueueService, RedisCacheService, TasksCacheInterceptor],
+  exports: [RedisQueueService, RedisCacheService, TasksCacheInterceptor],
 })
 export class RedisModule {}

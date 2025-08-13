@@ -1,7 +1,6 @@
-import { IsString } from "class-validator";
+import { IsString } from 'class-validator';
 
-export class GenerateTaskDto
-{
-    @IsString()
-    prompt: string;
+export class GenerateTaskDto {
+  @IsString()
+  prompt: string;
 }

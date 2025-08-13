@@ -137,8 +137,7 @@ export class TasksController {
   }
 
   @Post('tasks/generate')
-  public async generateTask(@Body() dto: GenerateTaskDto)
-  {
+  public async generateTask(@Body() dto: GenerateTaskDto) {
     return this.tasksService.generateTaskFromPrompt(dto.prompt);
   }
 

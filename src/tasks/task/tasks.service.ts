@@ -37,7 +37,6 @@ import { TelegramService } from 'src/telegram/telegram.service';
 
 @Injectable()
 export class TasksService {
-
   private openai = new OpenAI({
     apiKey: process.env.OPEN_AI_KEY,
   });
@@ -536,9 +535,7 @@ export class TasksService {
     return { error: false, validData: validDtos };
   }
 
-  public async generateTaskFromPrompt(prompt: string)
-  {
-
+  public async generateTaskFromPrompt(prompt: string) {
     const allowedLabels = Object.values(TaskLabelEnum);
 
     const completion = await this.openai.chat.completions.create({
@@ -566,10 +563,10 @@ export class TasksService {
           role: 'user',
           content: `Create a task from this: "${prompt}".
                     Use only these labels: ${allowedLabels.join(', ')}.
-                    Respond strictly in JSON format.`
+                    Respond strictly in JSON format.`,
         },
       ],
-      temperature: 0.7
+      temperature: 0.7,
     });
 
     try {
@@ -579,8 +576,7 @@ export class TasksService {
       }
 
       return JSON.parse(rawText);
-    }
-    catch(e){
+    } catch (e) {
       return {
         error: 'Error of parsing from OpenAI',
         raw: completion.choices[0].message.content,

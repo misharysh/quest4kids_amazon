@@ -10,16 +10,14 @@ import { RedisCacheService } from 'src/redis/redis-cache.service';
 
 @Injectable()
 export class TasksCacheInterceptor implements NestInterceptor {
-  constructor(
-    private readonly redisCacheService: RedisCacheService
-  ) {}
+  constructor(private readonly redisCacheService: RedisCacheService) {}
 
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const req = context.switchToHttp().getRequest();
     const userId = req.user?.id || 'anonymous';
     const filters = req.query || {};
     const key = `tasks:${userId}:${JSON.stringify(filters)}`;
-    
+
     return from(this.redisCacheService.get(key)).pipe(
       switchMap((cached) => {
         if (cached) {
@@ -27,11 +25,15 @@ export class TasksCacheInterceptor implements NestInterceptor {
           return of(JSON.parse(cached));
         }
 
-        console.log(`[CACHE MISS] No cache found for key: ${key}, fetching from DB...`);
+        console.log(
+          `[CACHE MISS] No cache found for key: ${key}, fetching from DB...`,
+        );
         return next.handle().pipe(
           tap(async (data) => {
             await this.redisCacheService.set(key, JSON.stringify(data), 10);
-            console.log(`[CACHE SET] Cache stored for key: ${key} with TTL 10s`);
+            console.log(
+              `[CACHE SET] Cache stored for key: ${key} with TTL 10s`,
+            );
           }),
         );
       }),
