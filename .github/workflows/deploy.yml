@@ -81,4 +81,6 @@ jobs:
               -e REDIS_TLS="${{ secrets.REDIS_TLS }}" \
               -e AMAZON_BUCKET="${{ secrets.AMAZON_BUCKET }}" \
               -e URL_RESET_PASSWORD="${{ secrets.URL_RESET_PASSWORD }}" \
+              -e TELEGRAM_BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}" \
+              -e TELEGRAM_ENABLE="${{ secrets.TELEGRAM_ENABLE }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/nestjs-api:${{ env.SHORT_SHA }}
