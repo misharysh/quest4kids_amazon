@@ -106,6 +106,7 @@ export class User {
 
   @Expose()
   @Column({
+    name: 'telegram_chat_id',
     nullable: true,
     default: null,
   })
