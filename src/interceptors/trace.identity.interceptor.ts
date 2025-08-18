@@ -5,12 +5,12 @@ import {
   NestInterceptor,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
-import { generateUuidNoDashes } from '../common/utils/idsGeneration';
+import { generateUuidNoDashes } from '../common/utils/identityGenerator';
 import { Request, Response } from 'express';
 import { TRACE_HEADER } from '../common/constants/headers';
 
 @Injectable()
-export class TraceInterceptor implements NestInterceptor {
+export class TraceIdentityInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
@@ -27,7 +27,7 @@ export class TraceInterceptor implements NestInterceptor {
 
     response.setHeader(TRACE_HEADER, traceId);
     // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    (request as any).traceid = traceId;
+    (request as any).traceId = traceId;
 
     return next.handle();
   }

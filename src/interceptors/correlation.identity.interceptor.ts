@@ -6,11 +6,11 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { Request, Response } from 'express';
-import { generateUuidNoDashes } from '../common/utils/idsGeneration';
+import { generateUuidNoDashes } from '../common/utils/identityGenerator';
 import { CORRELATION_HEADER } from '../common/constants/headers';
 
 @Injectable()
-export class CorrelationInterceptor implements NestInterceptor {
+export class CorrelationIdentityInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler<any>,
