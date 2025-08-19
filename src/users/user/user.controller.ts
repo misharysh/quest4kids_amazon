@@ -33,6 +33,7 @@ import { UpdateTelegramChatIdDto } from '../dto/update-telegram-chat-id.dto';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetChildAccountQuery } from '../cqrs/queries/get-child-account.query';
 import { CreateChildAccountCommand } from '../cqrs/commands/create-child-account.command';
+import { UpdateChildAccountCommand } from '../cqrs/commands/update-child-account.command';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -112,7 +113,7 @@ export class UserController {
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
     return this.commandBus.execute(
-      new CreateChildAccountCommand(createUserDto, currentUser),
+      new CreateChildAccountCommand(createUserDto, currentUser.id),
     );
   }
 
@@ -123,11 +124,9 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
-    const childUser = await this.userService.findOneOrFail(params.id);
-
-    await this.userService.checkParentUser(childUser, currentUser);
-
-    return await this.userService.updateUser(childUser, updateUserDto);
+    return this.commandBus.execute(
+      new UpdateChildAccountCommand(params.id, updateUserDto, currentUser),
+    );
   }
 
   @Delete('remove-child-account/:id')

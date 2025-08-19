@@ -10,7 +10,7 @@ export class CreateChildAccountHandler
   constructor(private readonly userService: UserService) {}
 
   async execute(command: CreateChildAccountCommand): Promise<User> {
-    const { createUser, currentUser } = command;
-    return this.userService.createChildAccount(createUser, currentUser.id);
+    const { createUser, parentId } = command;
+    return this.userService.createChildAccount(createUser, parentId);
   }
 }

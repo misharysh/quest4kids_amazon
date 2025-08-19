@@ -27,6 +27,7 @@ import { RedisModule } from '../redis/redis.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { GetChildAccountHandler } from './cqrs/handlers/get-child-account.handler';
 import { CreateChildAccountHandler } from './cqrs/handlers/create-child-account.handler';
+import { UpdateChildAccountHandler } from './cqrs/handlers/update-child-account.handler';
 
 @Module({
   imports: [
@@ -72,6 +73,7 @@ import { CreateChildAccountHandler } from './cqrs/handlers/create-child-account.
     },
     GetChildAccountHandler,
     CreateChildAccountHandler,
+    UpdateChildAccountHandler,
   ],
   controllers: [AuthController, UserController],
   exports: [UserService],
