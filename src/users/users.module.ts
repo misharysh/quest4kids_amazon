@@ -29,6 +29,12 @@ import { GetChildAccountHandler } from './cqrs/handlers/get-child-account.handle
 import { CreateChildAccountHandler } from './cqrs/handlers/create-child-account.handler';
 import { UpdateChildAccountHandler } from './cqrs/handlers/update-child-account.handler';
 
+const Handlers = [
+  GetChildAccountHandler,
+  CreateChildAccountHandler,
+  UpdateChildAccountHandler,
+];
+
 @Module({
   imports: [
     RedisModule,
@@ -71,9 +77,7 @@ import { UpdateChildAccountHandler } from './cqrs/handlers/update-child-account.
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
-    GetChildAccountHandler,
-    CreateChildAccountHandler,
-    UpdateChildAccountHandler,
+    ...Handlers,
   ],
   controllers: [AuthController, UserController],
   exports: [UserService],
