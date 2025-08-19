@@ -30,6 +30,9 @@ import { PointsDto } from '../dto/points.dto';
 import { UserWithOnlineStatusDto } from '../dto/user-with-online-status.dto';
 import { OnlineService } from '../online/online.service';
 import { UpdateTelegramChatIdDto } from '../dto/update-telegram-chat-id.dto';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { GetChildAccountQuery } from '../cqrs/queries/get-child-account.query';
+import { CreateChildAccountCommand } from '../cqrs/commands/create-child-account.command';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -37,6 +40,8 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly onlineService: OnlineService,
+    private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get('get-child-account/:id')
@@ -45,11 +50,7 @@ export class UserController {
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
-    const childUser = await this.userService.findOneOrFail(params.id);
-
-    await this.userService.checkParentUser(childUser, currentUser);
-
-    return childUser;
+    return this.queryBus.execute(new GetChildAccountQuery(params, currentUser));
   }
 
   @Get('get-children-list')
@@ -110,12 +111,9 @@ export class UserController {
     @Body() createUserDto: CreateUserDto,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
-    const childUser = await this.userService.createChildAccount(
-      createUserDto,
-      currentUser.id,
+    return this.commandBus.execute(
+      new CreateChildAccountCommand(createUserDto, currentUser),
     );
-
-    return childUser;
   }
 
   @Patch('update-child-account/:id')

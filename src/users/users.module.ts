@@ -24,6 +24,9 @@ import { Notification } from '../notifications/notification.entity';
 import { NotificationGateway } from '../notifications/notification.gateway';
 import { OnlineService } from './online/online.service';
 import { RedisModule } from '../redis/redis.module';
+import { CqrsModule } from '@nestjs/cqrs';
+import { GetChildAccountHandler } from './cqrs/handlers/get-child-account.handler';
+import { CreateChildAccountHandler } from './cqrs/handlers/create-child-account.handler';
 
 @Module({
   imports: [
@@ -44,6 +47,7 @@ import { RedisModule } from '../redis/redis.module';
         },
       }),
     }),
+    CqrsModule,
   ],
   providers: [
     PasswordService,
@@ -66,6 +70,8 @@ import { RedisModule } from '../redis/redis.module';
       provide: APP_GUARD,
       useClass: RolesGuard,
     },
+    GetChildAccountHandler,
+    CreateChildAccountHandler,
   ],
   controllers: [AuthController, UserController],
   exports: [UserService],
