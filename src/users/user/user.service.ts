@@ -4,7 +4,6 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
 import { User } from '../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -13,7 +12,6 @@ import { PasswordService } from '../password/password.service';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { Role } from '../role.enum';
 import { PaginationParams } from '../../common/pagination.params';
-import { UpdateUserDto } from '../dto/update-user.dto';
 import { AwsService } from '../../aws/aws.service';
 import { CurrentUserDto } from '../dto/current-user.dto';
 import { DashboardSettingsService } from '../../dashboardSettings/dashboard-settings.service';
@@ -127,29 +125,7 @@ export class UserService {
     return user;
   }
 
-  public async updateUser(
-    user: User,
-    updateUserDto: UpdateUserDto,
-  ): Promise<User> {
-    if (updateUserDto.password && updateUserDto.oldPassword) {
-      //Compare the old password with the password in db
-      if (
-        !(await this.passwordService.verify(
-          updateUserDto.oldPassword,
-          user.password,
-        ))
-      ) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
-
-      //hash new password
-      updateUserDto.password = await this.passwordService.hash(
-        updateUserDto.password,
-      );
-    }
-
-    Object.assign(user, updateUserDto);
-
+  public async updateUser(user: User): Promise<User> {
     return await this.userRepository.save(user);
   }
 

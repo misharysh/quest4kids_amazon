@@ -9,11 +9,11 @@ export class UpdateChildAccountHandler
 {
   constructor(private readonly userService: UserService) {}
   async execute(command: UpdateChildAccountCommand): Promise<User> {
-    const { childId, updateUserDto, currentUser } = command;
+    const { childId, currentUser, applyChanges } = command;
     const childUser = await this.userService.findOneOrFail(childId);
-
+    await applyChanges(childUser);
     await this.userService.checkParentUser(childUser, currentUser);
 
-    return await this.userService.updateUser(childUser, updateUserDto);
+    return await this.userService.updateUser(childUser);
   }
 }

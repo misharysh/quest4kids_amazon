@@ -34,6 +34,7 @@ import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetChildAccountQuery } from '../cqrs/queries/get-child-account.query';
 import { CreateChildAccountCommand } from '../cqrs/commands/create-child-account.command';
 import { UpdateChildAccountCommand } from '../cqrs/commands/update-child-account.command';
+import { populate } from './mappers/user-mapper';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -125,7 +126,9 @@ export class UserController {
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
     return this.commandBus.execute(
-      new UpdateChildAccountCommand(params.id, updateUserDto, currentUser),
+      new UpdateChildAccountCommand(params.id, currentUser, (user) =>
+        populate(user, updateUserDto),
+      ),
     );
   }
 
