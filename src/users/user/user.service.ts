@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   ForbiddenException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -15,6 +16,9 @@ import { PaginationParams } from '../../common/pagination.params';
 import { AwsService } from '../../aws/aws.service';
 import { CurrentUserDto } from '../dto/current-user.dto';
 import { DashboardSettingsService } from '../../dashboardSettings/dashboard-settings.service';
+import { ILoggingFactory } from 'src/logging/logging.interfaces';
+import { LogLevel } from 'src/logging/log-level.enum';
+import { LoggingFactory } from 'src/logging/logging.factory';
 
 @Injectable()
 export class UserService {
@@ -24,6 +28,7 @@ export class UserService {
     private readonly passwordService: PasswordService,
     private readonly awsService: AwsService,
     private readonly dashboardSettings: DashboardSettingsService,
+    private readonly loggingFactory:LoggingFactory
   ) {}
 
   public async findOneByEmail(email: string): Promise<User | null> {
@@ -61,6 +66,11 @@ export class UserService {
     pagination: PaginationParams,
     parentId: string,
   ): Promise<[User[], number]> {
+
+    const logger = await this.loggingFactory.create(UserService.name, 'console');
+    logger.scope({ correlationId: '425' });
+    logger.log(LogLevel.info, 'Fetching users', { parentId: parentId });
+
     const query = this.userRepository
       .createQueryBuilder('user')
       .leftJoinAndSelect('user.badges', 'userBadge')

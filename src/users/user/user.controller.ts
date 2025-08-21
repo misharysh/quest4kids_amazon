@@ -30,6 +30,8 @@ import { PointsDto } from '../dto/points.dto';
 import { UserWithOnlineStatusDto } from '../dto/user-with-online-status.dto';
 import { OnlineService } from '../online/online.service';
 import { UpdateTelegramChatIdDto } from '../dto/update-telegram-chat-id.dto';
+import { LoggingFactory } from 'src/logging/logging.factory';
+import { LogLevel } from 'src/logging/log-level.enum';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetChildAccountQuery } from '../cqrs/queries/get-child-account.query';
 import { CreateChildAccountCommand } from '../cqrs/commands/create-child-account.command';
@@ -39,9 +41,11 @@ import { populate } from './mappers/user-mapper';
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
+
   constructor(
     private readonly userService: UserService,
     private readonly onlineService: OnlineService,
+    private readonly loggingFactory: LoggingFactory,
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
   ) {}
@@ -52,6 +56,10 @@ export class UserController {
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
+    const logger = await this.loggingFactory.create(UserController.name, 'console');
+    logger.scope({ correlationId: '888' });
+    logger.log(LogLevel.info, 'Fetching user', { });
+
     return this.queryBus.execute(new GetChildAccountQuery(params, currentUser));
   }
 
@@ -61,6 +69,10 @@ export class UserController {
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<User>> {
+    
+    const logger = await this.loggingFactory.create(UserController.name, 'console');
+    logger.scope({ correlationId: '123', traceId: 'abc' });
+
     const [items, total] = await this.userService.findAll(
       pagination,
       currentUser.id,

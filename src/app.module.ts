@@ -31,6 +31,8 @@ import { StatisticsModule } from './statistics/statistics.module';
 import { redisConfig } from './config/bull.config';
 import { TelegramService } from './telegram/telegram.service';
 import { TelegramModule } from './telegram/telegram.module';
+import { LoggingModule } from './logging/logging.module';
+import { DatabaseLogEntity } from './logging/database-logging.entity';
 
 @Module({
   imports: [
@@ -65,6 +67,7 @@ import { TelegramModule } from './telegram/telegram.module';
           DashboardSettings,
           Notification,
           Message,
+          DatabaseLogEntity
         ],
         autoLoadEntities: true,
         synchronize: false,
@@ -87,6 +90,7 @@ import { TelegramModule } from './telegram/telegram.module';
     RedisModule,
     BullModule.forRoot(redisConfig),
     TelegramModule,
+    LoggingModule,
   ],
   controllers: [AppController],
   providers: [AppService, TelegramService],
