@@ -35,7 +35,7 @@ export class HttpResponseLoggingInterceptor implements NestInterceptor {
 
     const protocol = 'HTTP';
 
-    const logger = this.loggingFactory.create('http');
+    const logger = this.loggingFactory.create('http', 'console');
 
     return next.handle().pipe(
       tap((data) => {
