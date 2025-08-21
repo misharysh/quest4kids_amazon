@@ -31,7 +31,7 @@ export class HttpRequestLoggingMiddleware implements NestMiddleware {
     const url = req.originalUrl || req.url;
     const method = req.method?.toUpperCase() || 'GET';
 
-    const logger = this.loggingFactory.create('http', 'console');
+    const logger = this.loggingFactory.create('http');
     logger.scope({
       traceId,
       correlationId,
