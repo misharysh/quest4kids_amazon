@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
@@ -33,6 +33,10 @@ import { TelegramService } from './telegram/telegram.service';
 import { TelegramModule } from './telegram/telegram.module';
 import { LoggingModule } from './logging/logging.module';
 import { DatabaseLogEntity } from './logging/database-logging.entity';
+import { APP_INTERCEPTOR } from '@nestjs/core';
+import { HttpResponseLoggingInterceptor } from './logging/http-response-logging.interceptor';
+import { HttpRequestLoggingMiddleware } from './logging/http-request-logging.middleware';
+import { NestModule } from '@nestjs/common';
 
 @Module({
   imports: [
@@ -67,7 +71,7 @@ import { DatabaseLogEntity } from './logging/database-logging.entity';
           DashboardSettings,
           Notification,
           Message,
-          DatabaseLogEntity
+          DatabaseLogEntity,
         ],
         autoLoadEntities: true,
         synchronize: false,
@@ -93,6 +97,17 @@ import { DatabaseLogEntity } from './logging/database-logging.entity';
     LoggingModule,
   ],
   controllers: [AppController],
-  providers: [AppService, TelegramService],
+  providers: [
+    AppService,
+    TelegramService,
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: HttpResponseLoggingInterceptor,
+    },
+  ],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(HttpRequestLoggingMiddleware).forRoutes('*');
+  }
+}

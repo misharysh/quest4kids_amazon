@@ -1,9 +1,9 @@
-import { LogLevel } from "./log-level.enum";
+import { LogLevel } from './log-level.enum';
 
 export class LogEntry {
-    timestamp: string;
-    level: LogLevel;
-    category: string;
-    message: string;
-    properties?: object;
+  timestamp: string;
+  level: LogLevel;
+  category: string;
+  message: string;
+  properties?: object;
 }

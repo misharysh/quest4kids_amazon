@@ -41,7 +41,6 @@ import { populate } from './mappers/user-mapper';
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
-
   constructor(
     private readonly userService: UserService,
     private readonly onlineService: OnlineService,
@@ -56,9 +55,12 @@ export class UserController {
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
-    const logger = await this.loggingFactory.create(UserController.name, 'console');
+    const logger = await this.loggingFactory.create(
+      UserController.name,
+      'console',
+    );
     logger.scope({ correlationId: '888' });
-    logger.log(LogLevel.info, 'Fetching user', { });
+    logger.log(LogLevel.info, 'Fetching user', {});
 
     return this.queryBus.execute(new GetChildAccountQuery(params, currentUser));
   }
@@ -69,8 +71,10 @@ export class UserController {
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<User>> {
-    
-    const logger = await this.loggingFactory.create(UserController.name, 'console');
+    const logger = await this.loggingFactory.create(
+      UserController.name,
+      'console',
+    );
     logger.scope({ correlationId: '123', traceId: 'abc' });
 
     const [items, total] = await this.userService.findAll(

@@ -32,6 +32,7 @@ import { GoogleAuthGuard } from '../guards/google-auth.guard';
 import { NotificationService } from '../../notifications/notification.service';
 import { ProfileResponseDto } from '../dto/profile.response.dto';
 import { plainToInstance } from 'class-transformer';
+import { populate } from '../user/mappers/user-mapper';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -114,8 +115,8 @@ export class AuthController {
     if (!user) {
       throw new NotFoundException();
     }
-
-    return await this.userService.updateUser(user, updateUserDto);
+    await populate(user, updateUserDto);
+    return await this.userService.updateUser(user);
   }
 
   @Post('forgot-password')

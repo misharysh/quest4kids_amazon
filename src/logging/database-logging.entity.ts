@@ -1,24 +1,28 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn } from "typeorm";
-import { LogLevel } from "./log-level.enum";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { LogLevel } from './log-level.enum';
 
 @Entity('logs')
-export class DatabaseLogEntity
-{
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+export class DatabaseLogEntity {
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @CreateDateColumn()
-    timestamp: Date;
+  @CreateDateColumn()
+  timestamp: Date;
 
-    @Column({type: 'enum', enum:LogLevel})
-    level: LogLevel;
+  @Column({ type: 'enum', enum: LogLevel })
+  level: LogLevel;
 
-    @Column()
-    category: string;
+  @Column()
+  category: string;
 
-    @Column()
-    message: string;
+  @Column()
+  message: string;
 
-    @Column({ type: 'jsonb', nullable: true })
-    properties?: object;
+  @Column({ type: 'jsonb', nullable: true })
+  properties?: object;
 }
