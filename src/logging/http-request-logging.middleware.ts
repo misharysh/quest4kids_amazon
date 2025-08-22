@@ -1,14 +1,17 @@
-import { Injectable, NestMiddleware } from '@nestjs/common';
+import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as os from 'os';
-import { LoggingFactory } from './logging.factory';
+import { ILoggingFactory } from 'src/logging/logging.interfaces';
 import { LogLevel } from './log-level.enum';
 
 @Injectable()
 export class HttpRequestLoggingMiddleware implements NestMiddleware {
-  constructor(private readonly loggingFactory: LoggingFactory) {}
+  constructor(
+    @Inject('LoggingFactory')
+    private readonly loggingFactory: ILoggingFactory
+  ) {}
 
-  use(req: Request, _res: Response, next: NextFunction) {
+  async use(req: Request, _res: Response, next: NextFunction) {
     const traceId = (req.headers['x-trace-id'] as string) || '';
     const correlationId = (req.headers['x-correlation-id'] as string) || '';
 
@@ -24,7 +27,7 @@ export class HttpRequestLoggingMiddleware implements NestMiddleware {
     const url = req.originalUrl;
     const method = req.method?.toUpperCase();
 
-    const logger = this.loggingFactory.create('serverRequest');
+    const logger = await this.loggingFactory.create('serverRequest');
     logger.scope({
       traceId,
       correlationId,

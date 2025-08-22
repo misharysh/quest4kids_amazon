@@ -7,6 +7,7 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Inject,
   Param,
   Patch,
   Post,
@@ -30,7 +31,6 @@ import { PointsDto } from '../dto/points.dto';
 import { UserWithOnlineStatusDto } from '../dto/user-with-online-status.dto';
 import { OnlineService } from '../online/online.service';
 import { UpdateTelegramChatIdDto } from '../dto/update-telegram-chat-id.dto';
-import { LoggingFactory } from 'src/logging/logging.factory';
 import { LogLevel } from 'src/logging/log-level.enum';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetChildAccountQuery } from '../cqrs/queries/get-child-account.query';
@@ -38,6 +38,7 @@ import { CreateChildAccountCommand } from '../cqrs/commands/create-child-account
 import { UpdateChildAccountCommand } from '../cqrs/commands/update-child-account.command';
 import { populate } from './mappers/user-mapper';
 import { GetChildrenListQuery } from '../cqrs/queries/get-children-list.query';
+import { ILoggingFactory } from 'src/logging/logging.interfaces';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -45,7 +46,8 @@ export class UserController {
   constructor(
     private readonly userService: UserService,
     private readonly onlineService: OnlineService,
-    private readonly loggingFactory: LoggingFactory,
+    @Inject('LoggingFactory')
+    private readonly loggingFactory: ILoggingFactory,
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
   ) {}
@@ -56,7 +58,7 @@ export class UserController {
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
-    const logger = this.loggingFactory.create(UserController.name, 'console');
+    const logger = await this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '888' });
     logger.log(LogLevel.info, 'Fetching user', {});
 
@@ -71,7 +73,8 @@ export class UserController {
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<User>> {
-    const logger = this.loggingFactory.create(UserController.name, 'console');
+    
+    const logger = await this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '123', traceId: 'abc' });
 
     const query = new GetChildrenListQuery(pagination, currentUser);

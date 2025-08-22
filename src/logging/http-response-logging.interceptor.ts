@@ -1,20 +1,24 @@
 import {
   CallHandler,
   ExecutionContext,
+  Inject,
   Injectable,
   NestInterceptor,
   Scope,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { Observable, tap } from 'rxjs';
-import { LoggingFactory } from './logging.factory';
+import { ILoggingFactory } from 'src/logging/logging.interfaces';
 import { LogLevel } from './log-level.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class HttpResponseLoggingInterceptor implements NestInterceptor {
-  constructor(private readonly loggingFactory: LoggingFactory) {}
+  constructor(
+    @Inject('LoggingFactory')
+    private readonly loggingFactory: ILoggingFactory
+  ) {}
 
-  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
+  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
     if (!this.loggingFactory) {
       return next.handle();
     }
@@ -22,7 +26,7 @@ export class HttpResponseLoggingInterceptor implements NestInterceptor {
     const http = context.switchToHttp();
     const res = http.getResponse<Response>();
 
-    const logger = this.loggingFactory.create('serverResponse');
+    const logger = await this.loggingFactory.create('serverResponse');
 
     return next.handle().pipe(
       tap((data) => {

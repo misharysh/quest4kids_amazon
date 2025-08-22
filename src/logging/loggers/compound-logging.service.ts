@@ -1,15 +1,13 @@
 import { Injectable, Scope } from "@nestjs/common";
-import { LogEntry } from "../log-entry";
 import { LogLevel } from "../log-level.enum";
 import { ILoggingService } from "../logging.interfaces";
 import { LoggingScope } from "../logging.scope";
 
 @Injectable({scope: Scope.TRANSIENT})
-export class ConsoleLoggingService implements ILoggingService
-{
+export class CompoundLoggingService implements ILoggingService {
     constructor(
         private readonly loggingScope: LoggingScope,
-        private readonly category: string,
+        private readonly services: ILoggingService[],
     ) {}
 
     scope(properties: Record<string, any>): void {
@@ -18,20 +16,10 @@ export class ConsoleLoggingService implements ILoggingService
             ...properties,
         };
     }
+    
 
     log(level: LogLevel, message: string, properties?: object): void {
-        const entry: LogEntry = 
-        {
-            timestamp: new Date().toISOString(),
-            level,
-            category: this.category,
-            message,
-            properties: {
-            ...this.loggingScope.context,
-            ...(properties || {}),
-            },
-        };
-
-    console.log(JSON.stringify(entry));
-  }
+        this.services.forEach(s => s.log(level, message, properties));
+    }
+    
 }
