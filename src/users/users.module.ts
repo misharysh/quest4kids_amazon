@@ -33,6 +33,7 @@ const Handlers = [
   GetChildAccountHandler,
   CreateChildAccountHandler,
   UpdateChildAccountHandler,
+  GetChildAccountHandler,
 ];
 
 @Module({

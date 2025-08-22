@@ -37,6 +37,7 @@ import { GetChildAccountQuery } from '../cqrs/queries/get-child-account.query';
 import { CreateChildAccountCommand } from '../cqrs/commands/create-child-account.command';
 import { UpdateChildAccountCommand } from '../cqrs/commands/update-child-account.command';
 import { populate } from './mappers/user-mapper';
+import { GetChildrenListQuery } from '../cqrs/queries/get-children-list.query';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -55,14 +56,13 @@ export class UserController {
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
-    const logger = await this.loggingFactory.create(
-      UserController.name,
-      'console',
-    );
+    const logger = this.loggingFactory.create(UserController.name, 'console');
     logger.scope({ correlationId: '888' });
     logger.log(LogLevel.info, 'Fetching user', {});
 
-    return this.queryBus.execute(new GetChildAccountQuery(params, currentUser));
+    const query = new GetChildAccountQuery(params, currentUser);
+    const user: Promise<User> = this.queryBus.execute(query);
+    return user;
   }
 
   @Get('get-children-list')
@@ -71,16 +71,14 @@ export class UserController {
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<User>> {
-    const logger = await this.loggingFactory.create(
-      UserController.name,
-      'console',
-    );
+    const logger = this.loggingFactory.create(UserController.name, 'console');
     logger.scope({ correlationId: '123', traceId: 'abc' });
 
-    const [items, total] = await this.userService.findAll(
-      pagination,
-      currentUser.id,
-    );
+    const query = new GetChildrenListQuery(pagination, currentUser);
+    const [items, total] = await this.queryBus.execute<
+      GetChildrenListQuery,
+      [User[], number]
+    >(query);
 
     return {
       data: items,
@@ -141,11 +139,12 @@ export class UserController {
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
-    return this.commandBus.execute(
-      new UpdateChildAccountCommand(params.id, currentUser, (user) =>
-        populate(user, updateUserDto),
-      ),
+    const command = new UpdateChildAccountCommand(
+      params.id,
+      currentUser,
+      (user) => populate(user, updateUserDto),
     );
+    return this.commandBus.execute(command);
   }
 
   @Delete('remove-child-account/:id')

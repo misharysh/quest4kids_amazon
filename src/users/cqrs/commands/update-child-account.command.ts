@@ -1,12 +1,8 @@
-import { ICommand } from '@nestjs/cqrs';
 import { CurrentUserDto } from '../../dto/current-user.dto';
 import { User } from '../../user.entity';
 import { AuthenticatedCommand } from './authenticated.command';
 
-export class UpdateChildAccountCommand
-  extends AuthenticatedCommand
-  implements ICommand
-{
+export class UpdateChildAccountCommand extends AuthenticatedCommand {
   constructor(
     public readonly childId: string,
     currentUser: CurrentUserDto,

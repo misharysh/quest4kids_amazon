@@ -1,19 +1,33 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UpdateChildAccountCommand } from '../commands/update-child-account.command';
-import { UserService } from '../../user/user.service';
 import { User } from '../../user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { ForbiddenException } from '@nestjs/common';
 
 @CommandHandler(UpdateChildAccountCommand)
 export class UpdateChildAccountHandler
   implements ICommandHandler<UpdateChildAccountCommand>
 {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    @InjectRepository(User)
+    private readonly userRepository: Repository<User>,
+  ) {}
+
   async execute(command: UpdateChildAccountCommand): Promise<User> {
     const { childId, currentUser, applyChanges } = command;
-    const childUser = await this.userService.findOneOrFail(childId);
+    const childUser = await this.userRepository.findOne({
+      where: { id: childId },
+      relations: ['badges', 'badges.badge'],
+    });
+    if (!childUser) {
+      throw new Error('Child user not found');
+    }
     await applyChanges(childUser);
-    await this.userService.checkParentUser(childUser, currentUser);
+    if (childUser.parentId !== currentUser.id) {
+      throw new ForbiddenException('You can only access your children');
+    }
 
-    return await this.userService.updateUser(childUser);
+    return await this.userRepository.save(childUser);
   }
 }

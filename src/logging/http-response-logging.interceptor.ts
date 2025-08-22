@@ -20,33 +20,14 @@ export class HttpResponseLoggingInterceptor implements NestInterceptor {
     }
 
     const http = context.switchToHttp();
-    const req = http.getRequest<Request>();
     const res = http.getResponse<Response>();
 
-    const traceId =
-      (req.headers['x-trace-id'] as string) ||
-      (req.headers['x-traceid'] as string) ||
-      '';
-
-    const correlationId =
-      (req.headers['x-correlation-id'] as string) ||
-      (req.headers['x-correlationid'] as string) ||
-      '';
-
-    const protocol = 'HTTP';
-
-    const logger = this.loggingFactory.create('http');
+    const logger = this.loggingFactory.create('serverResponse');
 
     return next.handle().pipe(
       tap((data) => {
         const status = res.statusCode;
-        const reason_phrase = res.statusMessage || 'OK';
-
-        const contentType = (res.getHeader('content-type') as string) || '';
-        const responseTraceId =
-          (res.getHeader('X-Trace-ID') as string) || traceId;
-        const responseCorrelationId =
-          (res.getHeader('X-Correlation-ID') as string) || correlationId;
+        const reason_phrase = res.statusMessage;
 
         const body = (() => {
           try {
@@ -57,15 +38,13 @@ export class HttpResponseLoggingInterceptor implements NestInterceptor {
         })();
 
         logger.log(LogLevel.info, 'HTTP Response', {
-          traceId,
-          correlationId,
-          protocol,
           status,
           reason_phrase,
           headers: {
-            'Content-Type': contentType,
-            'X-Trace-ID': responseTraceId,
-            'X-Correlation-ID': responseCorrelationId,
+            // 'Content-Type': contentType,
+            // 'X-Trace-ID': responseTraceId,
+            // 'X-Correlation-ID': responseCorrelationId,
+            //TODO all headers
           },
           body,
         });
