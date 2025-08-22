@@ -60,7 +60,7 @@ export class UserController {
   ): Promise<User> {
     const logger = await this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '888' });
-    logger.log(LogLevel.info, 'Fetching user', {});
+    logger.logInfo('Fetching user', {});
 
     const query = new GetChildAccountQuery(params, currentUser);
     const user: Promise<User> = this.queryBus.execute(query);

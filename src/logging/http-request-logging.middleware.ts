@@ -23,7 +23,14 @@ export class HttpRequestLoggingMiddleware implements NestMiddleware {
       (req.ip || req.socket?.remoteAddress || '').toString();
 
     const hostName = os.hostname();
-    const protocol = req.protocol || 'HTTP'; //TODO: x-forvarded-proto
+    let protocol = (req.headers['x-forwarded-proto'] as string | undefined)
+      ?.split(',')[0]
+      ?.trim()
+      ?.toLowerCase();
+    if (protocol !== 'https' && protocol !== 'http') {
+      protocol = req.protocol || '';
+    }
+
     const url = req.originalUrl;
     const method = req.method?.toUpperCase();
 
@@ -48,12 +55,7 @@ export class HttpRequestLoggingMiddleware implements NestMiddleware {
       protocol,
       url,
       method,
-      headers: {
-        Authorization: (req.headers['authorization'] as string) ?? '',
-        'Content-Type': (req.headers['content-type'] as string) ?? '',
-        'X-Correlation-ID': correlationId,
-        //TODO all headers
-      },
+      headers: req.rawHeaders,
       body,
     });
 

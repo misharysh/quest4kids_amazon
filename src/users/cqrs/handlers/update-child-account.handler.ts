@@ -3,7 +3,7 @@ import { UpdateChildAccountCommand } from '../commands/update-child-account.comm
 import { User } from '../../user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
-import { ForbiddenException } from '@nestjs/common';
+import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
 @CommandHandler(UpdateChildAccountCommand)
 export class UpdateChildAccountHandler
@@ -21,7 +21,7 @@ export class UpdateChildAccountHandler
       relations: ['badges', 'badges.badge'],
     });
     if (!childUser) {
-      throw new Error('Child user not found');
+      throw new NotFoundException('Child user not found');
     }
     await applyChanges(childUser);
     if (childUser.parentId !== currentUser.id) {

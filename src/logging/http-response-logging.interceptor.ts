@@ -44,12 +44,7 @@ export class HttpResponseLoggingInterceptor implements NestInterceptor {
         logger.log(LogLevel.info, 'HTTP Response', {
           status,
           reason_phrase,
-          headers: {
-            // 'Content-Type': contentType,
-            // 'X-Trace-ID': responseTraceId,
-            // 'X-Correlation-ID': responseCorrelationId,
-            //TODO all headers
-          },
+          headers: res.getHeaders(),
           body,
         });
       }),
