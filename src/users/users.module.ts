@@ -28,12 +28,24 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { GetChildAccountHandler } from './cqrs/handlers/get-child-account.handler';
 import { CreateChildAccountHandler } from './cqrs/handlers/create-child-account.handler';
 import { UpdateChildAccountHandler } from './cqrs/handlers/update-child-account.handler';
+import { AddAvatarHandler } from './cqrs/handlers/add-avatar.handler';
+import { ClaimPointsHandler } from './cqrs/handlers/claim-points.handler';
+import { GetAvatarHandler } from './cqrs/handlers/get-avatar.handler';
+import { GetOnlineUsersHandler } from './cqrs/handlers/get-online-users.handler';
+import { RemoveChildAccountHandler } from './cqrs/handlers/remove-child-account.handler';
+import { TelegramChatIdHandler } from './cqrs/handlers/telegram-chat-id.handler';
 
 const Handlers = [
   GetChildAccountHandler,
   CreateChildAccountHandler,
   UpdateChildAccountHandler,
   GetChildAccountHandler,
+  AddAvatarHandler,
+  ClaimPointsHandler,
+  GetAvatarHandler,
+  GetOnlineUsersHandler,
+  RemoveChildAccountHandler,
+  TelegramChatIdHandler,
 ];
 
 @Module({

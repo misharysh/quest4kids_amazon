@@ -28,7 +28,7 @@ export class UserService {
     private readonly awsService: AwsService,
     private readonly dashboardSettings: DashboardSettingsService,
     @Inject('LoggingFactory')
-    private readonly loggingFactory: ILoggingFactory
+    private readonly loggingFactory: ILoggingFactory,
   ) {}
 
   public async findOneByEmail(email: string): Promise<User | null> {
@@ -66,7 +66,6 @@ export class UserService {
     pagination: PaginationParams,
     parentId: string,
   ): Promise<[User[], number]> {
-
     const logger = await this.loggingFactory.create(UserService.name);
     logger.scope({ correlationId: '425' });
     logger.log(LogLevel.info, 'Fetching users', { parentId: parentId });

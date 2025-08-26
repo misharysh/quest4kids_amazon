@@ -1,6 +1,6 @@
-import { Injectable, Scope } from "@nestjs/common";
+import { Injectable, Scope } from '@nestjs/common';
 
-@Injectable({scope: Scope.REQUEST})
+@Injectable({ scope: Scope.REQUEST })
 export class LoggingScope {
-    context: Record<string,any> = {};
+  context: Record<string, any> = {};
 }

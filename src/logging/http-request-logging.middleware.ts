@@ -2,13 +2,12 @@ import { Inject, Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
 import * as os from 'os';
 import { ILoggingFactory } from 'src/logging/logging.interfaces';
-import { LogLevel } from './log-level.enum';
 
 @Injectable()
 export class HttpRequestLoggingMiddleware implements NestMiddleware {
   constructor(
     @Inject('LoggingFactory')
-    private readonly loggingFactory: ILoggingFactory
+    private readonly loggingFactory: ILoggingFactory,
   ) {}
 
   async use(req: Request, _res: Response, next: NextFunction) {
@@ -49,7 +48,7 @@ export class HttpRequestLoggingMiddleware implements NestMiddleware {
       }
     })();
 
-    logger.log(LogLevel.info, 'HTTP Request', {
+    logger.info('HTTP Request', {
       clientIp,
       hostName,
       protocol,

@@ -9,16 +9,18 @@ import {
 import { Response } from 'express';
 import { Observable, tap } from 'rxjs';
 import { ILoggingFactory } from 'src/logging/logging.interfaces';
-import { LogLevel } from './log-level.enum';
 
 @Injectable({ scope: Scope.REQUEST })
 export class HttpResponseLoggingInterceptor implements NestInterceptor {
   constructor(
     @Inject('LoggingFactory')
-    private readonly loggingFactory: ILoggingFactory
+    private readonly loggingFactory: ILoggingFactory,
   ) {}
 
-  async intercept(context: ExecutionContext, next: CallHandler): Promise<Observable<any>> {
+  async intercept(
+    context: ExecutionContext,
+    next: CallHandler,
+  ): Promise<Observable<any>> {
     if (!this.loggingFactory) {
       return next.handle();
     }
@@ -41,7 +43,7 @@ export class HttpResponseLoggingInterceptor implements NestInterceptor {
           }
         })();
 
-        logger.log(LogLevel.info, 'HTTP Response', {
+        logger.info('HTTP Response', {
           status,
           reason_phrase,
           headers: res.getHeaders(),

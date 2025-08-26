@@ -8,6 +8,7 @@ import {
   HttpCode,
   HttpStatus,
   Inject,
+  NotFoundException,
   Param,
   Patch,
   Post,
@@ -31,7 +32,6 @@ import { PointsDto } from '../dto/points.dto';
 import { UserWithOnlineStatusDto } from '../dto/user-with-online-status.dto';
 import { OnlineService } from '../online/online.service';
 import { UpdateTelegramChatIdDto } from '../dto/update-telegram-chat-id.dto';
-import { LogLevel } from 'src/logging/log-level.enum';
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetChildAccountQuery } from '../cqrs/queries/get-child-account.query';
 import { CreateChildAccountCommand } from '../cqrs/commands/create-child-account.command';
@@ -39,6 +39,12 @@ import { UpdateChildAccountCommand } from '../cqrs/commands/update-child-account
 import { populate } from './mappers/user-mapper';
 import { GetChildrenListQuery } from '../cqrs/queries/get-children-list.query';
 import { ILoggingFactory } from 'src/logging/logging.interfaces';
+import { GetOnlineUsersQuery } from '../cqrs/queries/get-online-users.query';
+import { RemoveChildAccountCommand } from '../cqrs/commands/remove-child-account.command';
+import { AddAvatarCommand } from '../cqrs/commands/add-avatar.command';
+import { GetAvatarQuery } from '../cqrs/queries/get-avatar.query';
+import { ClaimPointsCommand } from '../cqrs/commands/claim-points.command';
+import { TelegramChatIdCommand } from '../cqrs/commands/telegram-chat-id.command';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -60,7 +66,7 @@ export class UserController {
   ): Promise<User> {
     const logger = await this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '888' });
-    logger.logInfo('Fetching user', {});
+    logger.info('Fetching user', {});
 
     const query = new GetChildAccountQuery(params, currentUser);
     const user: Promise<User> = this.queryBus.execute(query);
@@ -73,7 +79,6 @@ export class UserController {
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<User>> {
-    
     const logger = await this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '123', traceId: 'abc' });
 
@@ -97,31 +102,10 @@ export class UserController {
   public async getOnlineUsers(
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<UserWithOnlineStatusDto[]> {
-    const isParent = currentUser.role === Role.PARENT;
-
-    let usersWithOnlineStatus: User[] = [];
-
-    if (isParent) {
-      const pagination = new PaginationParams();
-      const [items, total] = await this.userService.findAll(
-        pagination,
-        currentUser.id,
-      );
-
-      usersWithOnlineStatus = items;
-    } else {
-      const parentUser = await this.userService.findParentByChildId(
-        currentUser.id,
-      );
-      if (parentUser) {
-        usersWithOnlineStatus.push(parentUser);
-      }
-    }
-
-    return usersWithOnlineStatus.map((user) => ({
-      ...user,
-      isOnline: this.onlineService.isUserOnline(user.id),
-    }));
+    const query = new GetOnlineUsersQuery(currentUser);
+    const users: Promise<UserWithOnlineStatusDto[]> =
+      this.queryBus.execute(query);
+    return users;
   }
 
   @Post('create-child-account')
@@ -157,11 +141,8 @@ export class UserController {
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<void> {
-    const childUser = await this.userService.findOneOrFail(params.id);
-
-    await this.userService.checkParentUser(childUser, currentUser);
-
-    await this.userService.deleteUser(childUser);
+    const command = new RemoveChildAccountCommand(params, currentUser);
+    return this.commandBus.execute(command);
   }
 
   @Post(':id/avatar')
@@ -182,12 +163,9 @@ export class UserController {
     @CurrentUser() currentUser: CurrentUserDto,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<User> {
-    const user = await this.userService.checkAvatarOwnership(
-      params.id,
-      currentUser,
-    );
-
-    return this.userService.addAvatar(user, file);
+    const command = new AddAvatarCommand(params, currentUser, file);
+    const user: Promise<User> = this.commandBus.execute(command);
+    return user;
   }
 
   @Get(':id/avatar')
@@ -195,18 +173,9 @@ export class UserController {
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<string> {
-    const user = await this.userService.checkAvatarOwnership(
-      params.id,
-      currentUser,
-    );
-
-    if (!user.avatarName) {
-      return '';
-    }
-
-    const url = await this.userService.getAvatar(user.avatarName);
-
-    return url;
+    const quey = new GetAvatarQuery(params, currentUser);
+    const avatar: Promise<string> = this.queryBus.execute(quey);
+    return avatar;
   }
 
   @Post(':id/claim-points')
@@ -216,24 +185,18 @@ export class UserController {
     @CurrentUser() currentUser: CurrentUserDto,
     @Body() pointsDto: PointsDto,
   ): Promise<User> {
-    const childUser = await this.userService.findOneOrFail(params.id);
-
-    await this.userService.checkParentUser(childUser, currentUser);
-
-    return await this.userService.claimPoints(
-      childUser,
-      pointsDto.exchangePoints,
-    );
+    const command = new ClaimPointsCommand(params, currentUser, pointsDto);
+    const user: Promise<User> = this.commandBus.execute(command);
+    return user;
   }
 
   @Patch('telegram-chat-id')
   async updateTelegramChatId(
     @CurrentUser() currentUser: CurrentUserDto,
     @Body() updateTelegramChatIdDto: UpdateTelegramChatIdDto,
-  ) {
-    return await this.userService.updateTelegramChatId(
-      currentUser.id,
-      updateTelegramChatIdDto.telegramChatId,
-    );
+  ): Promise<User> {
+    const command = new TelegramChatIdCommand(currentUser, updateTelegramChatIdDto);
+    const user: Promise<User> = this.commandBus.execute(command);
+    return user;
   }
 }
