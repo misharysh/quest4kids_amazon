@@ -11,8 +11,11 @@ export class HttpRequestLoggingMiddleware implements NestMiddleware {
   ) {}
 
   async use(req: Request, _res: Response, next: NextFunction) {
-    const traceId = (req.headers['x-trace-id'] as string) || '';
-    const correlationId = (req.headers['x-correlation-id'] as string) || '';
+    const traceId =
+      (req.headers['x-trace-id'] as string) || (req.traceId as string);
+    const correlationId =
+      (req.headers['x-correlation-id'] as string) ||
+      (req.correlationId as string);
 
     const clientIp =
       ((req.headers['x-forwarded-for'] as string) || '')

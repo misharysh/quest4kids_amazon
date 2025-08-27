@@ -195,7 +195,10 @@ export class UserController {
     @CurrentUser() currentUser: CurrentUserDto,
     @Body() updateTelegramChatIdDto: UpdateTelegramChatIdDto,
   ): Promise<User> {
-    const command = new TelegramChatIdCommand(currentUser, updateTelegramChatIdDto);
+    const command = new TelegramChatIdCommand(
+      currentUser,
+      updateTelegramChatIdDto,
+    );
     const user: Promise<User> = this.commandBus.execute(command);
     return user;
   }

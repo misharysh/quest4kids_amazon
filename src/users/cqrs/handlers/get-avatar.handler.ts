@@ -8,7 +8,7 @@ import { Role } from '../../role.enum';
 import { PaginationParams } from '../../../common/pagination.params';
 import { ForbiddenException, NotFoundException } from '@nestjs/common';
 
-@QueryHandler('get-avatar')
+@QueryHandler(GetAvatarQuery)
 export class GetAvatarHandler implements IQueryHandler<GetAvatarQuery> {
   constructor(
     @InjectRepository(User)

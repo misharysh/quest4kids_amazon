@@ -26,8 +26,7 @@ export class TraceIdentityInterceptor implements NestInterceptor {
     const traceId = generateUuidNoDashes();
 
     response.setHeader(TRACE_HEADER, traceId);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    (request as any).traceId = traceId;
+    request.traceId = traceId;
 
     return next.handle();
   }

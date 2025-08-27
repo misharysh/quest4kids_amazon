@@ -9,7 +9,7 @@ import { Repository } from 'typeorm';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { OnlineService } from '../../online/online.service';
 
-@QueryHandler('get-online-users')
+@QueryHandler(GetOnlineUsersQuery)
 export class GetOnlineUsersHandler
   implements IQueryHandler<GetOnlineUsersQuery>
 {

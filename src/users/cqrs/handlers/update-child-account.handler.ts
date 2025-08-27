@@ -18,7 +18,7 @@ export class UpdateChildAccountHandler
     const { childId, currentUser, applyChanges } = command;
     const childUser = await this.userRepository.findOne({
       where: { id: childId },
-      relations: ['badges', 'badges.badge'],
+      relations: { badges: { badge: true } },
     });
     if (!childUser) {
       throw new NotFoundException('Child user not found');

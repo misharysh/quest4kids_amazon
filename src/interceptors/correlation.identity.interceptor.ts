@@ -27,8 +27,7 @@ export class CorrelationIdentityInterceptor implements NestInterceptor {
     const correlationId: string = incoming?.trim() || generateUuidNoDashes();
 
     response.setHeader(CORRELATION_HEADER, correlationId);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
-    (request as any).correlationId = correlationId;
+    request.correlationId = correlationId;
 
     return next.handle();
   }
