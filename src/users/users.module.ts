@@ -34,6 +34,7 @@ import { GetAvatarHandler } from './cqrs/handlers/get-avatar.handler';
 import { GetOnlineUsersHandler } from './cqrs/handlers/get-online-users.handler';
 import { RemoveChildAccountHandler } from './cqrs/handlers/remove-child-account.handler';
 import { TelegramChatIdHandler } from './cqrs/handlers/telegram-chat-id.handler';
+import { GetChildrenListHandler } from './cqrs/handlers/get-children-list.handler';
 
 const Handlers = [
   GetChildAccountHandler,
@@ -46,6 +47,7 @@ const Handlers = [
   GetOnlineUsersHandler,
   RemoveChildAccountHandler,
   TelegramChatIdHandler,
+  GetChildrenListHandler
 ];
 
 @Module({
