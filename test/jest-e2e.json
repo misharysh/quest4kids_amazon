@@ -5,5 +5,7 @@
   "transform": { "^.+\\.(t|j)s$": "ts-jest" },
   "collectCoverageFrom": ["**/*.(t|j)s"],
   "coverageDirectory": "coverage-e2e",
-  "testEnvironment": "node"
+  "testEnvironment": "node",
+  "maxWorkers": 1,
+  "testTimeout": 20000
 }
