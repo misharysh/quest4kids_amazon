@@ -37,6 +37,8 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpResponseLoggingInterceptor } from './logging/http-response-logging.interceptor';
 import { HttpRequestLoggingMiddleware } from './logging/http-request-logging.middleware';
 import { NestModule } from '@nestjs/common';
+import { TraceIdentityMiddleware } from './middleware/trace-identity.middleware';
+import { CorrelationIdentityMiddleware } from './middleware/correlation.identity.middleware';
 
 @Module({
   imports: [
@@ -108,6 +110,12 @@ import { NestModule } from '@nestjs/common';
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(HttpRequestLoggingMiddleware).forRoutes('*');
+    consumer
+      .apply(
+        TraceIdentityMiddleware,
+        CorrelationIdentityMiddleware,
+        HttpRequestLoggingMiddleware,
+      )
+      .forRoutes('*');
   }
 }

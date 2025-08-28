@@ -3,6 +3,7 @@ import {
   ClassSerializerInterceptor,
   Controller,
   Get,
+  Inject,
   NotFoundException,
   Patch,
   Post,
@@ -33,6 +34,7 @@ import { NotificationService } from '../../notifications/notification.service';
 import { ProfileResponseDto } from '../dto/profile.response.dto';
 import { plainToInstance } from 'class-transformer';
 import { populate } from '../user/mappers/user-mapper';
+import { ILoggingFactory } from '../../logging/logging.interfaces';
 
 @Controller('auth')
 @UseInterceptors(ClassSerializerInterceptor)
@@ -42,6 +44,8 @@ export class AuthController {
     private readonly authService: AuthService,
     private readonly userService: UserService,
     private readonly notificationService: NotificationService,
+    @Inject('LoggingFactory')
+    private readonly loggingFactory: ILoggingFactory,
   ) {}
 
   @Post('register')
@@ -59,6 +63,8 @@ export class AuthController {
       loginDto.email,
       loginDto.password,
     );
+    const logger = await this.loggingFactory.create('Auth.login');
+    logger.info('LOGGING', { user: loginDto.email });
 
     return new LoginResponse({ accessToken, refreshToken });
   }

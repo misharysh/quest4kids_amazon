@@ -7,15 +7,9 @@ import { redisConfig } from './config/bull.config';
 import { ExpressAdapter } from '@bull-board/express';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
-import { CorrelationIdentityInterceptor } from './interceptors/correlation.identity.interceptor';
-import { TraceIdentityInterceptor } from './interceptors/trace.identity.interceptor';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-
-  app.useGlobalInterceptors(new CorrelationIdentityInterceptor());
-  app.useGlobalInterceptors(new TraceIdentityInterceptor());
-
   const options = new DocumentBuilder()
     .setTitle('quest4kids API')
     .setVersion('1.0')
