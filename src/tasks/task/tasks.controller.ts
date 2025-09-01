@@ -3,11 +3,9 @@ import {
   Body,
   Controller,
   Delete,
-  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
-  NotFoundException,
   Param,
   Patch,
   Post,
@@ -39,12 +37,21 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { memoryStorage } from 'multer';
 import { GenerateTaskDto } from '../dto/generate-task.dto';
 import { TasksCacheInterceptor } from 'src/interceptors/tasks-cache.interceptors';
+import { GetTaskListQuery } from '../cqrs/queries/get-task-list.query';
+import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CreateTaskCommand } from '../cqrs/commands/create-task.command';
+import { GenerateTaskCommand } from '../cqrs/commands/generate-task.command';
+import { UpdateTaskCommand } from '../cqrs/commands/update-task.command';
+import { CreateTasksFromCsvCommand } from '../cqrs/commands/create-tasks-from-csv.command';
+import { GetChildAccountQuery } from 'src/users/cqrs/queries/get-child-account.query';
 
 @Controller()
 export class TasksController {
   constructor(
     private readonly tasksService: TasksService,
     private readonly userService: UserService,
+    private readonly queryBus: QueryBus,
+    private readonly commandBus: CommandBus,
   ) {}
 
   @Get('tasks')
@@ -53,11 +60,8 @@ export class TasksController {
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<Task>> {
-    const [items, total] = await this.tasksService.findAll(
-      filters,
-      pagination,
-      currentUser,
-    );
+    const query = new GetTaskListQuery(filters, pagination, currentUser);
+    const [items, total] = await this.queryBus.execute<GetTaskListQuery,[Task[], number]>(query);
 
     return {
       data: items,
@@ -76,11 +80,8 @@ export class TasksController {
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<Task>> {
-    const [items, total] = await this.tasksService.findAll(
-      filters,
-      pagination,
-      currentUser,
-    );
+    const query = new GetTaskListQuery(filters, pagination, currentUser);
+    const [items, total] = await this.queryBus.execute<GetTaskListQuery,[Task[], number]>(query);
 
     return {
       data: items,
@@ -138,7 +139,7 @@ export class TasksController {
 
   @Post('tasks/generate')
   public async generateTask(@Body() dto: GenerateTaskDto) {
-    return this.tasksService.generateTaskFromPrompt(dto.prompt);
+    return this.commandBus.execute(new GenerateTaskCommand(dto));
   }
 
   @Post('kids/:id/task')
@@ -148,21 +149,12 @@ export class TasksController {
     @Body() createTaskDto: CreateTaskDto,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<Task> {
-    //check if there is a child user
-    const childUser = await this.userService.findOne(id);
+    const childUser = await this.queryBus.execute(
+      new GetChildAccountQuery({id}, currentUser),
+    );
 
-    if (!childUser) {
-      throw new NotFoundException('Child user not found');
-    }
-
-    //check if this childUser has ParentId as current user id
-    if (childUser.parentId !== currentUser.id) {
-      throw new ForbiddenException('You can only access your children');
-    }
-
-    return await this.tasksService.createTask(
-      { ...createTaskDto, userId: id },
-      childUser,
+    return this.commandBus.execute(
+      new CreateTaskCommand({ ...createTaskDto, userId: id }, childUser),
     );
   }
 
@@ -197,21 +189,14 @@ export class TasksController {
     @CurrentUser() currentUser: CurrentUserDto,
     @UploadedFile() file: Express.Multer.File,
   ) {
-    const response: any = await this.tasksService.validateCsvData(
-      file,
-      currentUser,
+    const response = await this.commandBus.execute(
+      new CreateTasksFromCsvCommand(file, currentUser),
     );
-    if (!response.error) {
-      // process data (create tasks for children)
-      for (const item of response.validData) {
-        await this.tasksService.createTask(item.csvDto, item.childUser);
-      }
-    }
 
     return {
-      error: false,
-      statusCode: response?.status || HttpStatus.OK,
-      message: response?.message || 'File Uploaded successfully',
+      error: response?.error || false,
+      statusCode:  response?.statusCode || (response?.error ? HttpStatus.BAD_REQUEST : HttpStatus.OK),
+      message: response?.message || (response?.error ? 'File Upload Failed' : 'File Uploaded successfully'),
       data: response?.validData || [],
       errorsArray: response?.errorsArray || [],
     };
@@ -223,11 +208,10 @@ export class TasksController {
     @Body() updateTaskDto: UpdateTaskDto,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<Task> {
-    const task = await this.tasksService.findOneOrFail(params.id);
-    await this.tasksService.checkTaskOwnership(task, currentUser);
-
     try {
-      return await this.tasksService.updateTask(task, updateTaskDto);
+      return await this.commandBus.execute(
+        new UpdateTaskCommand(params.id, updateTaskDto, currentUser),
+      );
     } catch (error) {
       if (error instanceof WrongTaskStatusException) {
         throw new BadRequestException([error.message]);

@@ -16,6 +16,23 @@ import { TaskStatusLogsEntity } from './entities/task-status-logs.entity';
 import { TaskStatusLoggerService } from './task-status-log/task-status-logger.service';
 import { CommunicationClientModule } from '../communication/communication-client.module';
 import { TelegramModule } from '../telegram/telegram.module';
+import { CqrsModule } from '@nestjs/cqrs';
+import { GetTaskListHandler } from './cqrs/handlers/get-task-list.handler';
+import { CreateTaskHandler } from './cqrs/handlers/create-task.handler';
+import { CreateTaskCommentHandler } from './cqrs/handlers/create-task-comment.handler';
+import { CreateTasksFromCsvHandler } from './cqrs/handlers/create-tasks-from-csv.handlers';
+import { GenerateTaskHandler } from './cqrs/handlers/generate-task.handler';
+import { UpdateTaskHandler } from './cqrs/handlers/update-task.handler';
+
+
+const Handlers = [
+  GetTaskListHandler,
+  CreateTaskHandler,
+  CreateTaskCommentHandler,
+  CreateTasksFromCsvHandler,
+  GenerateTaskHandler,
+  UpdateTaskHandler
+];
 
 @Module({
   imports: [
@@ -34,9 +51,10 @@ import { TelegramModule } from '../telegram/telegram.module';
     CommunicationClientModule,
     forwardRef(() => NotificationModule),
     TelegramModule,
+    CqrsModule,
   ],
   controllers: [TasksController],
-  providers: [TasksService, TaskStatusLoggerService],
+  providers: [TasksService, TaskStatusLoggerService, ...Handlers],
   exports: [TasksService],
 })
 export class TasksModule {}

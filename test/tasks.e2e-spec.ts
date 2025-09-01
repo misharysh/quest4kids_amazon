@@ -1,9 +1,9 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { createTestApp } from './utils/create-app';
-import { CreateTaskDto } from 'src/tasks/dto/create-task.dto';
-import { UpdateTaskDto } from 'src/tasks/dto/update-task.dto';
-import { Task } from 'src/tasks/task.entity';
+import { CreateTaskDto } from '../src/tasks/dto/create-task.dto';
+import { UpdateTaskDto } from '../src/tasks/dto/update-task.dto';
+import { Task } from '../src/tasks/task.entity';
 import { TaskStatus } from '../src/tasks/task.model';
 import { PaginationResponse } from '../src/common/pagination.response';
 

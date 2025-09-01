@@ -1,8 +1,8 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { createTestApp } from './utils/create-app';
-import { CreateBadgeDto } from 'src/badges/dto/create-badge.dto';
-import { Badge } from 'src/badges/badge.entity';
+import { CreateBadgeDto } from '../src/badges/dto/create-badge.dto';
+import { Badge } from '../src/badges/badge.entity';
 import { TaskLabelEnum } from '../src/tasks/task-label.enum';
 import { PaginationResponse } from '../src/common/pagination.response';
 
