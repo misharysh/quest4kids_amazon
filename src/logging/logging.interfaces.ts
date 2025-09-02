@@ -13,5 +13,5 @@ export interface ILoggingService {
 }
 
 export interface ILoggingFactory {
-  create(category: string): Promise<ILoggingService>;
+  create(category: string): ILoggingService;
 }

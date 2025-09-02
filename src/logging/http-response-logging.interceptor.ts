@@ -17,10 +17,7 @@ export class HttpResponseLoggingInterceptor implements NestInterceptor {
     private readonly loggingFactory: ILoggingFactory,
   ) {}
 
-  async intercept(
-    context: ExecutionContext,
-    next: CallHandler,
-  ): Promise<Observable<any>> {
+  intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     if (!this.loggingFactory) {
       return next.handle();
     }
@@ -28,7 +25,7 @@ export class HttpResponseLoggingInterceptor implements NestInterceptor {
     const http = context.switchToHttp();
     const res = http.getResponse<Response>();
 
-    const logger = await this.loggingFactory.create('serverResponse');
+    const logger = this.loggingFactory.create('serverResponse');
 
     return next.handle().pipe(
       tap((data) => {

@@ -38,6 +38,10 @@ import { HttpResponseLoggingInterceptor } from './logging/http-response-logging.
 import { HttpRequestLoggingMiddleware } from './logging/http-request-logging.middleware';
 import { TraceIdentityMiddleware } from './middleware/trace-identity.middleware';
 import { CorrelationIdentityMiddleware } from './middleware/correlation.identity.middleware';
+import { ErrorLoggingInterceptor } from './common/error-logging.interceptor';
+import { RouteTemplateInterceptors } from './interceptors/route-template.interceptors';
+import { TypeormAdapterMiddleware } from './middleware/typeorm-adapter.middleware';
+import { TypeormLoggerAdapter } from './logging/typeorm/typeorm-logger-adapter';
 
 @Module({
   imports: [
@@ -58,8 +62,11 @@ import { CorrelationIdentityMiddleware } from './middleware/correlation.identity
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<ConfigTypes>) => {
+      inject: [ConfigService, TypeormLoggerAdapter],
+      useFactory: (
+        configService: ConfigService<ConfigTypes>,
+        typeormLogger: TypeormLoggerAdapter,
+      ) => {
         const isTest = process.env.NODE_ENV === 'test';
 
         const dbFromConfig =
@@ -83,6 +90,7 @@ import { CorrelationIdentityMiddleware } from './middleware/correlation.identity
           autoLoadEntities: true,
           synchronize: false,
           migrationsRun: !isTest,
+          logger: typeormLogger,
           migrations: [
             isTest ? 'src/migrations/*{.ts,.js}' : 'dist/migrations/*{.js}',
           ],
@@ -114,12 +122,23 @@ import { CorrelationIdentityMiddleware } from './middleware/correlation.identity
       provide: APP_INTERCEPTOR,
       useClass: HttpResponseLoggingInterceptor,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      scope: Scope.REQUEST,
+      useClass: ErrorLoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      scope: Scope.REQUEST,
+      useClass: RouteTemplateInterceptors,
+    },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
+        TypeormAdapterMiddleware,
         TraceIdentityMiddleware,
         CorrelationIdentityMiddleware,
         HttpRequestLoggingMiddleware,

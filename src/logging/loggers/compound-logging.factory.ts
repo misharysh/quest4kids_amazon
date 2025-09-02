@@ -10,11 +10,11 @@ export class CompoundLoggingFactory implements ILoggingFactory {
     private readonly factories: ILoggingFactory[],
   ) {}
 
-  async create(category: string): Promise<ILoggingService> {
+  create(category: string): ILoggingService {
     const services: ILoggingService[] = [];
 
     for (const factory of this.factories) {
-      const logger = await factory.create(category);
+      const logger = factory.create(category);
       services.push(logger);
     }
 

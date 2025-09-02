@@ -1,16 +1,15 @@
-import { DatabaseLogEntity } from '../database-logging.entity';
-import { Repository } from 'typeorm';
-import { LogLevel } from '../log-level.enum';
 import { Injectable, Scope } from '@nestjs/common';
-import { LoggingScope } from '../logging.scope';
 import { LoggingServiceBase } from '../logging.service.base';
+import { LoggingScope } from '../logging.scope';
+import { LogLevel } from '../log-level.enum';
+import { AwsCloudWatchClient } from './aws/aws-cloudwatch.client';
 
 @Injectable({ scope: Scope.TRANSIENT })
-export class DatabaseLoggingService extends LoggingServiceBase {
+export class AwsCloudWatchLoggingService extends LoggingServiceBase {
   constructor(
     private readonly loggingScope: LoggingScope,
     private readonly category: string,
-    private readonly logRepository: Repository<DatabaseLogEntity>,
+    private readonly client: AwsCloudWatchClient,
   ) {
     super();
   }
@@ -28,7 +27,7 @@ export class DatabaseLoggingService extends LoggingServiceBase {
     message: string,
     properties?: object,
   ): Promise<void> {
-    const entry = this.logRepository.create({
+    const payload = {
       timestamp: new Date().toISOString(),
       level,
       category: this.category,
@@ -37,8 +36,9 @@ export class DatabaseLoggingService extends LoggingServiceBase {
         ...this.loggingScope.context,
         ...(properties || {}),
       },
-    });
+    };
 
-    await this.logRepository.save(entry);
+    const str = JSON.stringify(payload);
+    await this.client.push(str, Date.now());
   }
 }

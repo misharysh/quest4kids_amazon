@@ -15,7 +15,7 @@ export class DatabaseLoggingFactory implements ILoggingFactory {
     private readonly logRepository: Repository<DatabaseLogEntity>,
   ) {}
 
-  async create(category: string): Promise<ILoggingService> {
+  create(category: string): ILoggingService {
     return new DatabaseLoggingService(
       this.loggingScope,
       category,
