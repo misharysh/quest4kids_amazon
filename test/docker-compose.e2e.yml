@@ -1,0 +1,27 @@
+services:
+  pg:
+    container_name: quest4kids_pg_test
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: quest4kids
+      POSTGRES_PASSWORD: quest4kids
+      POSTGRES_DB: quest4kids_test
+    ports:
+      - "5433:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U quest4kids -d quest4kids_test"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    container_name: quest4kids_redis_test
+    image: redis:7-alpine
+    command: ["redis-server", "--appendonly", "no"]
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
