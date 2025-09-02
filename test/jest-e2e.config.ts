@@ -1,24 +1,18 @@
-export default {
+import type { Config } from 'jest';
+
+const config: Config = {
   preset: 'ts-jest',
   testEnvironment: 'node',
-  rootDir: '../',
-  testRegex: '.e2e-spec.ts$',
+  rootDir: '..',
+  testRegex: 'test/.*\\.e2e-spec\\.ts$',
   moduleFileExtensions: ['ts', 'js', 'json'],
-
-  setupFilesAfterEnv: ['<rootDir>/test/jest-setup.ts'],
-
-  moduleNameMapper: { '^src/(.*)$': '<rootDir>/src/$1' },
-
-  transform: {
-    '^.+\\.(t|j)s$': [
-      'ts-jest',
-      {
-        tsconfig: '<rootDir>/tsconfig.json',
-        isolatedModules: false,
-      },
-    ],
+  setupFiles: ['dotenv/config'],
+  globalSetup: '<rootDir>/test/global-setup.ts',
+  verbose: true,
+  moduleNameMapper: {
+    '^src/(.*)$': '<rootDir>/src/$1',
+    '^@/(.*)$': '<rootDir>/src/$1',
   },
 
-  collectCoverageFrom: ['**/*.(t|j)s'],
-  coverageDirectory: 'coverage-e2e',
 };
+export default config;

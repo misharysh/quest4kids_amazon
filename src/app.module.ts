@@ -6,7 +6,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { appConfig } from './config/app.config';
 import { appConfigSchema, ConfigTypes } from './config/config-types';
 import { typeOrmConfig } from './config/database.config';
-import { TypeOrmModule } from '@nestjs/typeorm';
+import { TypeOrmModule, TypeOrmModuleOptions } from '@nestjs/typeorm';
 import { Task } from './tasks/task.entity';
 import { User } from './users/user.entity';
 import { TaskLabel } from './tasks/task-label.entity';
@@ -68,9 +68,13 @@ import { TypeormLoggerAdapter } from './logging/typeorm/typeorm-logger-adapter';
         configService: ConfigService<ConfigTypes>,
         typeormLogger: TypeormLoggerAdapter,
       ) => {
-        const base = configService.get('database');
+        const isTest = process.env.NODE_ENV === 'test';
+
+        const dbFromConfig =
+          configService.get<TypeOrmModuleOptions>('database') || {};
+
         return {
-          ...base,
+          ...dbFromConfig,
           entities: [
             Task,
             User,
@@ -86,15 +90,17 @@ import { TypeormLoggerAdapter } from './logging/typeorm/typeorm-logger-adapter';
           ],
           autoLoadEntities: true,
           synchronize: false,
-          migrationsRun: true,
-          migrations: ['dist/migrations/*{.ts,.js}'],
+          migrationsRun: !isTest,
           logger: typeormLogger,
-          ssl: true,
-          extra: {
-            ssl: {
-              rejectUnauthorized: false,
-            },
-          },
+          migrations: [
+            isTest ? 'src/migrations/*{.ts,.js}' : 'dist/migrations/*{.js}',
+          ],
+          ssl: !isTest,
+          extra: isTest
+            ? {}
+            : {
+                ssl: { rejectUnauthorized: false },
+              },
         };
       },
     }),
