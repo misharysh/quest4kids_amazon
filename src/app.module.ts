@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
@@ -36,6 +36,7 @@ import { DatabaseLogEntity } from './logging/database-logging.entity';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import { HttpResponseLoggingInterceptor } from './logging/http-response-logging.interceptor';
 import { HttpRequestLoggingMiddleware } from './logging/http-request-logging.middleware';
+import { NestModule } from '@nestjs/common';
 import { TraceIdentityMiddleware } from './middleware/trace-identity.middleware';
 import { CorrelationIdentityMiddleware } from './middleware/correlation.identity.middleware';
 import { ErrorLoggingInterceptor } from './common/error-logging.interceptor';
