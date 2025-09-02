@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, Scope } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TasksModule } from './tasks/tasks.module';
@@ -39,6 +39,10 @@ import { HttpRequestLoggingMiddleware } from './logging/http-request-logging.mid
 import { NestModule } from '@nestjs/common';
 import { TraceIdentityMiddleware } from './middleware/trace-identity.middleware';
 import { CorrelationIdentityMiddleware } from './middleware/correlation.identity.middleware';
+import { ErrorLoggingInterceptor } from './common/error-logging.interceptor';
+import { RouteTemplateInterceptors } from './interceptors/route-template.interceptors';
+import { TypeormAdapterMiddleware } from './middleware/typeorm-adapter.middleware';
+import { TypeormLoggerAdapter } from './logging/typeorm/typeorm-logger-adapter';
 
 @Module({
   imports: [
@@ -59,33 +63,40 @@ import { CorrelationIdentityMiddleware } from './middleware/correlation.identity
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
-      inject: [ConfigService],
-      useFactory: (configService: ConfigService<ConfigTypes>) => ({
-        ...configService.get('database'),
-        entities: [
-          Task,
-          User,
-          TaskLabel,
-          RefreshToken,
-          UserTaskCompletion,
-          Badge,
-          UserBadge,
-          DashboardSettings,
-          Notification,
-          Message,
-          DatabaseLogEntity,
-        ],
-        autoLoadEntities: true,
-        synchronize: false,
-        migrationsRun: true,
-        migrations: ['dist/migrations/*{.ts,.js}'],
-        ssl: true,
-        extra: {
-          ssl: {
-            rejectUnauthorized: false,
+      inject: [ConfigService, TypeormLoggerAdapter],
+      useFactory: (
+        configService: ConfigService<ConfigTypes>,
+        typeormLogger: TypeormLoggerAdapter,
+      ) => {
+        const base = configService.get('database');
+        return {
+          ...base,
+          entities: [
+            Task,
+            User,
+            TaskLabel,
+            RefreshToken,
+            UserTaskCompletion,
+            Badge,
+            UserBadge,
+            DashboardSettings,
+            Notification,
+            Message,
+            DatabaseLogEntity,
+          ],
+          autoLoadEntities: true,
+          synchronize: false,
+          migrationsRun: true,
+          migrations: ['dist/migrations/*{.ts,.js}'],
+          logger: typeormLogger,
+          ssl: true,
+          extra: {
+            ssl: {
+              rejectUnauthorized: false,
+            },
           },
-        },
-      }),
+        };
+      },
     }),
     TasksModule,
     UsersModule,
@@ -106,12 +117,23 @@ import { CorrelationIdentityMiddleware } from './middleware/correlation.identity
       provide: APP_INTERCEPTOR,
       useClass: HttpResponseLoggingInterceptor,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      scope: Scope.REQUEST,
+      useClass: ErrorLoggingInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      scope: Scope.REQUEST,
+      useClass: RouteTemplateInterceptors,
+    },
   ],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
+        TypeormAdapterMiddleware,
         TraceIdentityMiddleware,
         CorrelationIdentityMiddleware,
         HttpRequestLoggingMiddleware,

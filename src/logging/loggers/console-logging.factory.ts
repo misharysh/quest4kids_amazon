@@ -7,7 +7,7 @@ import { ConsoleLoggingService } from './console-logging.service';
 export class ConsoleLoggingFactory implements ILoggingFactory {
   constructor(private readonly loggingScope: LoggingScope) {}
 
-  async create(category: string): Promise<ILoggingService> {
+  create(category: string): ILoggingService {
     return new ConsoleLoggingService(this.loggingScope, category);
   }
 }
