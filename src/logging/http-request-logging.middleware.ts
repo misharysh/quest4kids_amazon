@@ -77,7 +77,6 @@ export class HttpRequestLoggingMiddleware implements NestMiddleware {
       if (!name) continue;
 
       if (name === 'set-cookie') {
-        // set-cookie не склеиваем — всегда массив
         const current = headers[name];
         if (Array.isArray(current)) {
           current.push(value);

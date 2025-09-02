@@ -51,18 +51,18 @@ import { TypeormLoggerAdapter } from './typeorm/typeorm-logger-adapter';
       useFactory: (
         scope: LoggingScope,
         consoleFactory: ConsoleLoggingFactory,
-        databaseFactory: DatabaseLoggingFactory,
+        // databaseFactory: DatabaseLoggingFactory,
         awsFactory: AwsCloudWatchLoggingFactory,
       ) =>
         new CompoundLoggingFactory(scope, [
           consoleFactory,
-          databaseFactory,
+          // databaseFactory,
           awsFactory,
         ]),
       inject: [
         LoggingScope,
         ConsoleLoggingFactory,
-        DatabaseLoggingFactory,
+        // DatabaseLoggingFactory,
         AwsCloudWatchLoggingFactory,
       ],
       scope: Scope.REQUEST,
