@@ -175,7 +175,6 @@ describe('Tasks CRUD (e2e)', () => {
       .get(`/tasks/not-a-uuid`)
       .set(h(parentAccessToken));
 
-    // Это не правильно на самом деле контролер должен 400 отдавать;
-    expect(res.status).toBe(500);
+    expect(res.status).toBe(400);
   });
 });

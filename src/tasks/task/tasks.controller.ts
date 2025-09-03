@@ -44,6 +44,7 @@ import { GenerateTaskCommand } from '../cqrs/commands/generate-task.command';
 import { UpdateTaskCommand } from '../cqrs/commands/update-task.command';
 import { CreateTasksFromCsvCommand } from '../cqrs/commands/create-tasks-from-csv.command';
 import { GetChildAccountQuery } from 'src/users/cqrs/queries/get-child-account.query';
+import { Uuid } from '../../common/validation';
 
 @Controller()
 export class TasksController {
@@ -61,7 +62,10 @@ export class TasksController {
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<Task>> {
     const query = new GetTaskListQuery(filters, pagination, currentUser);
-    const [items, total] = await this.queryBus.execute<GetTaskListQuery,[Task[], number]>(query);
+    const [items, total] = await this.queryBus.execute<
+      GetTaskListQuery,
+      [Task[], number]
+    >(query);
 
     return {
       data: items,
@@ -81,7 +85,10 @@ export class TasksController {
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<Task>> {
     const query = new GetTaskListQuery(filters, pagination, currentUser);
-    const [items, total] = await this.queryBus.execute<GetTaskListQuery,[Task[], number]>(query);
+    const [items, total] = await this.queryBus.execute<
+      GetTaskListQuery,
+      [Task[], number]
+    >(query);
 
     return {
       data: items,
@@ -129,10 +136,10 @@ export class TasksController {
 
   @Get('tasks/:id')
   public async findOne(
-    @Param() params: FindOneParams,
+    @Uuid() id: string,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<Task> {
-    const task = await this.tasksService.findOneOrFail(params.id);
+    const task = await this.tasksService.findOneOrFail(id);
     await this.tasksService.checkTaskOwnership(task, currentUser);
     return task;
   }
@@ -150,7 +157,7 @@ export class TasksController {
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<Task> {
     const childUser = await this.queryBus.execute(
-      new GetChildAccountQuery({id}, currentUser),
+      new GetChildAccountQuery({ id }, currentUser),
     );
 
     return this.commandBus.execute(
@@ -195,8 +202,12 @@ export class TasksController {
 
     return {
       error: response?.error || false,
-      statusCode:  response?.statusCode || (response?.error ? HttpStatus.BAD_REQUEST : HttpStatus.OK),
-      message: response?.message || (response?.error ? 'File Upload Failed' : 'File Uploaded successfully'),
+      statusCode:
+        response?.statusCode ||
+        (response?.error ? HttpStatus.BAD_REQUEST : HttpStatus.OK),
+      message:
+        response?.message ||
+        (response?.error ? 'File Upload Failed' : 'File Uploaded successfully'),
       data: response?.validData || [],
       errorsArray: response?.errorsArray || [],
     };
