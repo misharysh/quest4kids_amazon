@@ -35,6 +35,7 @@ import { GetOnlineUsersHandler } from './cqrs/handlers/get-online-users.handler'
 import { RemoveChildAccountHandler } from './cqrs/handlers/remove-child-account.handler';
 import { TelegramChatIdHandler } from './cqrs/handlers/telegram-chat-id.handler';
 import { GetChildrenListHandler } from './cqrs/handlers/get-children-list.handler';
+import { ZitadelIdentityService } from 'src/identityService/zitadel-identity.service';
 
 const Handlers = [
   GetChildAccountHandler,
@@ -79,6 +80,7 @@ const Handlers = [
     UserService,
     AuthService,
     NotificationService,
+    ZitadelIdentityService,
     DashboardSettingsService,
     NotificationGateway,
     GoogleStrategy,

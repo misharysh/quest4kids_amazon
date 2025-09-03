@@ -111,4 +111,13 @@ export class User {
     default: null,
   })
   telegramChatId?: string;
+
+  @Expose()
+  @Column({
+    name: 'external_id',
+    type: 'varchar',
+    nullable: true,
+    default: null,
+  })
+  externalId: string | null ;
 }

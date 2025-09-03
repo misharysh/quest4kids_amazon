@@ -51,6 +51,7 @@
     "@nestjs/websockets": "^11.0.17",
     "@types/cron": "^2.0.1",
     "aws-sdk": "^2.1692.0",
+    "axios": "^1.11.0",
     "bcrypt": "^5.1.1",
     "bullmq": "^5.52.2",
     "class-transformer": "^0.5.1",
