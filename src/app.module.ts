@@ -43,6 +43,7 @@ import { ErrorLoggingInterceptor } from './common/error-logging.interceptor';
 import { RouteTemplateInterceptors } from './interceptors/route-template.interceptors';
 import { TypeormAdapterMiddleware } from './middleware/typeorm-adapter.middleware';
 import { TypeormLoggerAdapter } from './logging/typeorm/typeorm-logger-adapter';
+import { CorrelationAlsMiddleware } from './middleware/correlation-als.middleware';
 
 @Module({
   imports: [
@@ -142,6 +143,7 @@ export class AppModule implements NestModule {
         TypeormAdapterMiddleware,
         TraceIdentityMiddleware,
         CorrelationIdentityMiddleware,
+        CorrelationAlsMiddleware,
         HttpRequestLoggingMiddleware,
       )
       .forRoutes('*');

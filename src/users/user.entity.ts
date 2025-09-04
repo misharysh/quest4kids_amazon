@@ -119,5 +119,5 @@ export class User {
     nullable: true,
     default: null,
   })
-  externalId: string | null ;
+  externalId: string | null;
 }

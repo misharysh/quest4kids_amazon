@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CreateChildAccountCommand } from '../commands/create-child-account.command';
 import { User } from '../../user.entity';
-import { ConflictException} from '@nestjs/common';
+import { ConflictException } from '@nestjs/common';
 import { Role } from '../../role.enum';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DataSource, Repository } from 'typeorm';
@@ -51,13 +51,14 @@ export class CreateChildAccountHandler
         .save(user);
 
       const identityUser: IdentityUser = new IdentityUser();
-      identityUser.email  = savedUser.email;
-      identityUser.firstName  = savedUser.name;
+      identityUser.email = savedUser.email;
+      identityUser.firstName = savedUser.name;
       identityUser.initialPassword = createUser.password;
-      identityUser.lastName  = savedUser.name;
-      identityUser.userName = savedUser.name; 
+      identityUser.lastName = savedUser.name;
+      identityUser.userName = savedUser.name;
 
-      const zitadelResult = await this.zitadelIdentityService.createUser(identityUser);
+      const zitadelResult =
+        await this.zitadelIdentityService.createUser(identityUser);
       createdZitadelUserId = zitadelResult.userId;
 
       savedUser.externalId = zitadelResult.userId;
@@ -72,11 +73,10 @@ export class CreateChildAccountHandler
       if (createdZitadelUserId) {
         try {
           await this.zitadelIdentityService.deleteUser(createdZitadelUserId);
-        } 
-        catch {
+        } catch {
           console.log('Error deleting user from Zitadel', error);
         }
-        
+
         await queryRunner.rollbackTransaction();
         throw error;
       }

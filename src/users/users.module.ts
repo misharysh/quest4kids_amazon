@@ -48,7 +48,7 @@ const Handlers = [
   GetOnlineUsersHandler,
   RemoveChildAccountHandler,
   TelegramChatIdHandler,
-  GetChildrenListHandler
+  GetChildrenListHandler,
 ];
 
 @Module({

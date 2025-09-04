@@ -63,7 +63,7 @@ export class UserController {
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<User> {
-    const logger = await this.loggingFactory.create(UserController.name);
+    const logger = this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '888' });
     logger.info('Fetching user', {});
 
@@ -78,7 +78,7 @@ export class UserController {
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
   ): Promise<PaginationResponse<User>> {
-    const logger = await this.loggingFactory.create(UserController.name);
+    const logger = this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '123', traceId: 'abc' });
 
     const query = new GetChildrenListQuery(pagination, currentUser);

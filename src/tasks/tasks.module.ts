@@ -24,14 +24,13 @@ import { CreateTasksFromCsvHandler } from './cqrs/handlers/create-tasks-from-csv
 import { GenerateTaskHandler } from './cqrs/handlers/generate-task.handler';
 import { UpdateTaskHandler } from './cqrs/handlers/update-task.handler';
 
-
 const Handlers = [
   GetTaskListHandler,
   CreateTaskHandler,
   CreateTaskCommentHandler,
   CreateTasksFromCsvHandler,
   GenerateTaskHandler,
-  UpdateTaskHandler
+  UpdateTaskHandler,
 ];
 
 @Module({
