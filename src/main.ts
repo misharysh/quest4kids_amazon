@@ -8,7 +8,6 @@ import { ExpressAdapter } from '@bull-board/express';
 import { createBullBoard } from '@bull-board/api';
 import { BullMQAdapter } from '@bull-board/api/bullMQAdapter';
 import { attachAxiosGlobalLogging } from './logging/axios-logging';
-import { ILoggingFactory } from './logging/logging.interfaces';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -50,8 +49,7 @@ async function bootstrap() {
   const bullBoardRouter = serverAdapter.getRouter();
   app.use('/admin/queues', bullBoardRouter);
 
-  const loggingFactory = await app.resolve<ILoggingFactory>('LoggingFactory');
-  attachAxiosGlobalLogging(() => loggingFactory.create('axios'));
+  attachAxiosGlobalLogging();
 
   await app.listen(process.env.PORT ?? 3000);
   console.log('Bull Board UI → http://localhost:3000/admin/queues');
