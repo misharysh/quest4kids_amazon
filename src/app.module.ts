@@ -44,6 +44,7 @@ import { RouteTemplateInterceptors } from './interceptors/route-template.interce
 import { TypeormAdapterMiddleware } from './middleware/typeorm-adapter.middleware';
 import { TypeormLoggerAdapter } from './logging/typeorm/typeorm-logger-adapter';
 import { CorrelationAlsMiddleware } from './middleware/correlation-als.middleware';
+import { IdentityModule } from './identityService/identity.module';
 
 @Module({
   imports: [
@@ -63,7 +64,7 @@ import { CorrelationAlsMiddleware } from './middleware/correlation-als.middlewar
       },
     }),
     TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
+      imports: [ConfigModule, IdentityModule],
       inject: [ConfigService, TypeormLoggerAdapter],
       useFactory: (
         configService: ConfigService<ConfigTypes>,

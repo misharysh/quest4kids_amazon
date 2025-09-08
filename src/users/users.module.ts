@@ -9,7 +9,7 @@ import { PasswordService } from './password/password.service';
 import { UserService } from './user/user.service';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
-import { AuthGuard } from './guards/auth.guard';
+// import { ard } from './guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guard';
 import { UserController } from './user/user.controller';
@@ -84,12 +84,12 @@ const Handlers = [
     DashboardSettingsService,
     NotificationGateway,
     GoogleStrategy,
-    AuthGuard,
+    // AuthGuard,
     RolesGuard,
-    {
-      provide: APP_GUARD,
-      useClass: AuthGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: AuthGuard,
+    // },
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

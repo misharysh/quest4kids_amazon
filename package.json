@@ -33,6 +33,7 @@
     "test:e2e:seeded:tasks": "npm run test:e2e:seeded -- -t \"Tasks CRUD\""
   },
   "dependencies": {
+    "@bufbuild/protobuf": "^2.7.0",
     "@bull-board/api": "^6.9.6",
     "@bull-board/express": "^6.9.6",
     "@nestjs/bullmq": "^11.0.2",
@@ -50,6 +51,7 @@
     "@nestjs/swagger": "^11.0.5",
     "@nestjs/websockets": "^11.0.17",
     "@types/cron": "^2.0.1",
+    "@zitadel/node": "^3.0.22",
     "aws-sdk": "^2.1692.0",
     "axios": "^1.11.0",
     "bcrypt": "^5.1.1",

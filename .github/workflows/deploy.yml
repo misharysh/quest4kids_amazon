@@ -83,4 +83,7 @@ jobs:
               -e URL_RESET_PASSWORD="${{ secrets.URL_RESET_PASSWORD }}" \
               -e TELEGRAM_BOT_TOKEN="${{ secrets.TELEGRAM_BOT_TOKEN }}" \
               -e TELEGRAM_ENABLE="${{ secrets.TELEGRAM_ENABLE }}" \
+              -e ZITADEL_HOST="${{ secrets.ZITADEL_HOST }}" \
+              -e ZITADEL_TOKEN="${{ secrets.ZITADEL_TOKEN }}" \
+              -e AWS_REGION="${{ secrets.AWS_REGION }}" \
               ${{ secrets.DOCKERHUB_USERNAME }}/nestjs-api:${{ env.SHORT_SHA }}
