@@ -36,6 +36,10 @@ import { RemoveChildAccountHandler } from './cqrs/handlers/remove-child-account.
 import { TelegramChatIdHandler } from './cqrs/handlers/telegram-chat-id.handler';
 import { GetChildrenListHandler } from './cqrs/handlers/get-children-list.handler';
 import { ZitadelIdentityService } from 'src/identityService/zitadel-identity.service';
+import { RemoteEventHandler } from 'src/events/remote-event.handler';
+import { AmazonSnsEventBus } from 'src/events/amazon-sns.event-bus';
+import { UserCreatedRemoteEventHandler } from 'src/events/user-created.remote-event.handler';
+import { UserUpdatedRemoteEventHandler } from 'src/events/user-updated.remote-event.handler';
 
 const Handlers = [
   GetChildAccountHandler,
@@ -49,6 +53,9 @@ const Handlers = [
   RemoveChildAccountHandler,
   TelegramChatIdHandler,
   GetChildrenListHandler,
+  RemoteEventHandler,
+  UserCreatedRemoteEventHandler,
+  UserUpdatedRemoteEventHandler,
 ];
 
 @Module({
@@ -86,6 +93,7 @@ const Handlers = [
     GoogleStrategy,
     // AuthGuard,
     RolesGuard,
+    AmazonSnsEventBus,
     // {
     //   provide: APP_GUARD,
     //   useClass: AuthGuard,
