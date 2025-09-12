@@ -45,6 +45,8 @@ import { TypeormAdapterMiddleware } from './middleware/typeorm-adapter.middlewar
 import { TypeormLoggerAdapter } from './logging/typeorm/typeorm-logger-adapter';
 import { CorrelationAlsMiddleware } from './middleware/correlation-als.middleware';
 import { IdentityModule } from './identityService/identity.module';
+import { SqsReaderModule } from './aws/sqs/sqs-reader.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -116,6 +118,8 @@ import { IdentityModule } from './identityService/identity.module';
     BullModule.forRoot(redisConfig),
     TelegramModule,
     LoggingModule,
+    ScheduleModule.forRoot(),
+    SqsReaderModule,
   ],
   controllers: [AppController],
   providers: [
