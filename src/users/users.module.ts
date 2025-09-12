@@ -9,7 +9,7 @@ import { PasswordService } from './password/password.service';
 import { UserService } from './user/user.service';
 import { AuthService } from './auth/auth.service';
 import { AuthController } from './auth/auth.controller';
-// import { ard } from './guards/auth.guard';
+import { AuthGuard } from './guards/auth.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './guards/roles.guard';
 import { UserController } from './user/user.controller';
@@ -36,6 +36,10 @@ import { RemoveChildAccountHandler } from './cqrs/handlers/remove-child-account.
 import { TelegramChatIdHandler } from './cqrs/handlers/telegram-chat-id.handler';
 import { GetChildrenListHandler } from './cqrs/handlers/get-children-list.handler';
 import { ZitadelIdentityService } from 'src/identityService/zitadel-identity.service';
+import { RemoteEventHandler } from 'src/events/remote-event.handler';
+import { AmazonSnsEventBus } from 'src/events/amazon-sns.event-bus';
+import { UserCreatedRemoteEventHandler } from 'src/events/user-created.remote-event.handler';
+import { UserUpdatedRemoteEventHandler } from 'src/events/user-updated.remote-event.handler';
 
 const Handlers = [
   GetChildAccountHandler,
@@ -49,6 +53,9 @@ const Handlers = [
   RemoveChildAccountHandler,
   TelegramChatIdHandler,
   GetChildrenListHandler,
+  RemoteEventHandler,
+  UserCreatedRemoteEventHandler,
+  UserUpdatedRemoteEventHandler,
 ];
 
 @Module({
@@ -84,12 +91,13 @@ const Handlers = [
     DashboardSettingsService,
     NotificationGateway,
     GoogleStrategy,
-    // AuthGuard,
+    AuthGuard,
     RolesGuard,
-    // {
-    //   provide: APP_GUARD,
-    //   useClass: AuthGuard,
-    // },
+    AmazonSnsEventBus,
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
     {
       provide: APP_GUARD,
       useClass: RolesGuard,

@@ -19,7 +19,6 @@ import { Roles } from '../decorators/roles.decorator';
 import { Role } from '../role.enum';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { User } from '../user.entity';
-import { UserService } from './user.service';
 import { CurrentUser } from '../decorators/current-user.decorator';
 import { PaginationResponse } from '../../common/pagination.response';
 import { PaginationParams } from '../../common/pagination.params';
@@ -29,9 +28,8 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { PointsDto } from '../dto/points.dto';
 import { UserWithOnlineStatusDto } from '../dto/user-with-online-status.dto';
-import { OnlineService } from '../online/online.service';
 import { UpdateTelegramChatIdDto } from '../dto/update-telegram-chat-id.dto';
-import { CommandBus, QueryBus } from '@nestjs/cqrs';
+import { CommandBus, EventBus, QueryBus } from '@nestjs/cqrs';
 import { GetChildAccountQuery } from '../cqrs/queries/get-child-account.query';
 import { CreateChildAccountCommand } from '../cqrs/commands/create-child-account.command';
 import { UpdateChildAccountCommand } from '../cqrs/commands/update-child-account.command';
@@ -44,17 +42,18 @@ import { AddAvatarCommand } from '../cqrs/commands/add-avatar.command';
 import { GetAvatarQuery } from '../cqrs/queries/get-avatar.query';
 import { ClaimPointsCommand } from '../cqrs/commands/claim-points.command';
 import { TelegramChatIdCommand } from '../cqrs/commands/telegram-chat-id.command';
+import { RequestContext } from '../decorators/request-context.decorator';
+import { UserCreatedEvent } from 'src/events/user-created.event';
 
 @Controller('user')
 @UseInterceptors(ClassSerializerInterceptor)
 export class UserController {
   constructor(
-    private readonly userService: UserService,
-    private readonly onlineService: OnlineService,
     @Inject('LoggingFactory')
     private readonly loggingFactory: ILoggingFactory,
     private readonly queryBus: QueryBus,
     private readonly commandBus: CommandBus,
+    private readonly eventBus: EventBus,
   ) {}
 
   @Get('get-child-account/:id')
@@ -62,6 +61,7 @@ export class UserController {
   public async getChild(
     @Param() params: FindOneParams,
     @CurrentUser() currentUser: CurrentUserDto,
+    @RequestContext() context,
   ): Promise<User> {
     const logger = this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '888' });
@@ -69,6 +69,8 @@ export class UserController {
 
     const query = new GetChildAccountQuery(params, currentUser);
     const user: Promise<User> = this.queryBus.execute(query);
+
+    this.eventBus.publish(new UserCreatedEvent(await user, {traceId: context.traceId, correlationId: context.correlationId}));
     return user;
   }
 
@@ -77,6 +79,7 @@ export class UserController {
   public async getChildrenList(
     @Query() pagination: PaginationParams,
     @CurrentUser() currentUser: CurrentUserDto,
+    @RequestContext() context,
   ): Promise<PaginationResponse<User>> {
     const logger = this.loggingFactory.create(UserController.name);
     logger.scope({ correlationId: '123', traceId: 'abc' });

@@ -97,7 +97,7 @@ import { ScheduleModule } from '@nestjs/schedule';
           migrationsRun: !isTest,
           logger: typeormLogger,
           migrations: [
-            isTest ? 'src/migrations/*{.ts,.js}' : 'dist/migrations/*{.js}',
+            isTest ? 'src/migrations/*{.ts,.js}' : 'dist/migrations/*{.ts,.js}',
           ],
           ssl: !isTest,
           extra: isTest

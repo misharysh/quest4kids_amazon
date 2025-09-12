@@ -1,9 +1,9 @@
 import { User } from "src/users/user.entity";
 import { Event } from "./event";
 
-export class UserCreatedEvent extends Event {
+export class UserUpdatedEvent extends Event {
     user: User;
-    type = 'event:user.created';
+    type = 'event:user.updated';
     isRemote = true;
 
     constructor(user: User, context: {traceId: string; correlationId: string})
@@ -12,4 +12,3 @@ export class UserCreatedEvent extends Event {
         this.user = user;
     }
 }
-
