@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { IEvent } from '@nestjs/cqrs';
-import { UserCreatedEvent } from './user-created.event';
+import { ArrivedUserCreatedEvent } from './arrived-user-created.event';
 
 export interface ExternalEventEnvelope {
   type: string;
@@ -19,7 +19,7 @@ export class EventFactory {
     this.register(
       'event:user.created',
       (e) =>
-        new UserCreatedEvent(
+        new ArrivedUserCreatedEvent(
           e.user as object,
           e.traceId,
           e.correlationId,

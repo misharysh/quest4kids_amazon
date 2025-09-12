@@ -4,10 +4,15 @@ import { SqsReaderService } from './sqs-reader.service';
 import { SqsConsumer } from './sqs.consumer';
 import { CqrsModule } from '@nestjs/cqrs';
 import { EventFactory } from '../../events/event-factory';
-import { UserCreatedHandler } from '../../events/user-created.handler';
+import { ArrivedUserCreatedHandler } from '../../events/arrived-user-created.handler';
 
 @Module({
   imports: [SqsModule, CqrsModule],
-  providers: [SqsReaderService, SqsConsumer, EventFactory, UserCreatedHandler],
+  providers: [
+    SqsReaderService,
+    SqsConsumer,
+    EventFactory,
+    ArrivedUserCreatedHandler,
+  ],
 })
 export class SqsReaderModule {}
